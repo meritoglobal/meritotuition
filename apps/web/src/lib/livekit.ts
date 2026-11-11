@@ -5,9 +5,9 @@ import { AccessToken, RoomServiceClient, TrackSource, WebhookReceiver } from "li
  * LiveKit settings, read from server env (never NEXT_PUBLIC: the secret must
  * not reach the browser). Without all three the classroom runs as a demo.
  */
-const URL_ = process.env.LIVEKIT_URL ?? "";
-const KEY = process.env.LIVEKIT_API_KEY ?? "";
-const SECRET = process.env.LIVEKIT_API_SECRET ?? "";
+const URL_ = (process.env.LIVEKIT_URL ?? "").trim();
+const KEY = (process.env.LIVEKIT_API_KEY ?? "").trim();
+const SECRET = (process.env.LIVEKIT_API_SECRET ?? "").trim();
 
 export const LK_LIVE = Boolean(URL_ && KEY && SECRET);
 export const LK_URL = URL_;
