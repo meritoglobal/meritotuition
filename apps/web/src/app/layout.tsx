@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { copy } from "@/lib/copy";
+import { signOut } from "@/lib/auth/actions";
+import { getUser } from "@/lib/auth/session";
 import { getLang } from "@/lib/lang";
 import { LangProvider, LangToggle } from "@/lib/lang-client";
 
@@ -22,13 +24,13 @@ function Logo({ bn }: { bn: boolean }) {
   return (
     <Link href="/" aria-label="Mastermoshai home" className="flex items-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={bn ? "/brand/logo-horizontal.svg" : "/brand/logo-horizontal-en-only.svg"} alt="মাস্টারমশাই · Mastermoshai" width={172} height={40} className="h-10 w-auto" />
+      <img src={bn ? "/brand/logo-horizontal.svg" : "/brand/logo-horizontal-en-only.svg"} alt="মাস্টারমশাই · Mastermoshai" width={172} height={40} className="h-9 w-auto sm:h-10" />
     </Link>
   );
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const lang = await getLang();
+  const [lang, user] = await Promise.all([getLang(), getUser()]);
   const c = copy(lang);
   return (
     <html lang={lang}>
@@ -43,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen">
         <LangProvider lang={lang}>
         <header className="sticky top-0 z-30 border-b border-line bg-paper">
-          <nav className="mx-auto flex max-w-7xl items-center gap-8 px-5 py-3">
+          <nav className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-8 sm:px-5">
             <Logo bn={lang === "bn"} />
             <div className="hidden gap-6 text-[15px] font-medium md:flex">
               <Link href="/teachers?mode=ONLINE" className="hover:underline underline-offset-4">{c.nav.online}</Link>
@@ -51,10 +53,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/videos" className="hover:underline underline-offset-4">{c.nav.free}</Link>
               <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
             </div>
-            <div className="ml-auto flex items-center gap-4">
+            <div className="ml-auto flex items-center gap-3 whitespace-nowrap sm:gap-4">
               <LangToggle />
-              <Link href="/dashboard/student" className="hidden text-[15px] font-semibold sm:block">{c.nav.mine}</Link>
-              <Link href="/teachers" className="btn-ink px-4! py-2!">{c.nav.find}</Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard/student" className="hidden text-[15px] font-semibold sm:block">{c.nav.mine}</Link>
+                  <form action={signOut} className="hidden sm:block">
+                    <button className="text-[15px] font-medium text-ink-2 hover:text-ink" title={user.email ?? user.phone}>{c.nav.logout}</button>
+                  </form>
+                </>
+              ) : (
+                <Link href="/login" className="text-[15px] font-semibold">{c.nav.login}</Link>
+              )}
+              <Link href="/teachers" className="btn-ink hidden px-4! py-2! sm:inline-flex">{c.nav.find}</Link>
             </div>
           </nav>
         </header>
