@@ -1,5 +1,5 @@
 {
-  "name": "@porao/mobile",
+  "name": "@merito/mobile",
   "version": "0.1.0",
   "private": true,
   "main": "expo-router/entry",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@porao/core": "workspace:*",
+    "@merito/core": "workspace:*",
     "expo": "~54.0.0",
     "expo-constants": "~18.0.0",
     "expo-linking": "~8.0.0",

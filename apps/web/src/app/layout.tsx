@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Porao — find your tutor, online or near home",
+  title: "Merito Tuition — find your tutor, online or near home",
   description: "1:1 and small-batch tutoring in Bangladesh with verified university tutors, free trial classes and money-back protection.",
 };
 
@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
           <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
             <Link href="/" className="text-xl font-bold text-brand-700">
-              Porao <span className="font-normal text-slate-400">পড়াও</span>
+              Merito <span className="font-normal text-slate-400">Tuition</span>
             </Link>
             <div className="hidden gap-5 text-sm text-slate-600 sm:flex">
               <Link href="/teachers" className="hover:text-brand-700">Find a tutor</Link>

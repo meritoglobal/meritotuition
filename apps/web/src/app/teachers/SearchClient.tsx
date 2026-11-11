@@ -1,7 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DHAKA_AREAS, SUBJECTS, searchTeachers, type ClassLevel, type Subject, type TeachingMode } from "@porao/core";
+import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DHAKA_AREAS, SUBJECTS, searchTeachers, type ClassLevel, type Subject, type TeachingMode } from "@merito/core";
 import { TeacherCard } from "@/components/TeacherCard";
 
 const TutorMap = dynamic(() => import("@/components/TutorMap"), { ssr: false, loading: () => <div className="h-full animate-pulse rounded-2xl bg-slate-200" /> });

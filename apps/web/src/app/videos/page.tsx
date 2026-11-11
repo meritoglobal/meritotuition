@@ -1,4 +1,4 @@
-import { DEMO_VIDEOS } from "@porao/core";
+import { DEMO_VIDEOS } from "@merito/core";
 import { VideoCard } from "@/components/VideoCard";
 
 export default function VideosPage() {

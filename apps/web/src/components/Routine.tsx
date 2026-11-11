@@ -1,4 +1,4 @@
-import { CLASS_LEVEL_LABEL, WEEKDAY_LABEL, classesPerMonth, formatTaka, openSeats, timeLabel, type WeeklySlot } from "@porao/core";
+import { CLASS_LEVEL_LABEL, WEEKDAY_LABEL, classesPerMonth, formatTaka, openSeats, timeLabel, type WeeklySlot } from "@merito/core";
 
 export function RoutineList({ slots, teacherId, actions = true }: { slots: WeeklySlot[]; teacherId: string; actions?: boolean }) {
   return (

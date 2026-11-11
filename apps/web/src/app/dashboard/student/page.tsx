@@ -1,4 +1,4 @@
-import { formatTaka } from "@porao/core";
+import { formatTaka } from "@merito/core";
 import { demoStudentPlan } from "@/lib/demo";
 import FlagForm from "./FlagForm";
 

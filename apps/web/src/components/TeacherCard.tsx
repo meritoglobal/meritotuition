@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@porao/core";
+import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@merito/core";
 
 export function initials(name: string) {
   return name.split(" ").map((p) => p[0]).join("").slice(0, 2);

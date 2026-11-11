@@ -1,4 +1,4 @@
-# Porao (পড়াও)
+# Merito Tuition
 
 1:1 and small-batch (up to 1:5) tutoring marketplace for Bangladesh: online live classes
 and offline home tutors found on a map, free trial classes, a free lesson library,
@@ -21,12 +21,12 @@ Plan and research: https://claude.ai/artifact/6c6x7LjVzeRXxoH7C9S9YY
 ```bash
 pnpm install
 pnpm test                         # core rules + API end-to-end flow
-pnpm --filter @porao/web dev      # http://localhost:3000
-pnpm --filter @porao/api dev      # http://localhost:4000
-pnpm --filter @porao/mobile start # Expo Go on your phone
+pnpm --filter @merito/web dev      # http://localhost:3000
+pnpm --filter @merito/api dev      # http://localhost:4000
+pnpm --filter @merito/mobile start # Expo Go on your phone
 ```
 
-The web and mobile screens use demo data from `@porao/core` until they are wired to the API.
+The web and mobile screens use demo data from `@merito/core` until they are wired to the API.
 The API currently uses an in-memory store with the same methods the Prisma repository will implement.
 
 ## Money rules (packages/core)

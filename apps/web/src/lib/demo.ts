@@ -1,5 +1,5 @@
-/** Demo plan/earnings built with the real rules from @porao/core, until the API is wired in. */
-import { DEMO_TEACHERS, commissionRate, perClassShares, settleClass, upcomingOccurrences, type SessionOutcome } from "@porao/core";
+/** Demo plan/earnings built with the real rules from @merito/core, until the API is wired in. */
+import { DEMO_TEACHERS, commissionRate, perClassShares, settleClass, upcomingOccurrences, type SessionOutcome } from "@merito/core";
 
 const rafi = DEMO_TEACHERS[0]!;
 const slot = rafi.routine[0]!;

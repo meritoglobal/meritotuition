@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Porao",
-    "slug": "porao",
-    "scheme": "porao",
+    "name": "Merito Tuition",
+    "slug": "merito-tuition",
+    "scheme": "merito",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "plugins": ["expo-router", "expo-notifications"],
-    "android": { "package": "com.porao.app", "permissions": ["ACCESS_FINE_LOCATION", "CAMERA", "RECORD_AUDIO"] },
-    "ios": { "bundleIdentifier": "com.porao.app" },
+    "android": { "package": "com.merito.tuition", "permissions": ["ACCESS_FINE_LOCATION", "CAMERA", "RECORD_AUDIO"] },
+    "ios": { "bundleIdentifier": "com.merito.tuition" },
     "experiments": { "typedRoutes": false }
   }
 }

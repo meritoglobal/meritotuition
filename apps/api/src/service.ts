@@ -22,7 +22,7 @@ import {
   type Settlement,
   type TeacherSummary,
   type WeeklySlot,
-} from "@porao/core";
+} from "@merito/core";
 import { Ledger } from "./ledger";
 import { Notifier } from "./notify";
 

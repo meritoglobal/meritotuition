@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from "react-native";
 import { router } from "expo-router";
-import { formatTaka, settleClass } from "@porao/core";
+import { formatTaka, settleClass } from "@merito/core";
 import { Button, Card, s } from "../../src/ui";
 
 export default function Earnings() {

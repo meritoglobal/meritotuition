@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, formatTaka } from "@porao/core";
+import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, formatTaka } from "@merito/core";
 import { RoutineList } from "@/components/Routine";
 import { initials } from "@/components/TeacherCard";
 import { VideoCard } from "@/components/VideoCard";
@@ -52,7 +52,7 @@ export default async function TeacherPage({ params }: { params: Promise<{ id: st
 
       <h2 id="routine" className="mb-3 mt-10 text-xl font-bold">Weekly routine and open seats</h2>
       <RoutineList slots={t.routine} teacherId={t.id} />
-      <p className="mt-2 text-xs text-slate-500">You pay in advance and Porao holds it. Each class is paid to the tutor only after it happens. Missed classes come back to you.</p>
+      <p className="mt-2 text-xs text-slate-500">You pay in advance and Merito Tuition holds it. Each class is paid to the tutor only after it happens. Missed classes come back to you.</p>
 
       {videos.length > 0 && (
         <>

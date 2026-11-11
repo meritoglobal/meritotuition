@@ -2,7 +2,7 @@
 import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 import { z } from "zod";
-import { BATCH_SIZES, CLASS_LEVELS, DEMO_VIDEOS, SUBJECTS, roomState, searchTeachers, teacherReceives, type BatchSize } from "@porao/core";
+import { BATCH_SIZES, CLASS_LEVELS, DEMO_VIDEOS, SUBJECTS, roomState, searchTeachers, teacherReceives, type BatchSize } from "@merito/core";
 import { roomToken } from "./livekit";
 import { DomainError, Marketplace } from "./service";
 

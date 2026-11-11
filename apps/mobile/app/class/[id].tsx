@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { roomState } from "@porao/core";
+import { roomState } from "@merito/core";
 import { Button, Card, s } from "../../src/ui";
 import { colors } from "../../src/theme";
 

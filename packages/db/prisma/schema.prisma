@@ -1,4 +1,4 @@
-// Porao data model. PostgreSQL + PostGIS.
+// Merito Tuition data model. PostgreSQL + PostGIS.
 // Money is stored as whole BDT integers. Every balance change is a LedgerEntry
 // (double-entry), so the escrow can always be reconciled.
 
@@ -233,7 +233,7 @@ model SessionAttendance {
   enrollmentId  String
   enrollment    Enrollment      @relation(fields: [enrollmentId], references: [id])
   classShare    Int
-  outcome       String? // SessionOutcome from @porao/core
+  outcome       String? // SessionOutcome from @merito/core
   state         SettlementState @default(HELD)
   releaseAt     DateTime?
   teacherNet    Int?

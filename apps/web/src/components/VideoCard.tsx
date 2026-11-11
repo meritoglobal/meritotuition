@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEMO_TEACHERS, type DemoVideo } from "@porao/core";
+import { DEMO_TEACHERS, type DemoVideo } from "@merito/core";
 
 export function VideoCard({ v }: { v: DemoVideo }) {
   const t = DEMO_TEACHERS.find((x) => x.id === v.teacherId);

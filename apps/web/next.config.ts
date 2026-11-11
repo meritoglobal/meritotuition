@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  transpilePackages: ["@porao/core"],
+  transpilePackages: ["@merito/core"],
 };
 export default config;

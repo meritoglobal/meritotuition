@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, DHAKA_AREAS, SUBJECTS, rankScore } from "@porao/core";
+import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, DHAKA_AREAS, SUBJECTS, rankScore } from "@merito/core";
 import { TeacherCard } from "@/components/TeacherCard";
 import { VideoCard } from "@/components/VideoCard";
 

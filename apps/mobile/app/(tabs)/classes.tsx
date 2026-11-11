@@ -1,6 +1,6 @@
 import { ScrollView, Text } from "react-native";
 import { router } from "expo-router";
-import { DEMO_TEACHERS, timeLabel } from "@porao/core";
+import { DEMO_TEACHERS, timeLabel } from "@merito/core";
 import { Button, Card, s } from "../../src/ui";
 
 export default function Classes() {
