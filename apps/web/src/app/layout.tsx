@@ -51,8 +51,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-8 sm:px-5">
             <Logo bn={lang === "bn"} />
             <div className="hidden gap-6 text-[15px] font-medium md:flex">
-              <Link href="/teachers?mode=ONLINE" className="hover:underline underline-offset-4">{c.nav.online}</Link>
-              <Link href="/teachers?mode=OFFLINE" className="hover:underline underline-offset-4">{c.nav.home}</Link>
+              <Link href="/teachers/online" className="hover:underline underline-offset-4">{c.nav.online}</Link>
+              <Link href="/teachers/home" className="hover:underline underline-offset-4">{c.nav.home}</Link>
               <Link href="/videos" className="hover:underline underline-offset-4">{c.nav.free}</Link>
               <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
             </div>

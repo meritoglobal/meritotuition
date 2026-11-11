@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { CLASS_LEVELS, DEMO_TEACHERS, DEMO_VIDEOS, DHAKA_AREAS, SUBJECTS, rankScore } from "@mastermoshai/core";
+import { DEMO_TEACHERS, DEMO_VIDEOS, rankScore } from "@mastermoshai/core";
+import { HeroSearch } from "@/components/HeroSearch";
 import { Scribble } from "@/components/Scribble";
 import { TeacherCard } from "@/components/TeacherCard";
 import { VideoCard } from "@/components/VideoCard";
@@ -39,37 +40,7 @@ export default async function Home() {
 
         {/* search: Preply-style labelled fields on a plain white bar */}
         <div className="mx-auto max-w-7xl px-5 pb-14">
-          <form action="/teachers" className="grid gap-1 rounded-xl bg-paper p-1.5 text-ink md:grid-cols-[1fr_1fr_1fr_1fr_auto]">
-            <label className="field border-transparent!">
-              <span>{c.form.subject}</span>
-              <select name="subjects" defaultValue="">
-                <option value="">{c.form.anySubject}</option>
-                {SUBJECTS.map((s) => <option key={s} value={s}>{L.subject(s, lang)}</option>)}
-              </select>
-            </label>
-            <label className="field border-transparent!">
-              <span>{c.form.level}</span>
-              <select name="level" defaultValue="">
-                <option value="">{c.form.anyLevel}</option>
-                {CLASS_LEVELS.map((l) => <option key={l} value={l}>{L.level(l, lang)}</option>)}
-              </select>
-            </label>
-            <label className="field border-transparent!">
-              <span>{c.form.how}</span>
-              <select name="mode" defaultValue="">
-                <option value="">{c.form.anyHow}</option>
-                <option value="ONLINE">{c.form.online}</option>
-                <option value="OFFLINE">{c.form.offline}</option>
-              </select>
-            </label>
-            <label className="field border-transparent!">
-              <span>{c.form.area}</span>
-              <select name="area" defaultValue="Farmgate">
-                {Object.keys(DHAKA_AREAS).map((x) => <option key={x} value={x}>{L.area(x, lang)}</option>)}
-              </select>
-            </label>
-            <button className="btn-gold text-base">{c.form.submit}</button>
-          </form>
+          <HeroSearch />
           <div className="mt-6 grid grid-cols-2 gap-y-4 text-sm md:grid-cols-4">
             {c.stats.map(([k, v]) => (
               <div key={k} className="border-l border-board-line pl-4">
@@ -85,13 +56,13 @@ export default async function Home() {
       <section className="mx-auto max-w-7xl px-5 py-20">
         <h2 className="font-display max-w-3xl text-4xl leading-tight sm:text-5xl">{c.two.h2}</h2>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
-          <Link href="/teachers?mode=ONLINE" className="group rounded-xl border border-line bg-online p-8 transition-colors hover:border-online-ink/40">
+          <Link href="/teachers/online" className="group rounded-xl border border-line bg-online p-8 transition-colors hover:border-online-ink/40">
             <div className="text-sm font-semibold text-online-ink">{c.two.onLabel}</div>
             <div className="font-display mt-2 text-3xl">{c.two.onTitle}</div>
             <p className="mt-3 max-w-md text-[17px] text-ink-2">{c.two.onText}</p>
             <div className="mt-6 font-semibold text-online-ink group-hover:underline">{c.two.onLink}</div>
           </Link>
-          <Link href="/teachers?mode=OFFLINE" className="group rounded-xl border border-line bg-home p-8 transition-colors hover:border-home-ink/40">
+          <Link href="/teachers/home" className="group rounded-xl border border-line bg-home p-8 transition-colors hover:border-home-ink/40">
             <div className="text-sm font-semibold text-home-ink">{c.two.offLabel}</div>
             <div className="font-display mt-2 text-3xl">{c.two.offTitle}</div>
             <p className="mt-3 max-w-md text-[17px] text-ink-2">{c.two.offText}</p>

@@ -33,6 +33,7 @@ const bn = {
     bullets: ["একা পড়ো, কিংবা পাঁচ বন্ধুর ছোট্ট ব্যাচে", "ঘরে বসে অনলাইনে, নয়তো পাড়ার সেরা ভাইয়া-আপুর কাছে", "প্রথম ক্লাস ফ্রি · ক্লাস না হলে টাকা ফেরত"],
     form: {
       subject: "কী পড়বে", anySubject: "যেকোনো বিষয়", level: "কোন ক্লাস", anyLevel: "যেকোনো ক্লাস",
+      tabOnline: "অনলাইনে পড়ব", tabHome: "বাসায় টিচার চাই",
       how: "কীভাবে", anyHow: "অনলাইন বা বাসায়", online: "অনলাইন লাইভ ক্লাস", offline: "বাসায় এসে পড়াবেন", area: "বাসা কোথায়", submit: "টিউটর খুঁজি →",
     },
     stats: [
@@ -84,6 +85,20 @@ const bn = {
     phone: { time: "৪:৫৮", room: "ওয়েটিং রুম", cls: "পদার্থবিজ্ঞান · ৯ম-১০ম", batch: "১:৩ ব্যাচ · ৬০ মিনিট", tutor: "রাফিউল হাসান", uni: "বুয়েট · ইইই", starts: "শুরু হতে বাকি", left: "০২:১৪", join: "টিচার এলেই বাটন জ্বলবে", note: "টিচার ১৫ মিনিটে না এলে এই ক্লাসের ৳১৬৭ ফেরত" },
   },
   search: {
+    chooseH1: "কীভাবে পড়বে, আগে সেটা ঠিক করো।",
+    chooseSub: "অনলাইনে ঠিকানা লাগে না, লাগে সময়। বাসায় পড়তে চাইলে লাগে ঠিকানা। তাই খোঁজার রাস্তাও আলাদা।",
+    onlineTitle: (subjects: string) => (subjects ? `অনলাইনে ${subjects}-এর টিউটর` : "অনলাইন টিউটর"),
+    onlineSub: "তুমি কোন এলাকায় থাকো, এখানে তাতে কিছু যায় আসে না। শুধু বলো কখন পড়তে চাও।",
+    homeTitle: (area: string) => `${area} ও আশপাশের বাসার টিউটর`,
+    homeSub: "শুধু তাঁদের দেখাচ্ছি, যাঁরা সত্যিই তোমার বাসা পর্যন্ত যান।",
+    when: "কখন পড়বে", anyTime: "যেকোনো সময়",
+    times: { MORNING: "সকাল (৫টা-১২টা)", AFTERNOON: "দুপুর-বিকাল (১২টা-৫টা)", EVENING: "সন্ধ্যা (৫টা-৮টা)", NIGHT: "রাত (৮টার পর)" } as Record<string, string>,
+    batch: "কেমন ক্লাস", anyBatch: "একা বা ব্যাচে", one: "একা (১:১)", group: "ছোট ব্যাচ (২-৫ জন)",
+    toHome: "বাসায় টিচার চাও? এদিকে →", toOnline: "অনলাইনে পড়তে চাও? এদিকে →",
+    onlinePanel: {
+      h: "অনলাইন ক্লাস যেভাবে চলে",
+      items: ["কোনো লিংক লাগে না, ক্লাস হয় মাস্টারমশাইয়ের ভেতরেই", "টিচার ক্লাস শুরু করলেই তোমার ফোনে খবর যায়", "কে কখন ঢুকল, হাজিরা নিজে থেকেই খাতায় ওঠে", "টিচার ১৫ মিনিটেও না এলে ওই ক্লাসের টাকা ফেরত"],
+    },
     title: (subjects: string, mode: string, area: string) =>
       mode === "OFFLINE" ? `${area}-এর আশপাশে ${subjects || "সব"} টিউটর` : mode === "ONLINE" ? `অনলাইনে ${subjects || "সব"} টিউটর` : `ঢাকার ${subjects || "সব"} টিউটর`,
     how: "কীভাবে", anyHow: "অনলাইন বা বাসায়", online: "অনলাইন লাইভ ক্লাস", offline: "বাসার টিউটর",
@@ -101,10 +116,12 @@ const bn = {
     seats: (s: number, v: number) => `এ মাসে ${n(s)}টি সিট খালি · ${n(v)}টি ফ্রি ক্লাস`,
     from: "মাসে · শুরু এখান থেকে", reviews: (c: number) => `${n(c)} জনের মতামত`, videos: "ফ্রি ক্লাস",
     trial: "ফ্রি ট্রায়াল নিই", routine: "রুটিন দেখি", profile: "প্রোফাইল দেখি",
+    batchLine: "মিলে যাওয়া ব্যাচ", homeRange: (km: number) => `${n(km)} কিমি পর্যন্ত যান`,
   },
   profile: {
     verified: (uni: string) => `✓ যাচাই করা · ${uni}`, pending: "যাচাই চলছে", online: "অনলাইন", home: (a: string) => `বাসার টিউটর · ${a}`,
-    about: "পরিচয়", routine: "সাপ্তাহিক রুটিন", routineSub: "যে ব্যাচে সিট খালি, সেটা বেছে নাও। সময় ঢাকার ঘড়িতে।",
+    about: "পরিচয়", routine: "সাপ্তাহিক রুটিন",
+    onlineBatches: "অনলাইন ব্যাচ", homeBatches: (a: string, km: number) => `বাসায় এসে পড়ানো · ${a} থেকে ${n(km)} কিমির মধ্যে`, routineSub: "যে ব্যাচে সিট খালি, সেটা বেছে নাও। সময় ঢাকার ঘড়িতে।",
     freeBy: (name: string) => `${name}-এর ফ্রি ক্লাস`,
     trial: "ফ্রি ট্রায়াল নিই", choose: "ব্যাচ বেছে নিই",
     promises: [
@@ -206,6 +223,7 @@ const en: Copy = {
     bullets: ["Just you, or a tiny batch of up to five", "Online from your room, or a tutor from your own neighbourhood", "First class free · no class, no charge"],
     form: {
       subject: "I want to learn", anySubject: "Any subject", level: "Class", anyLevel: "Any class",
+      tabOnline: "Learn online", tabHome: "Tutor at my home",
       how: "How", anyHow: "Online or at home", online: "Online live class", offline: "Home tutor near me", area: "I live in", submit: "Find tutors →",
     },
     stats: [
@@ -257,6 +275,20 @@ const en: Copy = {
     phone: { time: "4:58", room: "Waiting room", cls: "Physics · Class 9-10", batch: "1:3 batch · 60 min", tutor: "Rafiul Hasan", uni: "BUET · EEE", starts: "starts in", left: "02:14", join: "Lights up when the tutor arrives", note: "Tutor 15 min late? This class's ৳167 comes back" },
   },
   search: {
+    chooseH1: "First things first: how do you want to learn?",
+    chooseSub: "Online needs a time, not an address. Home tuition needs an address. So the search is different too.",
+    onlineTitle: (subjects) => (subjects ? `Online ${subjects} tutors` : "Online tutors"),
+    onlineSub: "Where you live doesn't matter here. Just tell us when you want to study.",
+    homeTitle: (area) => `Home tutors around ${area}`,
+    homeSub: "Only tutors who actually travel as far as your home.",
+    when: "When", anyTime: "Any time",
+    times: { MORNING: "Morning (5am-12pm)", AFTERNOON: "Afternoon (12-5pm)", EVENING: "Evening (5-8pm)", NIGHT: "Night (after 8pm)" },
+    batch: "Class size", anyBatch: "Solo or batch", one: "Just me (1:1)", group: "Small batch (2-5)",
+    toHome: "Want a tutor at home? This way →", toOnline: "Rather learn online? This way →",
+    onlinePanel: {
+      h: "How online classes work",
+      items: ["No links. The class happens inside Mastermoshai", "Your phone pings the moment the tutor starts", "Attendance marks itself: who joined, and when", "Tutor 15 minutes absent? That class is refunded"],
+    },
     title: (subjects, mode, area) => `${subjects || "All"} tutors ${mode === "OFFLINE" ? `near ${area}` : mode === "ONLINE" ? "online" : "in Dhaka"}`,
     how: "How", anyHow: "Online or at home", online: "Online live class", offline: "Home tutor",
     level: "Class", anyLevel: "Any class", area: "I live in", uni: "University", anyUni: "Any university",
@@ -273,10 +305,12 @@ const en: Copy = {
     seats: (s, v) => `${s} seat${s === 1 ? "" : "s"} open this month · ${v} free classes`,
     from: "per month, from", reviews: (c) => `${c} reviews`, videos: "free classes",
     trial: "Book free trial", routine: "See routine", profile: "View profile",
+    batchLine: "Matching batch", homeRange: (km) => `travels up to ${km} km`,
   },
   profile: {
     verified: (uni) => `✓ Verified · ${uni}`, pending: "Verification pending", online: "Online", home: (a) => `Home tutor · ${a}`,
-    about: "About", routine: "Weekly routine", routineSub: "Pick a batch with an open seat. Times are Dhaka time.",
+    about: "About", routine: "Weekly routine",
+    onlineBatches: "Online batches", homeBatches: (a, km) => `At your home · within ${km} km of ${a}`, routineSub: "Pick a batch with an open seat. Times are Dhaka time.",
     freeBy: (name) => `Free classes by ${name}`,
     trial: "Book free trial", choose: "Choose a batch",
     promises: [

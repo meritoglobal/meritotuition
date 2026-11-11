@@ -2,7 +2,7 @@
 import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 import { z } from "zod";
-import { BATCH_SIZES, CLASS_LEVELS, DEMO_VIDEOS, SUBJECTS, roomState, searchTeachers, teacherReceives, type BatchSize } from "@mastermoshai/core";
+import { BATCH_SIZES, CLASS_LEVELS, TIMES_OF_DAY, DEMO_VIDEOS, SUBJECTS, roomState, searchTeachers, teacherReceives, type BatchSize } from "@mastermoshai/core";
 import { seedLibrary } from "@mastermoshai/content/content/index";
 import { registerContentRoutes } from "./content-routes";
 import { roomToken } from "./livekit";
@@ -48,6 +48,9 @@ export function buildApp(market = new Marketplace()): FastifyInstance {
         maxPrice: z.coerce.number().optional(),
         batchSize: z.coerce.number().optional(),
         freeTrial: z.enum(["true", "false"]).optional(),
+        // online only: when the class runs and 1:1 vs group
+        time: z.enum(TIMES_OF_DAY as [string, ...string[]]).optional(),
+        batch: z.enum(["ONE", "GROUP"]).optional(),
         q: z.string().optional(),
       })
       .parse(req.query);
@@ -62,9 +65,11 @@ export function buildApp(market = new Marketplace()): FastifyInstance {
       maxPrice: q.maxPrice,
       batchSize: BATCH_SIZES.includes(q.batchSize as BatchSize) ? (q.batchSize as BatchSize) : undefined,
       freeTrialOnly: q.freeTrial === "true",
+      timeOfDay: q.time as (typeof TIMES_OF_DAY)[number] | undefined,
+      batchKind: q.batch,
       text: q.q,
     });
-    return { results: hits.map((h) => ({ ...h.teacher, distanceKm: h.distanceKm, score: h.score })) };
+    return { results: hits.map((h) => ({ ...h.teacher, distanceKm: h.distanceKm, fromPrice: h.fromPrice, matchingSlots: h.slots, score: h.score })) };
   });
 
   app.get("/teachers/:id", async (req) => {

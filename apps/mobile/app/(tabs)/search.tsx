@@ -10,11 +10,11 @@ import { colors } from "../../src/theme";
  * sits above the list.
  */
 export default function Search() {
-  const [mode, setMode] = useState<TeachingMode | undefined>();
+  const [mode, setMode] = useState<TeachingMode>("ONLINE");
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [area, setArea] = useState("Farmgate");
   const hits = useMemo(
-    () => searchTeachers(DEMO_TEACHERS, { mode, subjects, near: DHAKA_AREAS[area], maxDistanceKm: 5 }),
+    () => searchTeachers(DEMO_TEACHERS, mode === "OFFLINE" ? { mode, subjects, near: DHAKA_AREAS[area], maxDistanceKm: 5 } : { mode, subjects }),
     [mode, subjects, area],
   );
   const pill = (active: boolean) => ({
@@ -28,16 +28,21 @@ export default function Search() {
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.pad}>
       <View style={s.row}>
-        {([[undefined, "Any"], ["ONLINE", "Online"], ["OFFLINE", "At home"]] as const).map(([v, l]) => (
+        {([["ONLINE", "Online"], ["OFFLINE", "At home"]] as const).map(([v, l]) => (
           <Pressable key={l} onPress={() => setMode(v)} style={pill(mode === v)}><Text>{l}</Text></Pressable>
         ))}
       </View>
-      <Text style={s.h2}>Area</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-        {Object.keys(DHAKA_AREAS).map((a) => (
-          <Pressable key={a} onPress={() => setArea(a)} style={pill(area === a)}><Text>{a}</Text></Pressable>
-        ))}
-      </ScrollView>
+      {/* Area only matters for home tuition; online search never asks where you live. */}
+      {mode === "OFFLINE" && (
+        <>
+          <Text style={s.h2}>Area</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+            {Object.keys(DHAKA_AREAS).map((a) => (
+              <Pressable key={a} onPress={() => setArea(a)} style={pill(area === a)}><Text>{a}</Text></Pressable>
+            ))}
+          </ScrollView>
+        </>
+      )}
       <Text style={s.h2}>Subjects</Text>
       <View style={s.row}>
         {SUBJECTS.map((sub) => {
@@ -49,7 +54,7 @@ export default function Search() {
           );
         })}
       </View>
-      <Text style={[s.muted, { marginTop: 12 }]}>{hits.length} tutors near {area}</Text>
+      <Text style={[s.muted, { marginTop: 12 }]}>{mode === "OFFLINE" ? `${hits.length} home tutors near ${area}` : `${hits.length} online tutors`}</Text>
       {hits.map((h) => <TeacherRow key={h.teacher.id} t={h.teacher} distanceKm={h.distanceKm} />)}
     </ScrollView>
   );

@@ -20,6 +20,8 @@ export default async function TeacherPage({ params }: { params: Promise<{ id: st
   const card = copy(lang).card;
   const videos = DEMO_VIDEOS.filter((v) => v.teacherId === t.id);
   const trial = t.routine.some(hasTrialSeat);
+  const online = t.routine.filter((s) => s.mode === "ONLINE");
+  const home = t.routine.filter((s) => s.mode === "OFFLINE");
   return (
     <>
       <section className="bg-board text-white">
@@ -28,7 +30,7 @@ export default async function TeacherPage({ params }: { params: Promise<{ id: st
           <div className="flex-1">
             <div className="flex flex-wrap gap-2">
               {t.verified ? <span className="tag bg-gold text-ink">{c.verified(L.uni(t.university, lang))}</span> : <span className="tag bg-white/10">{c.pending}</span>}
-              {t.modes.map((m) => <span key={m} className="tag bg-white/10 text-white">{m === "ONLINE" ? c.online : c.home(L.area(t.area?.name ?? "", lang))}</span>)}
+              {[...new Set(t.routine.map((s) => s.mode))].map((m) => <span key={m} className="tag bg-white/10 text-white">{m === "ONLINE" ? c.online : c.home(L.area(t.area?.name ?? "", lang))}</span>)}
             </div>
             <h1 className="font-display mt-3 text-5xl sm:text-6xl">{L.name(t, lang)}</h1>
             <p className="mt-2 text-lg text-white/75">{L.uni(t.university, lang)} · {L.dept(t, lang)}</p>
@@ -52,7 +54,19 @@ export default async function TeacherPage({ params }: { params: Promise<{ id: st
 
           <h2 id="routine" className="font-display mt-12 text-3xl">{c.routine}</h2>
           <p className="mb-4 mt-1 text-ink-2">{c.routineSub}</p>
-          <RoutineList slots={t.routine} teacherId={t.id} lang={lang} />
+          {online.length > 0 && (
+            <div id="online-batches" className="scroll-mt-24">
+              <h3 className="mb-3 mt-6 flex items-center gap-2 text-lg font-bold"><span className="tag bg-online text-online-ink">{c.online}</span>{c.onlineBatches}</h3>
+              <RoutineList slots={online} teacherId={t.id} lang={lang} />
+            </div>
+          )}
+          {home.length > 0 && t.area && (
+            <div id="home-batches" className="scroll-mt-24">
+              <h3 className="mb-3 mt-8 flex items-center gap-2 text-lg font-bold"><span className="tag bg-home text-home-ink">{c.home(L.area(t.area.name, lang))}</span></h3>
+              <p className="-mt-2 mb-3 text-sm text-ink-2">{c.homeBatches(L.area(t.area.name, lang), t.area.radiusKm)}</p>
+              <RoutineList slots={home} teacherId={t.id} lang={lang} />
+            </div>
+          )}
 
           {videos.length > 0 && (
             <>
