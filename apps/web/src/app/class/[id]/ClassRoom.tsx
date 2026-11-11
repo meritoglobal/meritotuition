@@ -1,16 +1,20 @@
 "use client";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { roomState, type ClassRoomState } from "@mastermoshai/core";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
 
+const LiveRoom = dynamic(() => import("./LiveRoom"), { ssr: false });
+
 /**
- * Live class panel. Production: fetch GET /sessions/:id/room for state, then
- * POST /sessions/:id/join for a LiveKit token and render @livekit/components-react
- * <LiveKitRoom> in place of the demo tiles below.
+ * Waiting room + classroom. With LiveKit keys set (`live`), students poll
+ * /api/class/:id/status and the join button lights up once the tutor is in the
+ * room; joining fetches a short-lived token and opens the real video class.
+ * Without keys it falls back to the simulated demo below.
  */
-export default function ClassRoom({ title, teacher, role }: { title: string; teacher: string; role: "student" | "teacher" }) {
+export default function ClassRoom({ classId, live, title, teacher, role }: { classId: string; live: boolean; title: string; teacher: string; role: "student" | "teacher" }) {
   const lang = useLang();
   const c = copy(lang).room;
   const [start] = useState(() => new Date(Date.now() + 90_000));
@@ -19,14 +23,57 @@ export default function ClassRoom({ title, teacher, role }: { title: string; tea
   const [joined, setJoined] = useState(false);
   const [ended, setEnded] = useState(false);
 
+  const [conn, setConn] = useState<{ url: string; token: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
 
+  // Real mode: students watch for the tutor every 5 seconds while waiting.
+  useEffect(() => {
+    if (!live || role !== "student" || joined) return;
+    let stop = false;
+    const check = async () => {
+      try {
+        const r = await fetch(`/api/class/${encodeURIComponent(classId)}/status`, { cache: "no-store" });
+        if (r.ok && !stop) setTeacherStarted(Boolean((await r.json()).teacherLive));
+      } catch { /* keep waiting */ }
+    };
+    check();
+    const t = setInterval(check, 5000);
+    return () => { stop = true; clearInterval(t); };
+  }, [live, role, joined, classId]);
+
+  async function enter() {
+    if (!live) { if (role === "teacher") setTeacherStarted(true); setJoined(true); return; }
+    setBusy(true); setErr("");
+    try {
+      const r = await fetch(`/api/class/${encodeURIComponent(classId)}/token${role === "teacher" ? "?as=teacher" : ""}`, { method: "POST" });
+      if (!r.ok) throw new Error(String(r.status));
+      setConn(await r.json());
+      if (role === "teacher") setTeacherStarted(true);
+      setJoined(true);
+    } catch {
+      setErr(c.lk.failed);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const state: ClassRoomState = roomState({ now, start, durationMin: 60, teacherStarted, ended });
   const secs = Math.max(0, Math.round((start.getTime() - now.getTime()) / 1000));
   const mmss = L.num(`${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`, lang);
+
+  if (joined && live && conn && !ended) {
+    return <LiveRoom url={conn.url} token={conn.token} title={title} role={role} onLeave={(how) => {
+      setJoined(false); setConn(null);
+      if (how === "left") setEnded(true);
+      else { setErr(c.lk.failed); if (role === "teacher") setTeacherStarted(false); }
+    }} />;
+  }
 
   if (joined && state === "LIVE") {
     return (
@@ -88,16 +135,18 @@ export default function ClassRoom({ title, teacher, role }: { title: string; tea
           </p>
           <div className="mt-6 flex justify-center gap-3">
             {role === "teacher" && !teacherStarted && (
-              <button onClick={() => { setTeacherStarted(true); setJoined(true); }} className="btn-gold">{c.start}</button>
+              <button disabled={busy} onClick={enter} className="btn-gold">{c.start}</button>
             )}
             {role === "student" && (
-              <button disabled={state !== "LIVE"} onClick={() => setJoined(true)} className="btn-board disabled:cursor-not-allowed disabled:border-line disabled:bg-mist disabled:text-ink-3">{c.join}</button>
+              <button disabled={state !== "LIVE" || busy} onClick={enter} className="btn-board disabled:cursor-not-allowed disabled:border-line disabled:bg-mist disabled:text-ink-3">{c.join}</button>
             )}
           </div>
-          {role === "student" && !teacherStarted && (
+          {err && <p role="alert" className="mt-4 text-sm text-redpen">{err}</p>}
+          {!live && role === "student" && !teacherStarted && (
             <button onClick={() => setTeacherStarted(true)} className="mt-6 text-xs text-ink-3 underline">{c.demo}</button>
           )}
           <p className="mt-6 text-xs text-ink-3">{c.note}</p>
+          {!live && <p className="mt-2 text-xs text-ink-3">{c.lk.demoNote}</p>}
         </>
       )}
     </div>
