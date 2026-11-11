@@ -18,6 +18,7 @@ import {
 } from "@livekit/components-react";
 import { ConnectionState, MediaDeviceFailure, RoomEvent, Track, VideoPresets, type Participant, type RoomOptions } from "livekit-client";
 import { copy } from "@/lib/copy";
+import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
 
 type Role = "teacher" | "student";
@@ -73,6 +74,11 @@ function Stage({ title, role, err }: { title: string; role: Role; err: string })
   const state = useConnectionState();
   const [chatOpen, setChatOpen] = useState(false);
   const [, bump] = useState(0);
+  // Chat lives here (always mounted) so messages sent while the panel is closed are kept.
+  const chat = useChat();
+  const [seen, setSeen] = useState(0);
+  const unread = chatOpen ? 0 : chat.chatMessages.length - seen;
+  useEffect(() => { if (chatOpen) setSeen(chat.chatMessages.length); }, [chatOpen, chat.chatMessages.length]);
 
   // Re-render when someone raises or lowers a hand.
   useEffect(() => {
@@ -125,10 +131,10 @@ function Stage({ title, role, err }: { title: string; role: Role; err: string })
             </div>
           )}
         </div>
-        {chatOpen && <ChatPanel />}
+        {chatOpen && <ChatPanel chat={chat} />}
       </div>
 
-      <Controls role={role} chatOpen={chatOpen} toggleChat={() => setChatOpen((v) => !v)} />
+      <Controls role={role} chatOpen={chatOpen} unread={unread} toggleChat={() => setChatOpen((v) => !v)} />
       <StartAudio label="🔊" className="sr-only" />
     </>
   );
@@ -168,7 +174,8 @@ function NetBadge() {
   return <span className="hidden items-center gap-1.5 text-xs text-white/80 sm:flex"><span className={`h-2 w-2 rounded-full ${color}`} />{label}</span>;
 }
 
-function Controls({ role, chatOpen, toggleChat }: { role: Role; chatOpen: boolean; toggleChat: () => void }) {
+function Controls({ role, chatOpen, unread, toggleChat }: { role: Role; chatOpen: boolean; unread: number; toggleChat: () => void }) {
+  const lang = useLang();
   const c = copy(useLang()).room;
   const room = useRoomContext();
   const { localParticipant } = useLocalParticipant();
@@ -192,20 +199,23 @@ function Controls({ role, chatOpen, toggleChat }: { role: Role; chatOpen: boolea
           {handUp ? c.lk.handDown : c.lk.hand}
         </button>
       )}
-      <button onClick={toggleChat} className={chatOpen ? "rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-board sm:px-4" : btn(true)}>{c.lk.chat}</button>
+      <button onClick={toggleChat} className={`relative ${chatOpen ? "rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-board sm:px-4" : btn(true)}`}>
+        {c.lk.chat}
+        {unread > 0 && <span className="absolute -right-1.5 -top-1.5 min-w-5 rounded-full bg-redpen px-1.5 text-xs leading-5 text-white">{L.num(String(unread), lang)}</span>}
+      </button>
       <button onClick={() => room.disconnect()} className="rounded-lg bg-redpen px-3 py-2 text-sm font-semibold text-white sm:px-4">{c.leave}</button>
     </div>
   );
 }
 
-function ChatPanel() {
+function ChatPanel({ chat }: { chat: ReturnType<typeof useChat> }) {
   const lang = useLang();
   const c = copy(lang).room.lk;
-  const { send, chatMessages, isSending } = useChat();
+  const { send, chatMessages, isSending } = chat;
   const [text, setText] = useState("");
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [chatMessages.length]);
-  const fmt = useMemo(() => new Intl.DateTimeFormat(lang === "bn" ? "bn-BD" : "en-GB", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Dhaka" }), [lang]);
+  const fmt = useMemo(() => new Intl.DateTimeFormat(lang === "bn" ? "bn-BD" : "en-GB", { hour: "numeric", minute: "2-digit", hour12: false, timeZone: "Asia/Dhaka" }), [lang]);
 
   return (
     <aside className="flex w-full max-w-[18rem] shrink-0 flex-col rounded-lg bg-chalk text-ink max-md:absolute max-md:inset-x-2 max-md:bottom-20 max-md:top-24 max-md:z-10 max-md:max-w-none">
