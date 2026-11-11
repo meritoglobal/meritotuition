@@ -28,6 +28,7 @@ const bn = {
   home: {
     badge: "কথায় চিঁড়ে ভেজে না। ক্লাস হলে তবেই টাকা।",
     h1: "যে মাস্টারমশাই ফাঁকি দেন না।",
+    h1Parts: ["যে মাস্টারমশাই ", "ফাঁকি", " দেন না।"] as [string, string, string],
     bullets: ["একা পড়ো, কিংবা পাঁচ বন্ধুর ছোট্ট ব্যাচে", "ঘরে বসে অনলাইনে, নয়তো পাড়ার সেরা ভাইয়া-আপুর কাছে", "প্রথম ক্লাস ফ্রি · ক্লাস না হলে টাকা ফেরত"],
     form: {
       subject: "কী পড়বে", anySubject: "যেকোনো বিষয়", level: "কোন ক্লাস", anyLevel: "যেকোনো ক্লাস",
@@ -61,6 +62,8 @@ const bn = {
     topH2: "যাঁদের ব্যাচে সিট পাওয়াই মুশকিল",
     guarantee: {
       h2: "ক্লাস হয়নি? টাকা সোজা ঘরে ফেরত।",
+      h2Parts: ["ক্লাস হয়নি? ", "টাকা", " সোজা ঘরে ফেরত।"] as [string, string, string],
+      rule: "লাল কালিতে লেখা নিয়ম",
       items: ["টিচার ১৫ মিনিটেও এলেন না → পুরো টাকা ফেরত", "দেরিতে এলেন বা আগেই ছুটি দিলেন → অর্ধেক ফেরত", "পড়ানো মনে ধরেনি → ৪৮ ঘণ্টার মধ্যে জানাও, আমরা দেখছি", "মাঝপথে ছাড়তে চাও → বাকি ক্লাসের টাকা ফেরত"],
     },
     teach: {
@@ -77,7 +80,7 @@ const bn = {
       ["অনলাইন না বাসায়, কোনটা ভালো?", "অনলাইনে খরচ কম, জ্যামও ঠেলতে হয় না। বাসার টিউটর আসেন নিজের এলাকার ভেতরে। দুটোতেই টাকার সুরক্ষা একই।"],
       ["পড়াবেন কারা?", "বুয়েট, ঢাবি, এনএসইউ, জাবিসহ সেরা ভার্সিটির ভাইয়া-আপুরা। স্টুডেন্ট আইডি আর এনআইডি মিলিয়ে দেখে তবেই দিই ‘যাচাই করা’ ব্যাজ।"],
     ],
-    mock: { title: "পদার্থবিজ্ঞান · ৯ম-১০ম · ১:৩", live: "● লাইভ", student: "আয়ান", tutor: "রাফি (টিচার)", joined: "ঢুকেছেন ৪:৫৮-এ · কাঁটায় কাঁটায়", timer: "৪২:১০", released: "৳২৫০ গেল টিচারের কাছে", after: "ক্লাস শেষ হওয়ার পর · ৪৮ ঘণ্টা বাদে" },
+    phone: { time: "৪:৫৮", room: "ওয়েটিং রুম", cls: "পদার্থবিজ্ঞান · ৯ম-১০ম", batch: "১:৩ ব্যাচ · ৬০ মিনিট", tutor: "রাফিউল হাসান", uni: "বুয়েট · ইইই", starts: "শুরু হতে বাকি", left: "০২:১৪", join: "টিচার এলেই বাটন জ্বলবে", note: "টিচার ১৫ মিনিটে না এলে এই ক্লাসের ৳১৬৭ ফেরত" },
   },
   search: {
     title: (subjects: string, mode: string, area: string) =>
@@ -94,7 +97,7 @@ const bn = {
   },
   card: {
     verified: "✓ যাচাই করা", online: "অনলাইন", home: "বাসায়", km: (d: string) => `${n(d)} কিমি`,
-    seats: (s: number, v: number) => `⚡ এ মাসে ${n(s)}টি সিট খালি · ${n(v)}টি ফ্রি ক্লাস`,
+    seats: (s: number, v: number) => `এ মাসে ${n(s)}টি সিট খালি · ${n(v)}টি ফ্রি ক্লাস`,
     from: "মাসে · শুরু এখান থেকে", reviews: (c: number) => `${n(c)} জনের মতামত`, videos: "ফ্রি ক্লাস",
     trial: "ফ্রি ট্রায়াল নিই", routine: "রুটিন দেখি", profile: "প্রোফাইল দেখি",
   },
@@ -197,6 +200,7 @@ const en: Copy = {
   home: {
     badge: "Pay per class. Not per promise.",
     h1: "A tutor who actually shows up.",
+    h1Parts: ["A tutor who ", "actually", " shows up."],
     bullets: ["Just you, or a tiny batch of up to five", "Online from your room, or a tutor from your own neighbourhood", "First class free · no class, no charge"],
     form: {
       subject: "I want to learn", anySubject: "Any subject", level: "Class", anyLevel: "Any class",
@@ -230,6 +234,8 @@ const en: Copy = {
     topH2: "Tutors whose batches fill up first",
     guarantee: {
       h2: "No class? Your money walks back home.",
+      h2Parts: ["No class? Your ", "money", " walks back home."],
+      rule: "The rules, in red ink",
       items: ["Tutor 15 min absent → 100% back", "Came late or left early → 50% back", "Not happy → tell us within 48 h, we look into it", "Want to stop → untaught classes refunded"],
     },
     teach: {
@@ -246,7 +252,7 @@ const en: Copy = {
       ["Online or at home, which is better?", "Online costs less and skips the traffic. Home tutors come to you within their area. Both carry the same payment protection."],
       ["Who are the tutors?", "Students and graduates of BUET, DU, NSU, JU and other top universities. We match student ID and NID before anyone gets the Verified badge."],
     ],
-    mock: { title: "Physics · Class 9-10 · 1:3", live: "● LIVE", student: "Ayan", tutor: "Rafi (tutor)", joined: "Joined 4:58 PM · on the dot", timer: "42:10", released: "৳250 released to tutor", after: "after class ended · 48 h window" },
+    phone: { time: "4:58", room: "Waiting room", cls: "Physics · Class 9-10", batch: "1:3 batch · 60 min", tutor: "Rafiul Hasan", uni: "BUET · EEE", starts: "starts in", left: "02:14", join: "Lights up when the tutor arrives", note: "Tutor 15 min late? This class's ৳167 comes back" },
   },
   search: {
     title: (subjects, mode, area) => `${subjects || "All"} tutors ${mode === "OFFLINE" ? `near ${area}` : mode === "ONLINE" ? "online" : "in Dhaka"}`,
@@ -262,7 +268,7 @@ const en: Copy = {
   },
   card: {
     verified: "✓ Verified", online: "Online", home: "Home", km: (d) => `${d} km`,
-    seats: (s, v) => `⚡ ${s} seat${s === 1 ? "" : "s"} open this month · ${v} free classes`,
+    seats: (s, v) => `${s} seat${s === 1 ? "" : "s"} open this month · ${v} free classes`,
     from: "per month, from", reviews: (c) => `${c} reviews`, videos: "free classes",
     trial: "Book free trial", routine: "See routine", profile: "View profile",
   },

@@ -33,9 +33,9 @@ export default function LoginForm({ channel, next, demoNote }: { channel: OtpCha
             className="w-full bg-transparent text-lg font-semibold outline-none"
           />
         </label>
-        {error && <p role="alert" className="rounded-lg bg-coral/25 px-3 py-2 text-sm font-medium">{c.errors[error]}</p>}
-        <button disabled={sending} className="btn-ink w-full text-base disabled:opacity-60">{sending ? c.sending : c.send}</button>
-        {demoNote && <p className="rounded-lg border-2 border-dashed border-ink/30 px-3 py-2 text-sm text-ink-2">{demoNote}</p>}
+        {error && <p role="alert" className="rounded-lg bg-redpen-tint text-redpen px-3 py-2 text-sm font-medium">{c.errors[error]}</p>}
+        <button disabled={sending} className="btn-gold w-full text-base disabled:opacity-60">{sending ? c.sending : c.send}</button>
+        {demoNote && <p className="rounded-lg border border-dashed border-ink-3/50 px-3 py-2 text-sm text-ink-2">{demoNote}</p>}
       </form>
     );
   }
@@ -45,7 +45,7 @@ export default function LoginForm({ channel, next, demoNote }: { channel: OtpCha
       <input type="hidden" name="id" value={sent.id} />
       <input type="hidden" name="next" value={next} />
       <div>
-        <h2 className="font-display text-3xl font-extrabold">{c.sentH}</h2>
+        <h2 className="font-display text-3xl">{c.sentH}</h2>
         <p className="mt-1 text-ink-2">{channel === "phone" ? c.sentSubPhone(sent.id!) : c.sentSub(sent.id!)}</p>
       </div>
       <label className="field">
@@ -59,12 +59,12 @@ export default function LoginForm({ channel, next, demoNote }: { channel: OtpCha
           placeholder="••••••"
           required
           autoFocus
-          className="w-full bg-transparent font-display text-3xl font-extrabold tracking-[0.4em] outline-none"
+          className="w-full bg-transparent text-3xl font-bold tracking-[0.4em] outline-none"
         />
       </label>
-      {error && <p role="alert" className="rounded-lg bg-coral/25 px-3 py-2 text-sm font-medium">{c.errors[error]}</p>}
-      <button disabled={verifying} className="btn-ink w-full text-base disabled:opacity-60">{verifying ? c.verifying : c.verify}</button>
-      {demoNote && <p className="rounded-lg border-2 border-dashed border-ink/30 px-3 py-2 text-sm text-ink-2">{demoNote}</p>}
+      {error && <p role="alert" className="rounded-lg bg-redpen-tint text-redpen px-3 py-2 text-sm font-medium">{c.errors[error]}</p>}
+      <button disabled={verifying} className="btn-gold w-full text-base disabled:opacity-60">{verifying ? c.verifying : c.verify}</button>
+      {demoNote && <p className="rounded-lg border border-dashed border-ink-3/50 px-3 py-2 text-sm text-ink-2">{demoNote}</p>}
       <button type="button" onClick={() => location.reload()} className="text-sm font-semibold underline underline-offset-4">{c.change}</button>
     </form>
   );

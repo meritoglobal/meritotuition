@@ -7,9 +7,9 @@ import FlagForm from "./FlagForm";
 export const dynamic = "force-dynamic";
 
 const TONE: Record<string, string> = {
-  COMPLETED: "bg-mint text-ink",
-  TEACHER_NO_SHOW: "bg-coral/60 text-ink",
-  TEACHER_LATE_OR_SHORT: "bg-sun text-ink",
+  COMPLETED: "bg-home text-home-ink",
+  TEACHER_NO_SHOW: "bg-redpen-tint text-redpen",
+  TEACHER_LATE_OR_SHORT: "bg-gold-tint text-ink",
   STUDENT_NO_SHOW: "bg-mist text-ink-2",
   BOTH_ABSENT: "bg-mist text-ink-2",
 };
@@ -24,16 +24,16 @@ export default async function StudentDashboard() {
   const past = plan.classes.filter((c) => c.outcome);
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
-      <h1 className="font-display text-4xl font-extrabold">{c.h1}</h1>
+      <h1 className="font-display text-4xl">{c.h1}</h1>
 
       {next && (
-        <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border-2 border-ink bg-lilac p-6">
+        <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl bg-board p-6 text-white">
           <div className="flex-1">
-            <div className="text-sm text-ink-2">{c.next}</div>
-            <div className="font-display text-2xl font-extrabold">{c.with(L.subjects(plan.slot.subjects, lang), L.name(plan.teacher, lang))}</div>
-            <div className="text-sm text-ink-2">{fmt(next.start)} · {c.reminder}</div>
+            <div className="text-sm text-white/60">{c.next}</div>
+            <div className="text-2xl font-bold">{c.with(L.subjects(plan.slot.subjects, lang), L.name(plan.teacher, lang))}</div>
+            <div className="text-sm text-white/60">{fmt(next.start)} · {c.reminder}</div>
           </div>
-          <a href="/class/demo" className="btn-sun">{c.open}</a>
+          <a href="/class/demo" className="btn-gold">{c.open}</a>
         </div>
       )}
 
@@ -43,7 +43,7 @@ export default async function StudentDashboard() {
         <Stat k={c.refunded} v={L.taka(refunded, lang)} />
       </div>
 
-      <h2 className="mb-3 mt-8 font-display text-2xl font-extrabold">{c.history}</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">{c.history}</h2>
       <div className="divide-y divide-line card">
         {past.map((k) => {
           const label = c.outcome[k.outcome!] ?? "";
@@ -64,7 +64,7 @@ export default async function StudentDashboard() {
 
       <div className="mt-8 flex gap-3 text-sm">
         <button className="btn-ghost">{c.renew}</button>
-        <button className="btn-ghost text-coral!">{c.stop}</button>
+        <button className="btn-ghost text-redpen!">{c.stop}</button>
       </div>
     </div>
   );
@@ -74,7 +74,7 @@ function Stat({ k, v }: { k: string; v: string }) {
   return (
     <div className="card p-4">
       <div className="text-xs text-ink-2">{k}</div>
-      <div className="mt-1 font-display text-2xl font-extrabold">{v}</div>
+      <div className="mt-1 text-2xl font-bold">{v}</div>
     </div>
   );
 }

@@ -8,10 +8,10 @@ export default async function VideosPage() {
   const c = copy(lang).videos;
   return (
     <>
-      <section className="border-b-2 border-ink bg-mint">
+      <section className="bg-board text-white">
         <div className="mx-auto max-w-7xl px-5 py-12">
-          <h1 className="font-display text-5xl font-extrabold sm:text-6xl">{c.h1}</h1>
-          <p className="mt-3 max-w-xl text-lg">{c.sub}</p>
+          <h1 className="font-display text-5xl sm:text-6xl">{c.h1}</h1>
+          <p className="mt-3 max-w-xl text-lg text-white/75">{c.sub}</p>
         </div>
       </section>
       <div className="mx-auto mt-10 grid max-w-7xl gap-6 px-5 sm:grid-cols-2 lg:grid-cols-3">

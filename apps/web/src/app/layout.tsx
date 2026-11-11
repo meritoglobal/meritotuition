@@ -39,12 +39,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;500;600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap"
         />
       </head>
       <body className="min-h-screen">
         <LangProvider lang={lang}>
-        <header className="sticky top-0 z-30 border-b border-line bg-paper">
+        <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
           <nav className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-8 sm:px-5">
             <Logo bn={lang === "bn"} />
             <div className="hidden gap-6 text-[15px] font-medium md:flex">
@@ -65,17 +65,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               ) : (
                 <Link href="/login" className="text-[15px] font-semibold">{c.nav.login}</Link>
               )}
-              <Link href="/teachers" className="btn-ink hidden px-4! py-2! sm:inline-flex">{c.nav.find}</Link>
+              <Link href="/teachers" className="btn-board hidden px-4! py-2! sm:inline-flex">{c.nav.find}</Link>
             </div>
           </nav>
         </header>
         <main>{children}</main>
-        <footer className="mt-24 bg-ink text-white">
+        <footer className="mt-24 bg-board text-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:grid-cols-4">
             <div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/brand/logo-horizontal-on-dark.svg" alt="Mastermoshai · মাস্টারমশাই" width={240} height={56} className="h-14 w-auto" />
-              <p className="font-display mt-3 text-xl font-extrabold text-sun">{c.footer.tagline}</p>
+              <p className="mt-3 text-lg font-semibold text-gold">{c.footer.tagline}</p>
               <p className="mt-2 text-sm text-white/60">{c.footer.line}</p>
             </div>
             {c.footer.cols.map(([h, items]) => (

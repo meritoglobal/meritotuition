@@ -1,76 +1,115 @@
 @import "tailwindcss";
 
 /*
- * Mastermoshai design tokens.
- * Direction taken from studying live competitor sites (Nov 2026):
- * - Preply: flat full-bleed colour blocks, huge tight headings, near-black
- *   8px-radius buttons, 2px-border tutor cards, labelled filter dropdowns.
- * - GoStudent: checklist hero bullets, trust-stat row, 3-step "how it works", FAQ.
- * - 10 Minute School: Bangla-first type (Anek Bangla) and BN/EN toggle.
- * No gradients, no soft emerald, no pill-everything.
+ * Mastermoshai design tokens, v2 (Nov 2026).
+ *
+ * Type: taken from chorcha.net (BD exam-prep leader): Inter for Latin,
+ * Noto Sans Bengali for Bangla, bold 700 headings with tight leading, plain
+ * 400 body. No display face, no letter-spacing tricks.
+ *
+ * Colour: a classroom, not a candy shop.
+ *   board  - blackboard green, the brand ground (hero, footer, dark panels)
+ *   chalk  - warm off-white of a chalk-dusted classroom (alternate sections)
+ *   gold   - the Moshai face from the logo; used only for the main action
+ *   redpen - the teacher's red pen: refunds, live, warnings
+ *   online / home - quiet tints that label the two ways to learn
+ * Neutrals follow chorcha.net's greys (#121212 text, #e5e5e5 lines).
+ *
+ * Shape: 1px hairlines, 8px controls, 12px cards. No offset shadows, no tilted
+ * stickers, no emoji icons.
  */
 @theme {
-  --color-ink: #121117;
-  --color-ink-2: #4d4c5c;
-  --color-ink-3: #8a8999;
-  --color-line: #dcdce5;
+  --color-ink: #121212;
+  --color-ink-2: #4b4b4b;
+  --color-ink-3: #8a8a8a;
+  --color-line: #e5e5e5;
+  --color-mist: #f4f4f2;
   --color-paper: #ffffff;
-  --color-mist: #f4f4f8;
 
-  --color-sun: #ffd84d; /* hero + primary highlight */
-  --color-sun-deep: #f5c400;
-  --color-mint: #9be7c4; /* home tutor / offline */
-  --color-lilac: #c9b8ff; /* online */
-  --color-coral: #ff6b4a; /* alerts, live */
-  --color-sky: #2f6bff; /* links */
-  --color-leaf: #12a150; /* money / success */
+  --color-board: #163129;
+  --color-board-2: #1f4238;
+  --color-board-line: #2c5247;
+  --color-chalk: #f6f3ec;
+  --color-chalk-2: #ece7dc;
 
-  --font-display: "Bricolage Grotesque", "Anek Bangla", system-ui, sans-serif;
-  --font-sans: "Inter", "Anek Bangla", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-gold: #ffd84d;
+  --color-gold-deep: #f5c400;
+  --color-gold-tint: #fff6d6;
+
+  --color-redpen: #c8372d;
+  --color-redpen-tint: #fbe8e6;
+
+  --color-online: #e7edf6;
+  --color-online-ink: #29497a;
+  --color-home: #e3efe8;
+  --color-home-ink: #1d5a44;
+
+  --color-leaf: #11804a;
+
+  --font-sans: "Inter", "Noto Sans Bengali", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Inter", "Noto Sans Bengali", system-ui, sans-serif;
 }
 
 body {
   @apply bg-paper text-ink antialiased;
   font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
 }
 
+/* Headings: bold, tight, like chorcha.net (48/48, 42/42). Bangla needs a touch more air. */
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  letter-spacing: -0.022em;
 }
+html[lang="bn"] .font-display { letter-spacing: 0; line-height: 1.2; }
+html[lang="bn"] body { line-height: 1.65; }
 
 /* Buttons */
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-3 text-[15px] font-semibold transition-colors;
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border px-5 py-3 text-[15px] font-semibold transition-colors;
 }
 @utility btn-ink {
   @apply btn border-ink bg-ink text-white hover:bg-ink-2 hover:border-ink-2;
 }
-@utility btn-sun {
-  @apply btn border-ink bg-sun text-ink hover:bg-sun-deep;
+@utility btn-gold {
+  @apply btn border-gold bg-gold text-ink hover:bg-gold-deep hover:border-gold-deep;
+}
+@utility btn-board {
+  @apply btn border-board bg-board text-white hover:bg-board-2 hover:border-board-2;
 }
 @utility btn-ghost {
-  @apply btn border-line bg-paper text-ink hover:border-ink;
+  @apply btn border-line bg-paper text-ink hover:border-ink-3;
+}
+@utility btn-chalk {
+  @apply btn border-white/25 bg-transparent text-white hover:border-white/60;
 }
 @utility card {
-  @apply rounded-xl border-2 border-line bg-paper;
+  @apply rounded-xl border border-line bg-paper;
 }
 @utility tag {
   @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold;
 }
-/* Labelled filter field (Preply style): small label over bold value */
+@utility eyebrow {
+  @apply text-[13px] font-semibold tracking-wide text-ink-3;
+}
+
+/* Labelled field (Preply style): small label over bold value */
 .field {
-  @apply flex flex-col rounded-lg border-2 border-line bg-paper px-3 py-2 text-left hover:border-ink focus-within:border-ink;
+  @apply flex flex-col rounded-lg border border-line bg-paper px-3 py-2 text-left transition-colors hover:border-ink-3 focus-within:border-ink;
 }
 .field > span {
-  @apply text-xs text-ink-2;
+  @apply text-xs text-ink-3;
 }
 .field select,
 .field input {
   @apply bg-transparent text-[15px] font-semibold outline-none;
 }
 
-/* Bangla: matras and conjuncts need more air than Latin display type. */
-html[lang="bn"] body { font-family: "Anek Bangla", "Inter", system-ui, sans-serif; }
-html[lang="bn"] .font-display { font-family: "Anek Bangla", "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.01em; }
-html[lang="bn"] h1.font-display, html[lang="bn"] h2.font-display { line-height: 1.18; }
+/* Hand-drawn chalk/red-pen underline under one or two words. */
+.scribble {
+  @apply relative inline-block whitespace-nowrap;
+}
+.scribble > svg {
+  @apply pointer-events-none absolute -bottom-2 left-0 h-3 w-full;
+}

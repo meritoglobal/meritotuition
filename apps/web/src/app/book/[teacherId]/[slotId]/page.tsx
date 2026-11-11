@@ -17,7 +17,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const fmt = (d: Date) => L.dateTime(d, lang);
   return (
     <div className="mx-auto max-w-xl px-5 py-12">
-      <h1 className="font-display text-4xl font-extrabold">{isTrial ? c.h1Trial : c.h1Enroll}</h1>
+      <h1 className="font-display text-4xl">{isTrial ? c.h1Trial : c.h1Enroll}</h1>
       <div className="card mt-6 space-y-3 p-5 text-[15px]">
         <Row k={c.tutor} v={`${L.name(t, lang)} · ${L.uni(t.university, lang)}`} />
         <Row k={c.subjects} v={`${L.subjects(s.subjects, lang)} · ${L.level(s.level, lang)}`} />
@@ -37,13 +37,13 @@ export default async function BookPage({ params, searchParams }: { params: Promi
       {!isTrial && (
         <div className="mt-6 grid grid-cols-3 gap-2 text-sm">
           {c.pay.map((m, i) => (
-            <label key={m} className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-line bg-paper py-3 font-semibold has-[:checked]:border-ink has-[:checked]:bg-sun">
-              <input type="radio" name="pay" defaultChecked={i === 0} className="accent-ink" /> {m}
+            <label key={m} className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-line bg-paper py-3 font-semibold has-[:checked]:border-board has-[:checked]:bg-home">
+              <input type="radio" name="pay" defaultChecked={i === 0} className="accent-board" /> {m}
             </label>
           ))}
         </div>
       )}
-      <a href="/dashboard/student" className="btn-ink mt-6 w-full text-base">
+      <a href="/dashboard/student" className="btn-gold mt-6 w-full text-base">
         {isTrial ? c.confirmTrial : c.payBtn(L.taka(s.monthlyPrice, lang))}
       </a>
     </div>
@@ -54,7 +54,7 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
   return (
     <div className="flex justify-between gap-4">
       <span className="text-ink-2">{k}</span>
-      <span className={`text-right ${strong ? "font-display text-xl font-extrabold" : "font-medium"}`}>{v}</span>
+      <span className={`text-right ${strong ? "text-xl font-bold" : "font-medium"}`}>{v}</span>
     </div>
   );
 }

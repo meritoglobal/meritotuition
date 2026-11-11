@@ -18,9 +18,9 @@ export default async function TeacherDashboard() {
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-4xl font-extrabold">{c.h1}</h1>
+        <h1 className="font-display text-4xl">{c.h1}</h1>
         <span className="text-ink-2">{L.name(t, lang)}</span>
-        <a href="/class/demo?as=teacher" className="ml-auto btn-ink">{c.start}</a>
+        <a href="/class/demo?as=teacher" className="ml-auto btn-board">{c.start}</a>
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-4">
@@ -31,13 +31,13 @@ export default async function TeacherDashboard() {
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-3 card p-4 text-sm">
         <span>{c.summary(tk(e.gross), tk(e.paidOut), tk(e.lost))}</span>
-        <button className="btn ml-auto border-ink bg-[#e2136e] text-white">{c.withdraw}</button>
+        <button className="btn ml-auto border-[#e2136e] bg-[#e2136e] text-white">{c.withdraw}</button>
       </div>
       <p className="mt-2 text-xs text-ink-2">
         {c.note(e.paidClasses, tk(example.teacher))}
       </p>
 
-      <h2 className="mb-3 mt-8 font-display text-2xl font-extrabold">{c.recent}</h2>
+      <h2 className="mb-3 mt-8 font-display text-2xl">{c.recent}</h2>
       <div className="overflow-x-auto card">
         <table className="w-full text-sm">
           <thead className="bg-mist text-left text-xs text-ink-2">
@@ -59,7 +59,7 @@ export default async function TeacherDashboard() {
       </div>
 
       <div className="mb-3 mt-8 flex items-center">
-        <h2 className="font-display text-2xl font-extrabold">{c.myRoutine}</h2>
+        <h2 className="font-display text-2xl">{c.myRoutine}</h2>
         <button className="ml-auto btn-ghost py-1.5! text-sm!">{c.add}</button>
       </div>
       <RoutineList slots={t.routine} teacherId={t.id} actions={false} lang={lang} />
@@ -69,9 +69,9 @@ export default async function TeacherDashboard() {
 
 function Card({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
   return (
-    <div className={`rounded-xl border-2 p-4 ${strong ? "border-ink! bg-sun" : "border-line bg-paper"}`}>
-      <div className="text-xs text-ink-2">{k}</div>
-      <div className="mt-1 font-display text-2xl font-extrabold">{v}</div>
+    <div className={`rounded-xl border p-4 ${strong ? "border-board bg-board text-white" : "border-line bg-paper"}`}>
+      <div className={`text-xs ${strong ? "text-white/65" : "text-ink-2"}`}>{k}</div>
+      <div className="mt-1 text-2xl font-bold">{v}</div>
     </div>
   );
 }

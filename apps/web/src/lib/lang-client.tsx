@@ -21,9 +21,9 @@ export function LangToggle() {
     router.refresh();
   };
   return (
-    <div className="flex rounded-lg border-2 border-line p-0.5 text-xs font-semibold" role="group" aria-label="ভাষা / Language">
+    <div className="flex rounded-lg border border-line p-0.5 text-xs font-semibold" role="group" aria-label="ভাষা / Language">
       {(["bn", "en"] as const).map((l) => (
-        <button key={l} onClick={() => set(l)} aria-pressed={lang === l} className={`rounded-md px-2 py-1 ${lang === l ? "bg-ink text-white" : "text-ink-2 hover:text-ink"}`}>
+        <button key={l} onClick={() => set(l)} aria-pressed={lang === l} className={`rounded-md px-2 py-1 ${lang === l ? "bg-board text-white" : "text-ink-2 hover:text-ink"}`}>
           {l === "bn" ? "বাং" : "EN"}
         </button>
       ))}

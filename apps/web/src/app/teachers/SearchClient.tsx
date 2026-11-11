@@ -45,12 +45,12 @@ export default function SearchClient(init: { subjects?: string; level?: string; 
 
   return (
     <>
-      <div className="border-b-2 border-ink bg-sun">
+      <div className="bg-board text-white">
         <div className="mx-auto max-w-7xl px-5 pb-6 pt-8">
-          <h1 className="font-display text-4xl font-extrabold sm:text-5xl">
+          <h1 className="font-display text-4xl sm:text-5xl">
             {c.title(subjects.map((s) => L.subject(s, lang)).join(" + "), mode, L.area(area, lang))}
           </h1>
-          <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-6 grid gap-2 text-ink sm:grid-cols-2 lg:grid-cols-5">
             <label className="field">
               <span>{c.how}</span>
               <select value={mode} onChange={(e) => setMode(e.target.value as TeachingMode | "")}>
@@ -80,17 +80,17 @@ export default function SearchClient(init: { subjects?: string; level?: string; 
             </label>
             <label className="field">
               <span>{c.budget(L.taka(maxPrice, lang))}</span>
-              <input type="range" min={1000} max={10000} step={500} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="accent-ink" />
+              <input type="range" min={1000} max={10000} step={500} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="accent-board" />
             </label>
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {SUBJECTS.map((s) => (
-              <button key={s} onClick={() => toggle(s)} className={`rounded-lg border-2 px-3 py-1.5 text-sm font-semibold ${subjects.includes(s) ? "border-ink bg-ink text-white" : "border-ink/20 bg-paper hover:border-ink"}`}>
+              <button key={s} onClick={() => toggle(s)} className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition-colors ${subjects.includes(s) ? "border-gold bg-gold text-ink" : "border-board-line text-white/85 hover:border-white/60"}`}>
                 {L.subject(s, lang)}
               </button>
             ))}
             <label className="ml-auto flex items-center gap-2 text-sm font-semibold">
-              <input type="checkbox" checked={trial} onChange={(e) => setTrial(e.target.checked)} className="h-4 w-4 accent-ink" /> {c.trial}
+              <input type="checkbox" checked={trial} onChange={(e) => setTrial(e.target.checked)} className="h-4 w-4 accent-gold" /> {c.trial}
             </label>
           </div>
         </div>
@@ -119,9 +119,9 @@ export default function SearchClient(init: { subjects?: string; level?: string; 
             <div className="h-80">
               <TutorMap center={center} teachers={hits.map((h) => h.teacher)} radiusKm={km} />
             </div>
-            <div className="border-t-2 border-line p-4">
+            <div className="border-t border-line p-4">
               <label className="block text-sm font-semibold">{c.distance(km, L.area(area, lang))}</label>
-              <input type="range" min={1} max={15} value={km} onChange={(e) => setKm(Number(e.target.value))} className="mt-2 w-full accent-ink" />
+              <input type="range" min={1} max={15} value={km} onChange={(e) => setKm(Number(e.target.value))} className="mt-2 w-full accent-board" />
             </div>
           </div>
         </aside>
