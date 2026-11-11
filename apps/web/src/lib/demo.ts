@@ -30,7 +30,7 @@ export function demoTeacherEarnings(now = new Date()) {
     const outcome: SessionOutcome = i === 5 ? "TEACHER_LATE_OR_SHORT" : i === 9 ? "STUDENT_NO_SHOW" : "COMPLETED";
     const st = settleClass({ classShare: share, outcome, commissionRate: rate });
     const date = new Date(now.getTime() - i * 1.2 * 86_400_000);
-    return { id: `r${i}`, date, batch: `${s.subjects.join(", ")} 1:${s.batchSize}`, outcome, pending: i < 2, ...st };
+    return { id: `r${i}`, date, subjects: s.subjects, batchSize: s.batchSize, outcome, pending: i < 2, ...st };
   });
   const released = rows.filter((r) => !r.pending);
   const sum = (k: "teacherGross" | "platform" | "teacherNet" | "refund", list = released) => list.reduce((a, r) => a + r[k], 0);

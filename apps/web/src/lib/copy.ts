@@ -1,0 +1,305 @@
+/**
+ * All site copy, in the Mastermoshai voice.
+ * Bangla is written first and is NOT a translation of the English: it uses our own
+ * idioms (ফাঁকি, কথায় চিঁড়ে ভেজে না, কেল্লা ফতে, নাম লেখানো, হাউসফুল, নালিশ).
+ * When adding a line, write the Bangla the way a witty Dhaka tutor would say it,
+ * then write English that carries the same joke.
+ */
+import type { Lang } from "@mastermoshai/core";
+import { L } from "./l10n";
+
+const n = (x: number | string) => L.num(x, "bn");
+
+const bn = {
+  meta: {
+    title: "মাস্টারমশাই · যে মাস্টারমশাই ফাঁকি দেন না",
+    description: "ঢাকার বুয়েট-ঢাবির যাচাই করা টিউটর, অনলাইনে কিংবা বাসায়। প্রথম ক্লাস ফ্রি, ক্লাস হলে তবেই টাকা।",
+  },
+  nav: { online: "অনলাইন টিউটর", home: "বাসার টিউটর", free: "ফ্রি ক্লাস", teach: "পড়াতে চাই", mine: "আমার ক্লাস", find: "টিউটর খুঁজি" },
+  footer: {
+    tagline: "ফাঁকি নয়, পড়া।",
+    line: "mastermoshai.net · ঢাকা · বিকাশ · নগদ · কার্ড",
+    cols: [
+      ["পড়ুয়াদের জন্য", ["অনলাইন টিউটর", "বাসার টিউটর", "ফ্রি ক্লাস", "টাকা ফেরতের নিয়ম"]],
+      ["মাস্টারমশাইদের জন্য", ["টিউটর হও", "রুটিন সাজাও", "আয় আর টাকা তোলা"]],
+      ["আমরা", ["মাস্টারমশাইয়ের গল্প", "নিরাপত্তা", "যোগাযোগ"]],
+    ] as [string, string[]][],
+  },
+  home: {
+    badge: "কথায় চিঁড়ে ভেজে না। ক্লাস হলে তবেই টাকা।",
+    h1: "যে মাস্টারমশাই ফাঁকি দেন না।",
+    bullets: ["একা পড়ো, কিংবা পাঁচ বন্ধুর ছোট্ট ব্যাচে", "ঘরে বসে অনলাইনে, নয়তো পাড়ার সেরা ভাইয়া-আপুর কাছে", "প্রথম ক্লাস ফ্রি · ক্লাস না হলে টাকা ফেরত"],
+    form: {
+      subject: "কী পড়বে", anySubject: "যেকোনো বিষয়", level: "কোন ক্লাস", anyLevel: "যেকোনো ক্লাস",
+      how: "কীভাবে", anyHow: "অনলাইন বা বাসায়", online: "অনলাইন লাইভ ক্লাস", offline: "বাসায় এসে পড়াবেন", area: "বাসা কোথায়", submit: "টিউটর খুঁজি →",
+    },
+    stats: [
+      ["৪.৮ ★", "নম্বর এবার দিচ্ছে পড়ুয়ারা"],
+      ["৳০", "প্রথম ক্লাসের খরচ"],
+      ["১৫ মিনিট", "দেরি হলেই টাকা ফেরত"],
+      ["বুয়েট · ঢাবি · এনএসইউ", "আইডি মিলিয়ে যাচাই করা"],
+    ],
+    two: {
+      h2: "পড়ার রাস্তা দুটো। টাকার সিন্দুক একটাই।",
+      onLabel: "অনলাইন", onTitle: "এক টোকায় ক্লাসরুম",
+      onText: "লিংক খোঁজাখুঁজির দিন শেষ। টিচার ‘শুরু’ চাপলেই তোমার ফোনে টুং, তুমি চাপবে ‘ঢুকি’। একা থেকে পাঁচজনের ব্যাচ।",
+      onLink: "অনলাইন টিউটর দেখি →",
+      offLabel: "বাসায়", offTitle: "পাড়ার মাস্টারমশাই",
+      offText: "ফার্মগেট, ধানমন্ডি, মিরপুর... ম্যাপ খুলে দেখো তোমার আশপাশে কে পড়ান। বুয়েট চাই না ঢাবি, সেটাও বেছে নাও।",
+      offLink: "বাসার টিউটর খুঁজি →",
+    },
+    how: {
+      h2: "তিন ধাপে কেল্লা ফতে",
+      steps: [
+        ["খোঁজো", "বিষয়, ক্লাস, এলাকা আর ভার্সিটি দিয়ে খোঁজো। আগে ফ্রি ক্লাসগুলো দেখে নাও, পড়ানোটা মনে ধরে কি না।"],
+        ["চেখে দেখো", "একটা আসল ক্লাসে বসে পড়ো, একদম ফ্রি। ভালো না লাগলে চুপচাপ উঠে যাও, কেউ কিচ্ছু বলবে না।"],
+        ["নিশ্চিন্তে পড়ো", "মাসের টাকা আগাম দাও, তবে সেটা থাকে আমাদের জিম্মায়। ক্লাস হলে তবেই টিচারের পকেটে যায়, এক ক্লাস এক ক্লাস করে।"],
+      ],
+    },
+    freeH2: "ফ্রি ক্লাস। আগে দেখো, পরে ভর্তি।",
+    freeAll: "সব ফ্রি ক্লাস",
+    topH2: "যাঁদের ব্যাচে সিট পাওয়াই মুশকিল",
+    guarantee: {
+      h2: "ক্লাস হয়নি? টাকা সোজা ঘরে ফেরত।",
+      items: ["টিচার ১৫ মিনিটেও এলেন না → পুরো টাকা ফেরত", "দেরিতে এলেন বা আগেই ছুটি দিলেন → অর্ধেক ফেরত", "পড়ানো মনে ধরেনি → ৪৮ ঘণ্টার মধ্যে জানাও, আমরা দেখছি", "মাঝপথে ছাড়তে চাও → বাকি ক্লাসের টাকা ফেরত"],
+    },
+    teach: {
+      h2: "তুমিও হয়ে যাও মাস্টারমশাই।",
+      text: "নিজের রুটিন নিজেই সাজাও। অনলাইনে পড়াও, কিংবা বাসায় গিয়ে। ফ্রি ক্লাস দিয়ে ছাত্র জোটাও, আর প্রতি সপ্তাহে টাকা তোলো বিকাশে। মাস শেষে বেতনের জন্য আর ঘোরাঘুরি নয়।",
+      cta: "পড়াতে চাই",
+      cards: [["তোমার ফি", "তুমিই ঠিক করো"], ["কমিশন", "২৫% থেকে নেমে ১৫%"], ["টাকা তোলা", "প্রতি সপ্তাহে, বিকাশে"], ["ছাত্র", "অনলাইন + নিজের এলাকা"]],
+    },
+    faqH2: "মনে প্রশ্ন জাগছে?",
+    faq: [
+      ["ফ্রি ট্রায়াল ব্যাপারটা কী?", "যে ব্যাচে ট্রায়াল সিট খালি, সেখানে একটা আসল ক্লাস করো বিনা পয়সায়। পড়ানো মনে ধরলে তবেই ভর্তি।"],
+      ["টিচার ক্লাসে না এলে?", "কে কখন ক্লাসে ঢুকল, আমাদের ক্লাসরুম সব টুকে রাখে। টিচার ১৫ মিনিটের মধ্যে না এলে ওই ক্লাসের টাকা নিজে থেকেই তোমার কাছে ফিরে আসে। ফোন করে তাগাদা দিতে হবে না।"],
+      ["মাসের মাঝখানে ছেড়ে দিতে পারব?", "পারবে। যে ক্লাসগুলো এখনো হয়নি, তার টাকা ফেরত। যতটুকু পড়েছ, ততটুকুরই দাম।"],
+      ["অনলাইন না বাসায়, কোনটা ভালো?", "অনলাইনে খরচ কম, জ্যামও ঠেলতে হয় না। বাসার টিউটর আসেন নিজের এলাকার ভেতরে। দুটোতেই টাকার সুরক্ষা একই।"],
+      ["পড়াবেন কারা?", "বুয়েট, ঢাবি, এনএসইউ, জাবিসহ সেরা ভার্সিটির ভাইয়া-আপুরা। স্টুডেন্ট আইডি আর এনআইডি মিলিয়ে দেখে তবেই দিই ‘যাচাই করা’ ব্যাজ।"],
+    ],
+    mock: { title: "পদার্থবিজ্ঞান · ৯ম-১০ম · ১:৩", live: "● লাইভ", student: "আয়ান", tutor: "রাফি (টিচার)", joined: "ঢুকেছেন ৪:৫৮-এ · কাঁটায় কাঁটায়", timer: "৪২:১০", released: "৳২৫০ গেল টিচারের কাছে", after: "ক্লাস শেষ হওয়ার পর · ৪৮ ঘণ্টা বাদে" },
+  },
+  search: {
+    title: (subjects: string, mode: string, area: string) =>
+      mode === "OFFLINE" ? `${area}-এর আশপাশে ${subjects || "সব"} টিউটর` : mode === "ONLINE" ? `অনলাইনে ${subjects || "সব"} টিউটর` : `ঢাকার ${subjects || "সব"} টিউটর`,
+    how: "কীভাবে", anyHow: "অনলাইন বা বাসায়", online: "অনলাইন লাইভ ক্লাস", offline: "বাসার টিউটর",
+    level: "কোন ক্লাস", anyLevel: "যেকোনো ক্লাস", area: "বাসা কোথায়", uni: "ভার্সিটি", anyUni: "যেকোনো ভার্সিটি",
+    budget: (p: string) => `বাজেট: ${p} পর্যন্ত`,
+    trial: "শুধু ফ্রি ট্রায়াল আছে এমন",
+    count: (c: number) => `${n(c)} জন টিউটর হাজির`,
+    sort: "সাজাও", best: "সবচেয়ে মানানসই", price: "কম খরচ আগে", near: "কাছের জন আগে",
+    empty: "এই মাপে কাউকে পেলাম না। দূরত্ব একটু বাড়াও, নয়তো বিষয় কমাও।",
+    distance: (km: number, area: string) => `বাসার টিউটর: ${area} থেকে ${n(km)} কিমির মধ্যে`,
+    you: "তোমার এলাকা",
+  },
+  card: {
+    verified: "✓ যাচাই করা", online: "অনলাইন", home: "বাসায়", km: (d: string) => `${n(d)} কিমি`,
+    seats: (s: number, v: number) => `⚡ এ মাসে ${n(s)}টি সিট খালি · ${n(v)}টি ফ্রি ক্লাস`,
+    from: "মাসে · শুরু এখান থেকে", reviews: (c: number) => `${n(c)} জনের মতামত`, videos: "ফ্রি ক্লাস",
+    trial: "ফ্রি ট্রায়াল নিই", routine: "রুটিন দেখি", profile: "প্রোফাইল দেখি",
+  },
+  profile: {
+    verified: (uni: string) => `✓ যাচাই করা · ${uni}`, pending: "যাচাই চলছে", online: "অনলাইন", home: (a: string) => `বাসার টিউটর · ${a}`,
+    about: "পরিচয়", routine: "সাপ্তাহিক রুটিন", routineSub: "যে ব্যাচে সিট খালি, সেটা বেছে নাও। সময় ঢাকার ঘড়িতে।",
+    freeBy: (name: string) => `${name}-এর ফ্রি ক্লাস`,
+    trial: "ফ্রি ট্রায়াল নিই", choose: "ব্যাচ বেছে নিই",
+    promises: [
+      ["ক্লাস হলে তবেই টাকা।", "তোমার টাকা থাকে মাস্টারমশাইয়ের জিম্মায়, ছাড়া হয় প্রতি ক্লাসের পর।"],
+      ["না এলে ফেরত।", "টিচার ১৫ মিনিটেও না এলে ওই ক্লাসের টাকা তোমার।"],
+      ["যখন খুশি ছাড়ো।", "না-হওয়া ক্লাসের টাকা ফেরত পাবে।"],
+    ],
+  },
+  routine: {
+    min: (m: number) => `${n(m)} মিনিট`, online: "অনলাইন", home: "বাসায়",
+    seats: (s: number) => `${n(s)}টি সিট খালি`, full: "হাউসফুল", perMonth: (c: number) => `মাসে ${n(c)}টি ক্লাস`, trial: "ফ্রি ট্রায়াল", enroll: "নাম লেখাই",
+  },
+  videos: { h1: "ফ্রি ক্লাস", sub: "মাস্টারমশাইদের ছোট ছোট ক্লাস, টিকিট লাগে না। কারও পড়ানো মনে ধরলে তাঁর কাছেই একটা ফ্রি ট্রায়াল নিয়ে নাও।", min: (m: number) => `${n(m)} মিনিট`, views: (v: number) => `${n((v / 1000).toFixed(1))} হাজার বার দেখা` },
+  book: {
+    h1Trial: "একটা ফ্রি ক্লাস হয়ে যাক", h1Enroll: "ব্যাচে নাম লেখাও",
+    tutor: "টিউটর", subjects: "বিষয়", routine: "রুটিন", batch: "ব্যাচ", at: "·", online: "মাস্টারমশাইয়ের ভেতরেই লাইভ ক্লাস", home: "তোমার বাসায়",
+    trialClass: "ট্রায়াল ক্লাস", firstClasses: "প্রথম ক্লাসগুলো", price: "খরচ", free: "এক পয়সাও না",
+    month: (c: number) => `${n(c)}টি ক্লাস (১ মাস)`,
+    note: "টাকা থাকে মাস্টারমশাইয়ের জিম্মায়। প্রতিটা ক্লাসের ৪৮ ঘণ্টা পর শুধু সেই ক্লাসের টাকা টিচারের কাছে যায়। ক্লাস না হলে টাকা ফেরত।",
+    pay: ["বিকাশ", "নগদ", "কার্ড"], confirmTrial: "ফ্রি ট্রায়াল পাকা করি", payBtn: (p: string) => `${p} দিয়ে ভর্তি হই`,
+  },
+  room: {
+    title: "পদার্থবিজ্ঞান · ৯ম-১০ম শ্রেণি · ১:৩ ব্যাচ", live: "লাইভ", board: "হোয়াইটবোর্ড দেখাচ্ছেন", you: "তুমি", mate: "সহপাঠী",
+    controls: ["মাইক", "ক্যামেরা", "স্ক্রিন দেখাই", "হাত তুলি", "চ্যাট"], leave: "বের হই",
+    ended: "ছুটি! ক্লাস শেষ।", endedSub: "কেমন লাগল? গড়বড় কিছু হয়ে থাকলে ৪৮ ঘণ্টার মধ্যে জানিয়ে দিও।", rate: "টিচারকে নম্বর দিই", flag: "নালিশ জানাই",
+    liveNow: "ক্লাস চলছে", waiting: "টিচারের অপেক্ষায়", startsIn: "শুরু হতে বাকি",
+    msgLive: "টিচার ক্লাস শুরু করেছেন। ঢুকে পড়ো।", msgTeacher: "তৈরি হলে ক্লাস শুরু করো। সব ছাত্রের ফোনে খবর চলে যাবে।", msgStudent: "তুমি ওয়েটিং রুমে আছ। টিচার শুরু করামাত্র তোমাকে ডেকে নেব।",
+    start: "ক্লাস শুরু করি", join: "ক্লাসে ঢুকি", demo: "ডেমো: ধরে নাও টিচার ক্লাস শুরু করলেন",
+    note: "তোমার হাজিরা নিজে থেকেই খাতায় উঠছে। টিচার ১৫ মিনিটের মধ্যে না এলে এই ক্লাসের টাকা ফেরত।",
+  },
+  flag: {
+    reasons: { TEACHER_ABSENT: "টিচার আসেননি", TEACHER_LATE: "টিচার দেরিতে এসেছেন", ENDED_EARLY: "আগেই ছুটি দিয়ে দিয়েছেন", POOR_TEACHING: "ঠিকমতো পড়াননি", BEHAVIOUR: "ব্যবহার ভালো ছিল না", OTHER: "অন্য কিছু" },
+    got: "নালিশ পেয়ে গেছি",
+    sentAttendance: "খাতা বলছে টিচার ঠিক সময়ে ঢুকে পুরো ক্লাস ছিলেন। তাই আমাদের একজন ৭২ ঘণ্টার মধ্যে নিজে মিলিয়ে দেখবেন। ততক্ষণ এই ক্লাসের টাকা আটকে থাকছে।",
+    sentOther: "আমাদের একজন ক্লাসের খাতা দেখবেন, দুই পক্ষের কথাও শুনবেন, ৭২ ঘণ্টার মধ্যে। ততক্ষণ এই ক্লাসের টাকা আটকে থাকছে।",
+    h2: "ক্লাস নিয়ে নালিশ", sub: "ক্লাস শেষের ৪৮ ঘণ্টার মধ্যে নালিশ জানানো যায়। হাজিরার গরমিল আমরা নিজেরাই মিলিয়ে দেখি।", placeholder: "কী হয়েছিল, খুলে বলো", submit: "নালিশ জমা দিই",
+  },
+  student: {
+    h1: "আমার ক্লাস", next: "পরের ক্লাস", with: (subjects: string, teacher: string) => `${teacher}-এর কাছে ${subjects}`, reminder: "১০ মিনিট আগে মনে করিয়ে দেব", open: "ক্লাসরুমে ঢুকি",
+    paid: "এ মাসে দিয়েছ", done: "ক্লাস হয়েছে", of: (a: number, b: number) => `${n(b)}টির মধ্যে ${n(a)}টি`, refunded: "ফেরত পেয়েছ", history: "ক্লাসের খতিয়ান",
+    outcome: { COMPLETED: "হয়েছে", TEACHER_NO_SHOW: "টিচার আসেননি · টাকা ফেরত", TEACHER_LATE_OR_SHORT: "দেরি বা কম সময় · অর্ধেক ফেরত", STUDENT_NO_SHOW: "তুমি ফাঁকি দিয়েছ", BOTH_ABSENT: "ক্লাস হয়নি · টাকা ফেরত" } as Record<string, string>,
+    renew: "পরের মাসেও পড়ব", stop: "এই টিউটর আর না (বাকি ক্লাসের টাকা ফেরত)",
+  },
+  teacher: {
+    h1: "মাস্টারমশাইয়ের খাতা", start: "পরের ক্লাস শুরু করি",
+    net: "হাতে এল (কমিশন বাদে)", commission: (r: number) => `মাস্টারমশাইয়ের কমিশন (${n(r)}%)`, hold: "আটকে আছে (৪৮ ঘণ্টার অপেক্ষা)", available: "এখনই তোলা যাবে",
+    summary: (g: string, p: string, l: string) => `মোট ${g} · তোলা হয়েছে ${p} · নালিশ বা দেরিতে কাটা ${l}`, withdraw: "বিকাশে তুলি",
+    note: (c: number, ex: string) => `${n(c)}টি পেইড ক্লাস নিয়েছ। ৫০ ক্লাস পেরোলে কমিশন ২০%, ২০০ পেরোলে ১৫%। যেমন: ৳৩,০০০-র ব্যাচ থেকে তুমি পাও ${ex}।`,
+    recent: "সাম্প্রতিক ক্লাস", cols: ["তারিখ", "ব্যাচ", "ফলাফল", "ক্লাসের দাম", "কমিশন", "তুমি পাও"], onHold: "আটকে আছে",
+    outcome: { COMPLETED: "হয়েছে", TEACHER_LATE_OR_SHORT: "দেরি বা কম সময় (৫০%)", STUDENT_NO_SHOW: "ছাত্র আসেনি (টাকা পাবে)", TEACHER_NO_SHOW: "তুমি আসোনি (০%)", BOTH_ABSENT: "ক্লাস হয়নি" } as Record<string, string>,
+    myRoutine: "আমার সাপ্তাহিক রুটিন", add: "+ নতুন সময়",
+  },
+};
+
+export type Copy = typeof bn;
+
+const en: Copy = {
+  meta: {
+    title: "Mastermoshai · the tutor who actually shows up",
+    description: "Verified BUET and DU tutors in Dhaka, online or at home. First class free, and you pay only for classes that happen.",
+  },
+  nav: { online: "Online tutors", home: "Home tutors", free: "Free classes", teach: "Teach with us", mine: "My classes", find: "Find a tutor" },
+  footer: {
+    tagline: "Less bunking. More learning.",
+    line: "mastermoshai.net · Dhaka · bKash · Nagad · Cards",
+    cols: [
+      ["For students", ["Online tutors", "Home tutors", "Free classes", "How refunds work"]],
+      ["For tutors", ["Become a tutor", "Set your routine", "Earnings and payouts"]],
+      ["Us", ["The Mastermoshai story", "Safety", "Contact"]],
+    ],
+  },
+  home: {
+    badge: "Pay per class. Not per promise.",
+    h1: "A tutor who actually shows up.",
+    bullets: ["Just you, or a tiny batch of up to five", "Online from your room, or a tutor from your own neighbourhood", "First class free · no class, no charge"],
+    form: {
+      subject: "I want to learn", anySubject: "Any subject", level: "Class", anyLevel: "Any class",
+      how: "How", anyHow: "Online or at home", online: "Online live class", offline: "Home tutor near me", area: "I live in", submit: "Find tutors →",
+    },
+    stats: [
+      ["4.8 ★", "students do the grading here"],
+      ["৳0", "for your first class"],
+      ["15 min", "late? refund is automatic"],
+      ["BUET · DU · NSU", "ID-checked tutors"],
+    ],
+    two: {
+      h2: "Two ways to learn. One safe wallet.",
+      onLabel: "Online", onTitle: "One tap, you're in class",
+      onText: "No more hunting for links. Your tutor taps Start, your phone pings, you tap Join. Batches from 1:1 to 1:5.",
+      onLink: "Browse online tutors →",
+      offLabel: "At home", offTitle: "The Mastermoshai next door",
+      offText: "Farmgate, Dhanmondi, Mirpur... open the map and see who teaches around you. BUET or DU, your pick.",
+      offLink: "Find home tutors →",
+    },
+    how: {
+      h2: "Three steps. Zero drama.",
+      steps: [
+        ["Find", "Search by subject, class, area and university. Watch a tutor's free classes first and see if the teaching clicks."],
+        ["Taste it", "Sit in one real class, free. Not your thing? Walk away. Nobody will chase you."],
+        ["Learn, relaxed", "Pay the month up front, but we hold it. The tutor gets paid one class at a time, only after it happens."],
+      ],
+    },
+    freeH2: "Free classes. Watch first, enroll later.",
+    freeAll: "All free classes",
+    topH2: "Tutors whose batches fill up first",
+    guarantee: {
+      h2: "No class? Your money walks back home.",
+      items: ["Tutor 15 min absent → 100% back", "Came late or left early → 50% back", "Not happy → tell us within 48 h, we look into it", "Want to stop → untaught classes refunded"],
+    },
+    teach: {
+      h2: "Go on, be the Mastermoshai.",
+      text: "Set your own routine. Teach online or at students' homes. Post free classes to win students, and withdraw to bKash every week. No more chasing anyone for your salary at month end.",
+      cta: "I want to teach",
+      cards: [["Your fee", "you set it"], ["Commission", "25% down to 15%"], ["Payout", "weekly, to bKash"], ["Students", "online + your area"]],
+    },
+    faqH2: "Go on, ask.",
+    faq: [
+      ["What's the deal with the free trial?", "Pick a batch with a trial seat and sit in one real class for nothing. Enroll only if the teaching clicks."],
+      ["What if the tutor doesn't show up?", "Our classroom notes who joined and when. If the tutor isn't there within 15 minutes, that class is refunded on its own. No awkward phone calls."],
+      ["Can I quit mid-month?", "Yes. Every class not yet taught comes back to you. You pay only for what you studied."],
+      ["Online or at home, which is better?", "Online costs less and skips the traffic. Home tutors come to you within their area. Both carry the same payment protection."],
+      ["Who are the tutors?", "Students and graduates of BUET, DU, NSU, JU and other top universities. We match student ID and NID before anyone gets the Verified badge."],
+    ],
+    mock: { title: "Physics · Class 9-10 · 1:3", live: "● LIVE", student: "Ayan", tutor: "Rafi (tutor)", joined: "Joined 4:58 PM · on the dot", timer: "42:10", released: "৳250 released to tutor", after: "after class ended · 48 h window" },
+  },
+  search: {
+    title: (subjects, mode, area) => `${subjects || "All"} tutors ${mode === "OFFLINE" ? `near ${area}` : mode === "ONLINE" ? "online" : "in Dhaka"}`,
+    how: "How", anyHow: "Online or at home", online: "Online live class", offline: "Home tutor",
+    level: "Class", anyLevel: "Any class", area: "I live in", uni: "University", anyUni: "Any university",
+    budget: (p) => `Budget: up to ${p}`,
+    trial: "Free trial open",
+    count: (c) => `${c} tutor${c === 1 ? "" : "s"} present`,
+    sort: "Sort by", best: "Best match", price: "Lowest price", near: "Nearest",
+    empty: "Nobody fits that. Try a wider distance or fewer subjects.",
+    distance: (km, area) => `Home tutor distance: ${km} km from ${area}`,
+    you: "Your area",
+  },
+  card: {
+    verified: "✓ Verified", online: "Online", home: "Home", km: (d) => `${d} km`,
+    seats: (s, v) => `⚡ ${s} seat${s === 1 ? "" : "s"} open this month · ${v} free classes`,
+    from: "per month, from", reviews: (c) => `${c} reviews`, videos: "free classes",
+    trial: "Book free trial", routine: "See routine", profile: "View profile",
+  },
+  profile: {
+    verified: (uni) => `✓ Verified · ${uni}`, pending: "Verification pending", online: "Online", home: (a) => `Home tutor · ${a}`,
+    about: "About", routine: "Weekly routine", routineSub: "Pick a batch with an open seat. Times are Dhaka time.",
+    freeBy: (name) => `Free classes by ${name}`,
+    trial: "Book free trial", choose: "Choose a batch",
+    promises: [
+      ["Paid class by class.", "Mastermoshai holds your money and releases it after each class."],
+      ["No show, no charge.", "Tutor 15 minutes absent? That class is yours again."],
+      ["Stop any time.", "Untaught classes are refunded."],
+    ],
+  },
+  routine: {
+    min: (m) => `${m} min`, online: "Online", home: "At home",
+    seats: (s) => `${s} seat${s > 1 ? "s" : ""} left`, full: "House full", perMonth: (c) => `${c} classes / month`, trial: "Free trial", enroll: "Enroll",
+  },
+  videos: { h1: "Free classes", sub: "Short lessons by our tutors, no ticket needed. Like how someone teaches? Grab a free trial with them.", min: (m) => `${m} min`, views: (v) => `${(v / 1000).toFixed(1)}k views` },
+  book: {
+    h1Trial: "Let's have a free class", h1Enroll: "Put your name down",
+    tutor: "Tutor", subjects: "Subjects", routine: "Routine", batch: "Batch", at: "at", online: "Live class inside Mastermoshai", home: "At your home",
+    trialClass: "Trial class", firstClasses: "First classes", price: "Price", free: "Not a single taka",
+    month: (c) => `${c} classes (1 month)`,
+    note: "Held safely by Mastermoshai. Released to the tutor one class at a time, 48 hours after each class. No class, money back.",
+    pay: ["bKash", "Nagad", "Card"], confirmTrial: "Confirm free trial", payBtn: (p) => `Pay ${p} and enroll`,
+  },
+  room: {
+    title: "Physics · Class 9-10 · 1:3 batch", live: "Live", board: "sharing whiteboard", you: "You", mate: "Classmate",
+    controls: ["Mic", "Camera", "Share screen", "Raise hand", "Chat"], leave: "Leave",
+    ended: "Bell's rung. Class over.", endedSub: "How was it? If something went wrong, tell us within 48 hours.", rate: "Grade the tutor", flag: "Report a problem",
+    liveNow: "Live now", waiting: "Waiting for the tutor", startsIn: "starts in",
+    msgLive: "The tutor has started. Jump in.", msgTeacher: "Start the class when you are ready. Every student gets a ping.", msgStudent: "You are in the waiting room. We will call you the moment the tutor starts.",
+    start: "Start class", join: "Join class", demo: "Demo: pretend the tutor has started",
+    note: "Your attendance marks itself. If the tutor does not join within 15 minutes, this class is refunded.",
+  },
+  flag: {
+    reasons: { TEACHER_ABSENT: "Tutor did not come", TEACHER_LATE: "Tutor came late", ENDED_EARLY: "Class ended early", POOR_TEACHING: "Did not teach properly", BEHAVIOUR: "Behaviour problem", OTHER: "Something else" },
+    got: "Complaint received",
+    sentAttendance: "The class record shows the tutor joined on time and stayed the full class, so a reviewer will check it within 72 hours. Payment for this class is on hold meanwhile.",
+    sentOther: "A reviewer will look at the class record and hear both sides within 72 hours. Payment for this class is on hold until then.",
+    h2: "Report a class", sub: "You can report a class up to 48 hours after it ends. Attendance problems are checked automatically.", placeholder: "What happened?", submit: "Submit report",
+  },
+  student: {
+    h1: "My classes", next: "Next class", with: (subjects, teacher) => `${subjects} with ${teacher}`, reminder: "reminder 10 min before", open: "Open classroom",
+    paid: "Paid this month", done: "Classes done", of: (a, b) => `${a} of ${b}`, refunded: "Refunded to you", history: "Class history",
+    outcome: { COMPLETED: "Done", TEACHER_NO_SHOW: "Tutor absent · refunded", TEACHER_LATE_OR_SHORT: "Late or short · half refunded", STUDENT_NO_SHOW: "You bunked this one", BOTH_ABSENT: "Not held · refunded" },
+    renew: "Renew next month", stop: "Stop this tutor (untaught classes refunded)",
+  },
+  teacher: {
+    h1: "The Mastermoshai ledger", start: "Start next class",
+    net: "Earned (after commission)", commission: (r) => `Mastermoshai commission (${r}%)`, hold: "On hold (48 h window)", available: "Ready to withdraw",
+    summary: (g, p, l) => `Gross ${g} · Paid out ${p} · Lost to reports or lateness ${l}`, withdraw: "Withdraw to bKash",
+    note: (c, ex) => `${c} paid classes taught. Commission drops to 20% after 50 classes and 15% after 200. Example: from a ৳3,000 batch you receive ${ex}.`,
+    recent: "Recent classes", cols: ["Date", "Batch", "Result", "Class price", "Commission", "You get"], onHold: "On hold",
+    outcome: { COMPLETED: "Completed", TEACHER_LATE_OR_SHORT: "Late or short (50%)", STUDENT_NO_SHOW: "Student absent (paid)", TEACHER_NO_SHOW: "You were absent (0%)", BOTH_ABSENT: "Not held" },
+    myRoutine: "My weekly routine", add: "+ Add slot",
+  },
+};
+
+export const COPY: Record<Lang, Copy> = { bn, en };
+export const copy = (lang: Lang) => COPY[lang];

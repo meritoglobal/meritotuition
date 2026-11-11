@@ -6,3 +6,4 @@ export * from "./routine";
 export * from "./geo";
 export * from "./search";
 export * from "./fixtures";
+export * from "./i18n";

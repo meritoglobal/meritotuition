@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
-import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, WEEKDAY_LABEL, classesPerMonth, formatTaka, timeLabel, upcomingOccurrences } from "@mastermoshai/core";
+import { DEMO_TEACHERS, classesPerMonth, upcomingOccurrences } from "@mastermoshai/core";
+import { copy } from "@/lib/copy";
+import { L } from "@/lib/l10n";
+import { getLang } from "@/lib/lang";
 
 export default async function BookPage({ params, searchParams }: { params: Promise<{ teacherId: string; slotId: string }>; searchParams: Promise<{ trial?: string }> }) {
   const { teacherId, slotId } = await params;
@@ -7,31 +10,33 @@ export default async function BookPage({ params, searchParams }: { params: Promi
   const t = DEMO_TEACHERS.find((x) => x.id === teacherId);
   const s = t?.routine.find((r) => r.id === slotId);
   if (!t || !s) notFound();
+  const lang = await getLang();
+  const c = copy(lang).book;
   const isTrial = trial === "1";
   const next = upcomingOccurrences(s, new Date(), isTrial ? 1 : 3);
-  const fmt = (d: Date) => d.toLocaleString("en-GB", { timeZone: "Asia/Dhaka", weekday: "short", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+  const fmt = (d: Date) => L.dateTime(d, lang);
   return (
     <div className="mx-auto max-w-xl px-5 py-12">
-      <h1 className="font-display text-4xl font-extrabold">{isTrial ? "Book a free trial class" : "Enroll in this batch"}</h1>
+      <h1 className="font-display text-4xl font-extrabold">{isTrial ? c.h1Trial : c.h1Enroll}</h1>
       <div className="card mt-6 space-y-3 p-5 text-[15px]">
-        <Row k="Tutor" v={`${t.name} · ${t.university}`} />
-        <Row k="Subjects" v={`${s.subjects.join(", ")} · ${CLASS_LEVEL_LABEL[s.level]}`} />
-        <Row k="Routine" v={`${s.days.map((d) => WEEKDAY_LABEL[d]).join(", ")} at ${timeLabel(s.startTime)} · ${s.durationMin} min`} />
-        <Row k="Batch" v={`1:${s.batchSize} · ${s.mode === "ONLINE" ? "Online live class in Mastermoshai" : "At your home"}`} />
-        <Row k={isTrial ? "Trial class" : "First classes"} v={next.map(fmt).join(" · ")} />
+        <Row k={c.tutor} v={`${L.name(t, lang)} · ${L.uni(t.university, lang)}`} />
+        <Row k={c.subjects} v={`${L.subjects(s.subjects, lang)} · ${L.level(s.level, lang)}`} />
+        <Row k={c.routine} v={`${s.days.map((d) => L.day(d, lang)).join(", ")} ${c.at} ${L.time(s.startTime, lang)} · ${copy(lang).routine.min(s.durationMin)}`} />
+        <Row k={c.batch} v={`${L.num(`1:${s.batchSize}`, lang)} · ${s.mode === "ONLINE" ? c.online : c.home}`} />
+        <Row k={isTrial ? c.trialClass : c.firstClasses} v={next.map(fmt).join(" · ")} />
         <hr className="border-line" />
         {isTrial ? (
-          <Row k="Price" v="Free" strong />
+          <Row k={c.price} v={c.free} strong />
         ) : (
           <>
-            <Row k={`${classesPerMonth(s)} classes (1 month)`} v={formatTaka(s.monthlyPrice)} strong />
-            <p className="text-xs text-ink-2">Held safely by Mastermoshai. Released to the tutor one class at a time, 48 hours after each class. Missed classes are refunded.</p>
+            <Row k={c.month(classesPerMonth(s))} v={L.taka(s.monthlyPrice, lang)} strong />
+            <p className="text-xs text-ink-2">{c.note}</p>
           </>
         )}
       </div>
       {!isTrial && (
         <div className="mt-6 grid grid-cols-3 gap-2 text-sm">
-          {["bKash", "Nagad", "Card"].map((m, i) => (
+          {c.pay.map((m, i) => (
             <label key={m} className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-line bg-paper py-3 font-semibold has-[:checked]:border-ink has-[:checked]:bg-sun">
               <input type="radio" name="pay" defaultChecked={i === 0} className="accent-ink" /> {m}
             </label>
@@ -39,7 +44,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
         </div>
       )}
       <a href="/dashboard/student" className="btn-ink mt-6 w-full text-base">
-        {isTrial ? "Confirm free trial" : `Pay ${formatTaka(s.monthlyPrice)}`}
+        {isTrial ? c.confirmTrial : c.payBtn(L.taka(s.monthlyPrice, lang))}
       </a>
     </div>
   );

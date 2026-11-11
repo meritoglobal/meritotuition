@@ -98,6 +98,8 @@ export interface WeeklySlot {
 export interface TeacherSummary {
   id: string;
   name: string;
+  /** Bangla spelling of the name, shown when the site is in Bangla. */
+  nameBn?: string;
   photoUrl?: string;
   university: string;
   department: string;
@@ -113,6 +115,8 @@ export interface TeacherSummary {
   /** Lowest monthly price across their slots, BDT. */
   fromPrice: number;
   bio: string;
+  bioBn?: string;
+  departmentBn?: string;
   freeVideoCount: number;
   routine: WeeklySlot[];
 }

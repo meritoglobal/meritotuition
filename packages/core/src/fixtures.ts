@@ -15,6 +15,9 @@ export const DEMO_TEACHERS: TeacherSummary[] = [
   {
     id: "t-rafi",
     name: "Rafiul Hasan",
+    nameBn: "রাফিউল হাসান",
+    departmentBn: "ইলেকট্রিক্যাল ও ইলেকট্রনিক ইঞ্জিনিয়ারিং",
+    bioBn: "পদার্থবিজ্ঞান আর উচ্চতর গণিত, এসএসসি থেকে এইচএসসি। প্রতি সপ্তাহে বোর্ডের প্রশ্ন ধরে ধরে অনুশীলন, সূত্র মুখস্থ নয়।",
     university: "BUET",
     department: "Electrical & Electronic Engineering",
     verified: true,
@@ -36,6 +39,9 @@ export const DEMO_TEACHERS: TeacherSummary[] = [
   {
     id: "t-nusrat",
     name: "Nusrat Jahan",
+    nameBn: "নুসরাত জাহান",
+    departmentBn: "রসায়ন",
+    bioBn: "ছবি এঁকে, ডায়াগ্রাম দেখিয়ে রসায়নের ভয় তাড়াই। মেডিকেল ভর্তির প্রস্তুতিও করাই।",
     university: "University of Dhaka",
     department: "Chemistry",
     verified: true,
@@ -57,6 +63,9 @@ export const DEMO_TEACHERS: TeacherSummary[] = [
   {
     id: "t-arif",
     name: "Arif Chowdhury",
+    nameBn: "আরিফ চৌধুরী",
+    departmentBn: "কম্পিউটার সায়েন্স",
+    bioBn: "ইংলিশ মিডিয়ামের ছেলেমেয়েদের ও লেভেল ম্যাথ আর আইসিটি পড়াই। ধীরেসুস্থে, বুঝিয়ে।",
     university: "North South University",
     department: "Computer Science",
     verified: true,
@@ -76,6 +85,9 @@ export const DEMO_TEACHERS: TeacherSummary[] = [
   {
     id: "t-sadia",
     name: "Sadia Islam",
+    nameBn: "সাদিয়া ইসলাম",
+    departmentBn: "সিভিল ইঞ্জিনিয়ারিং",
+    bioBn: "৯ম-১০মের বিজ্ঞান বিভাগ: গণিত, পদার্থ, রসায়ন, তিনটাই এক টিচারের কাছে। বাসায় এসে পড়াই।",
     university: "BUET",
     department: "Civil Engineering",
     verified: false,
@@ -96,6 +108,9 @@ export const DEMO_TEACHERS: TeacherSummary[] = [
   {
     id: "t-tanvir",
     name: "Tanvir Ahmed",
+    nameBn: "তানভীর আহমেদ",
+    departmentBn: "গণিত",
+    bioBn: "গণিত একদম গোড়া থেকে, বোর্ড পরীক্ষা মাথায় রেখে। ব্যাচ ছোট, পরীক্ষা প্রতি সপ্তাহে।",
     university: "Jahangirnagar University",
     department: "Mathematics",
     verified: true,
@@ -120,6 +135,7 @@ export interface DemoVideo {
   id: string;
   teacherId: string;
   title: string;
+  titleBn: string;
   subject: string;
   level: string;
   durationMin: number;
@@ -127,10 +143,10 @@ export interface DemoVideo {
 }
 
 export const DEMO_VIDEOS: DemoVideo[] = [
-  { id: "v1", teacherId: "t-rafi", title: "Newton's 2nd law in 12 minutes", subject: "Physics", level: "SSC", durationMin: 12, views: 18400 },
-  { id: "v2", teacherId: "t-nusrat", title: "Mole concept: the easy way", subject: "Chemistry", level: "SSC", durationMin: 18, views: 25100 },
-  { id: "v3", teacherId: "t-tanvir", title: "Algebra formulas you must know", subject: "Math", level: "Class 9-10", durationMin: 15, views: 9700 },
-  { id: "v4", teacherId: "t-arif", title: "O Level: simultaneous equations", subject: "Math", level: "O Level", durationMin: 20, views: 3200 },
-  { id: "v5", teacherId: "t-rafi", title: "Vectors for HSC, part 1", subject: "Physics", level: "HSC", durationMin: 25, views: 12800 },
-  { id: "v6", teacherId: "t-nusrat", title: "Periodic table tricks", subject: "Chemistry", level: "Class 9-10", durationMin: 14, views: 30500 },
+  { id: "v1", teacherId: "t-rafi", title: "Newton's 2nd law in 12 minutes", titleBn: "১২ মিনিটে নিউটনের দ্বিতীয় সূত্র", subject: "Physics", level: "SSC", durationMin: 12, views: 18400 },
+  { id: "v2", teacherId: "t-nusrat", title: "Mole concept: the easy way", titleBn: "মোল ধারণা: সহজ উপায়ে", subject: "Chemistry", level: "SSC", durationMin: 18, views: 25100 },
+  { id: "v3", teacherId: "t-tanvir", title: "Algebra formulas you must know", titleBn: "বীজগণিতের যে সূত্রগুলো জানতেই হবে", subject: "Math", level: "Class 9-10", durationMin: 15, views: 9700 },
+  { id: "v4", teacherId: "t-arif", title: "O Level: simultaneous equations", titleBn: "ও লেভেল: সহসমীকরণ", subject: "Math", level: "O Level", durationMin: 20, views: 3200 },
+  { id: "v5", teacherId: "t-rafi", title: "Vectors for HSC, part 1", titleBn: "এইচএসসি ভেক্টর, পর্ব ১", subject: "Physics", level: "HSC", durationMin: 25, views: 12800 },
+  { id: "v6", teacherId: "t-nusrat", title: "Periodic table tricks", titleBn: "পর্যায় সারণি মনে রাখার কৌশল", subject: "Chemistry", level: "Class 9-10", durationMin: 14, views: 30500 },
 ];
