@@ -1,4 +1,4 @@
-# Netlify: deploys the Next.js website (apps/web) from this monorepo.
+# Netlify: deploys the Next.js website (apps/web) from this pnpm monorepo.
 [build]
   base = "apps/web"
   command = "pnpm build"
@@ -6,3 +6,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Next.js runtime (server pages, server actions, proxy). Listed explicitly so the
+# monorepo build never falls back to serving .next as plain static files.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

@@ -122,6 +122,9 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0(leaflet@1.9.4)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
     devDependencies:
+      '@netlify/plugin-nextjs':
+        specifier: ^5.16.6
+        version: 5.16.6
       '@tailwindcss/postcss':
         specifier: ^4.1.0
         version: 4.3.5
@@ -1212,6 +1215,10 @@ packages:
 
   '@livekit/protocol@1.53.0':
     resolution: {integrity: sha512-dM562Q7sEQbJ9ZghjIpcVuRxRApGNwJW/JfXRub+dJT8J1cC2Tep0SyYkDzOawix7+0x969fnjXt0qEZOxkjbQ==}
+
+  '@netlify/plugin-nextjs@5.16.6':
+    resolution: {integrity: sha512-BXy5WhogsaQOKz+C+KMlWrQupdGkV1a6TmJ6RLF6RwUMz6Oi419RejMD8yB8ttBKqImQDkOE4MmNLx3uEEKxPw==}
+    engines: {node: '>=18.0.0'}
 
   '@next/env@16.4.6':
     resolution: {integrity: sha512-SunBjJ6t+oBtecS3dTjdVuMhUogP5wD/vrGL5EVuQYM1iS4O5ilL51HkiJ3sPjMzRHiCChvr4dbaSJbR7F3lxA==}
@@ -5911,6 +5918,8 @@ snapshots:
   '@livekit/protocol@1.53.0':
     dependencies:
       '@bufbuild/protobuf': 1.10.1
+
+  '@netlify/plugin-nextjs@5.16.6': {}
 
   '@next/env@16.4.6': {}
 
