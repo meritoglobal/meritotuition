@@ -5,11 +5,11 @@ import FlagForm from "./FlagForm";
 export const dynamic = "force-dynamic";
 
 const LABEL: Record<string, [string, string]> = {
-  COMPLETED: ["Done", "bg-brand-50 text-brand-700"],
-  TEACHER_NO_SHOW: ["Teacher absent · refunded", "bg-red-50 text-red-700"],
-  TEACHER_LATE_OR_SHORT: ["Late/short · half refunded", "bg-amber-50 text-amber-700"],
-  STUDENT_NO_SHOW: ["You missed it", "bg-slate-100 text-slate-600"],
-  BOTH_ABSENT: ["Not held · refunded", "bg-slate-100 text-slate-600"],
+  COMPLETED: ["Done", "bg-mint text-leaf"],
+  TEACHER_NO_SHOW: ["Teacher absent · refunded", "bg-coral/60 text-ink"],
+  TEACHER_LATE_OR_SHORT: ["Late/short · half refunded", "bg-sun text-ink"],
+  STUDENT_NO_SHOW: ["You missed it", "bg-mist text-ink-2"],
+  BOTH_ABSENT: ["Not held · refunded", "bg-mist text-ink-2"],
 };
 
 export default function StudentDashboard() {
@@ -19,17 +19,17 @@ export default function StudentDashboard() {
   const next = plan.classes.find((c) => !c.outcome);
   const past = plan.classes.filter((c) => c.outcome);
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-2xl font-bold">My classes</h1>
+    <div className="mx-auto max-w-7xl px-5 py-10">
+      <h1 className="font-display text-4xl font-extrabold">My classes</h1>
 
       {next && (
-        <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl bg-brand-900 p-5 text-white">
+        <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border-2 border-ink bg-lilac p-6">
           <div className="flex-1">
-            <div className="text-sm text-brand-100">Next class</div>
-            <div className="text-lg font-semibold">{plan.slot.subjects.join(", ")} with {plan.teacher.name}</div>
-            <div className="text-sm text-brand-100">{fmt(next.start)} · reminder 10 min before</div>
+            <div className="text-sm text-ink-2">Next class</div>
+            <div className="font-display text-2xl font-extrabold">{plan.slot.subjects.join(", ")} with {plan.teacher.name}</div>
+            <div className="text-sm text-ink-2">{fmt(next.start)} · reminder 10 min before</div>
           </div>
-          <a href="/class/demo" className="rounded-full bg-white px-5 py-2.5 font-semibold text-brand-900">Open class room</a>
+          <a href="/class/demo" className="btn-sun">Open class room</a>
         </div>
       )}
 
@@ -39,15 +39,15 @@ export default function StudentDashboard() {
         <Stat k="Refunded to your credit" v={formatTaka(refunded)} />
       </div>
 
-      <h2 className="mb-3 mt-8 text-lg font-semibold">Class history</h2>
-      <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
+      <h2 className="mb-3 mt-8 font-display text-2xl font-extrabold">Class history</h2>
+      <div className="divide-y divide-line card">
         {past.map((c) => {
           const [label, cls] = LABEL[c.outcome!] ?? ["", ""];
           return (
             <div key={c.id} className="flex items-center gap-3 p-4 text-sm">
               <div className="flex-1">{fmt(c.start)}</div>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${cls}`}>{label}</span>
-              {c.refund > 0 && <span className="text-brand-700">+{formatTaka(c.refund)}</span>}
+              <span className={`tag ${cls}`}>{label}</span>
+              {c.refund > 0 && <span className="text-leaf">+{formatTaka(c.refund)}</span>}
             </div>
           );
         })}
@@ -58,8 +58,8 @@ export default function StudentDashboard() {
       </div>
 
       <div className="mt-8 flex gap-3 text-sm">
-        <button className="rounded-full border border-slate-300 px-4 py-2">Renew next month</button>
-        <button className="rounded-full border border-red-200 px-4 py-2 text-red-700">Stop this tutor (untaught classes refunded)</button>
+        <button className="btn-ghost">Renew next month</button>
+        <button className="btn-ghost text-coral!">Stop this tutor (untaught classes refunded)</button>
       </div>
     </div>
   );
@@ -67,9 +67,9 @@ export default function StudentDashboard() {
 
 function Stat({ k, v }: { k: string; v: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs text-slate-500">{k}</div>
-      <div className="mt-1 text-xl font-bold">{v}</div>
+    <div className="card p-4">
+      <div className="text-xs text-ink-2">{k}</div>
+      <div className="mt-1 font-display text-2xl font-extrabold">{v}</div>
     </div>
   );
 }

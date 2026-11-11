@@ -1,0 +1,270 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Merito Tuition content module. Merge into packages/db/prisma/schema.prisma.
+// Depends on core models: User, TeacherProfile, StudentProfile, RoutineSlot.
+// Back-relations needed on core models are listed at the bottom.
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContentOwner {
+  PLATFORM // made by Merito Tuition, free for every verified teacher
+  TEACHER  // a teacher's own upload or edited copy
+}
+
+enum QuestionType {
+  MCQ          // single correct option
+  MULTI_MCQ    // multiple-statement (i, ii, iii) style, still one answer key
+  CQ           // creative question: stem + a/b/c/d parts
+  SHORT
+  WRITTEN      // BCS written / essay
+  FILL_BLANK
+  TRUE_FALSE
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ExamMode {
+  LIVE       // fixed window, everyone at once
+  PRACTICE   // any time within window, can retake
+  HOMEWORK   // printable / written, teacher grades
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  GRADED
+}
+
+// ── Curriculum tree ──────────────────────────────────────────────────────────
+
+model CurriculumSegment {
+  id      String  @id @default(cuid())
+  code    String  @unique // PRE_PRIMARY, PRIMARY, ... (see taxonomy.ts)
+  nameBn  String
+  nameEn  String
+  order   Int
+  tracks  CurriculumTrack[]
+}
+
+model CurriculumTrack {
+  id         String  @id @default(cuid())
+  code       String  @unique // CLASS_9, HSC_1ST, ADM_MEDICAL, JOB_BCS_PRELI ...
+  nameBn     String
+  nameEn     String
+  order      Int
+  targetExam String?
+  segmentId  String
+  segment    CurriculumSegment @relation(fields: [segmentId], references: [id])
+  subjects   TrackSubject[]
+}
+
+model Subject {
+  id      String  @id @default(cuid())
+  code    String  @unique // PHYSICS, HIGHER_MATH_1, BD_AFFAIRS ...
+  nameBn  String
+  nameEn  String
+  tracks  TrackSubject[]
+  chapters Chapter[]
+}
+
+/// A subject as taught at one track (Physics @ CLASS_9 differs from Physics @ ADM_ENGINEERING).
+model TrackSubject {
+  id        String  @id @default(cuid())
+  trackId   String
+  subjectId String
+  stream    String? // SCIENCE | BUSINESS | HUMANITIES | null = all
+  track     CurriculumTrack @relation(fields: [trackId], references: [id])
+  subject   Subject         @relation(fields: [subjectId], references: [id])
+  chapters  Chapter[]
+
+  @@unique([trackId, subjectId])
+}
+
+model Chapter {
+  id             String  @id @default(cuid())
+  trackSubjectId String
+  subjectId      String
+  number         Int
+  titleBn        String
+  titleEn        String?
+  trackSubject   TrackSubject @relation(fields: [trackSubjectId], references: [id])
+  subject        Subject      @relation(fields: [subjectId], references: [id])
+  topics         Topic[]
+
+  @@unique([trackSubjectId, number])
+}
+
+model Topic {
+  id         String  @id @default(cuid())
+  chapterId  String
+  order      Int
+  titleBn    String
+  titleEn    String?
+  /// Suggested class time in minutes, used by lesson plans and routine builder.
+  minutes    Int     @default(60)
+  chapter    Chapter @relation(fields: [chapterId], references: [id])
+  sheets     LectureSheet[]
+  decks      SlideDeck[]
+  questions  QuestionTopic[]
+
+  @@unique([chapterId, order])
+}
+
+// ── Teaching material ────────────────────────────────────────────────────────
+
+model LectureSheet {
+  id         String        @id @default(cuid())
+  topicId    String
+  owner      ContentOwner  @default(PLATFORM)
+  authorId   String?       // User.id; null for platform sheets
+  /// Copy-on-edit: a teacher's personal version points at the platform original.
+  forkedFromId String?
+  medium     String        @default("BANGLA") // BANGLA | ENGLISH_VERSION
+  title      String
+  /// Structured blocks (see lecture-sheet.ts LectureSheetBody). Rendered to web, PDF and slides.
+  body       Json
+  version    Int           @default(1)
+  status     ContentStatus @default(DRAFT)
+  reviewedBy String?
+  publishedAt DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  topic      Topic         @relation(fields: [topicId], references: [id])
+  forkedFrom LectureSheet? @relation("SheetFork", fields: [forkedFromId], references: [id])
+  forks      LectureSheet[] @relation("SheetFork")
+
+  @@index([topicId, owner, status])
+}
+
+model SlideDeck {
+  id        String        @id @default(cuid())
+  topicId   String
+  owner     ContentOwner  @default(PLATFORM)
+  authorId  String?
+  sheetId   String?       // generated from this sheet
+  title     String
+  slides    Json          // Slide[] (see slides.ts)
+  status    ContentStatus @default(DRAFT)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  topic     Topic         @relation(fields: [topicId], references: [id])
+
+  @@index([topicId, owner, status])
+}
+
+// ── Question bank ────────────────────────────────────────────────────────────
+
+model Question {
+  id          String        @id @default(cuid())
+  type        QuestionType
+  difficulty  Difficulty    @default(MEDIUM)
+  owner       ContentOwner  @default(PLATFORM)
+  authorId    String?
+  medium      String        @default("BANGLA")
+  /// Stem, options, parts, answer key, explanation (see questions.ts QuestionBody).
+  body        Json
+  marks       Float         @default(1)
+  /// e.g. "Dhaka Board 2023", "47th BCS", "DU Ka 2022-23"; null = original.
+  sourceTag   String?
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  topics      QuestionTopic[]
+  examItems   ExamItem[]
+
+  @@index([type, difficulty, status])
+}
+
+model QuestionTopic {
+  questionId String
+  topicId    String
+  question   Question @relation(fields: [questionId], references: [id])
+  topic      Topic    @relation(fields: [topicId], references: [id])
+
+  @@id([questionId, topicId])
+  @@index([topicId])
+}
+
+// ── Exams ────────────────────────────────────────────────────────────────────
+
+/// A built exam paper. Teachers get one by one-click generate (or by copying a platform paper).
+model Exam {
+  id          String        @id @default(cuid())
+  owner       ContentOwner  @default(TEACHER)
+  authorId    String?       // TeacherProfile.userId
+  title       String
+  trackCode   String
+  subjectCode String?
+  topicIds    String[]
+  /// The blueprint used to generate (counts by type/difficulty), kept for "regenerate".
+  blueprint   Json
+  durationMin Int
+  totalMarks  Float
+  negativeMark Float        @default(0) // per wrong MCQ, e.g. 0.25
+  shuffle     Boolean       @default(true)
+  seed        Int
+  createdAt   DateTime      @default(now())
+  items       ExamItem[]
+  assignments ExamAssignment[]
+}
+
+model ExamItem {
+  id         String   @id @default(cuid())
+  examId     String
+  questionId String
+  order      Int
+  marks      Float
+  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id])
+
+  @@unique([examId, order])
+}
+
+/// Sends an exam to a teacher's batch (RoutineSlot) or a single student.
+model ExamAssignment {
+  id          String    @id @default(cuid())
+  examId      String
+  teacherId   String    // TeacherProfile.id
+  slotId      String?   // RoutineSlot.id, students resolved via Enrollment ACTIVE
+  studentId   String?   // StudentProfile.id for 1:1 assignment
+  mode        ExamMode  @default(PRACTICE)
+  opensAt     DateTime
+  closesAt    DateTime
+  showAnswersAfterClose Boolean @default(true)
+  createdAt   DateTime  @default(now())
+  exam        Exam      @relation(fields: [examId], references: [id])
+  attempts    ExamAttempt[]
+
+  @@index([slotId])
+  @@index([studentId])
+}
+
+model ExamAttempt {
+  id           String        @id @default(cuid())
+  assignmentId String
+  studentId    String        // StudentProfile.id
+  status       AttemptStatus @default(IN_PROGRESS)
+  /// questionId -> answer (option index, text, or per-part text for CQ)
+  answers      Json          @default("{}")
+  /// questionId -> { marks, correct, feedback }
+  grading      Json?
+  score        Float?
+  startedAt    DateTime      @default(now())
+  submittedAt  DateTime?
+  gradedAt     DateTime?
+  assignment   ExamAssignment @relation(fields: [assignmentId], references: [id])
+
+  @@unique([assignmentId, studentId])
+}
+
+// Core models need no new columns. Relations are by id string so the content
+// module can ship without touching User/TeacherProfile/StudentProfile/RoutineSlot.

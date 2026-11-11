@@ -1,16 +1,71 @@
 @import "tailwindcss";
 
+/*
+ * Merito Tuition design tokens.
+ * Direction taken from studying live competitor sites (Nov 2026):
+ * - Preply: flat full-bleed colour blocks, huge tight headings, near-black
+ *   8px-radius buttons, 2px-border tutor cards, labelled filter dropdowns.
+ * - GoStudent: checklist hero bullets, trust-stat row, 3-step "how it works", FAQ.
+ * - 10 Minute School: Bangla-first type (Anek Bangla) and BN/EN toggle.
+ * No gradients, no soft emerald, no pill-everything.
+ */
 @theme {
-  --color-brand-50: #ecfdf5;
-  --color-brand-100: #d1fae5;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
-  --color-brand-900: #064e3b;
-  --color-accent-500: #f59e0b;
-  --font-sans: "Inter", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-ink: #121117;
+  --color-ink-2: #4d4c5c;
+  --color-ink-3: #8a8999;
+  --color-line: #dcdce5;
+  --color-paper: #ffffff;
+  --color-mist: #f4f4f8;
+
+  --color-sun: #ffd84d; /* hero + primary highlight */
+  --color-sun-deep: #f5c400;
+  --color-mint: #9be7c4; /* home tutor / offline */
+  --color-lilac: #c9b8ff; /* online */
+  --color-coral: #ff6b4a; /* alerts, live */
+  --color-sky: #2f6bff; /* links */
+  --color-leaf: #12a150; /* money / success */
+
+  --font-display: "Bricolage Grotesque", "Anek Bangla", system-ui, sans-serif;
+  --font-sans: "Inter", "Anek Bangla", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-paper text-ink antialiased;
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+/* Buttons */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-3 text-[15px] font-semibold transition-colors;
+}
+@utility btn-ink {
+  @apply btn border-ink bg-ink text-white hover:bg-ink-2 hover:border-ink-2;
+}
+@utility btn-sun {
+  @apply btn border-ink bg-sun text-ink hover:bg-sun-deep;
+}
+@utility btn-ghost {
+  @apply btn border-line bg-paper text-ink hover:border-ink;
+}
+@utility card {
+  @apply rounded-xl border-2 border-line bg-paper;
+}
+@utility tag {
+  @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold;
+}
+/* Labelled filter field (Preply style): small label over bold value */
+.field {
+  @apply flex flex-col rounded-lg border-2 border-line bg-paper px-3 py-2 text-left hover:border-ink focus-within:border-ink;
+}
+.field > span {
+  @apply text-xs text-ink-2;
+}
+.field select,
+.field input {
+  @apply bg-transparent text-[15px] font-semibold outline-none;
 }

@@ -3,11 +3,12 @@ import { Link } from "expo-router";
 import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@merito/core";
 import { colors } from "./theme";
 
-export function Button({ title, onPress, variant = "solid", disabled }: { title: string; onPress?: () => void; variant?: "solid" | "outline" | "danger"; disabled?: boolean }) {
-  const bg = disabled ? "#cbd5e1" : variant === "solid" ? colors.brand : variant === "danger" ? colors.red : "transparent";
+export function Button({ title, onPress, variant = "solid", disabled }: { title: string; onPress?: () => void; variant?: "solid" | "outline" | "danger" | "sun"; disabled?: boolean }) {
+  const bg = disabled ? "#f4f4f8" : variant === "solid" ? colors.brand : variant === "danger" ? colors.coral : variant === "sun" ? colors.sun : colors.white;
+  const fg = disabled ? "#8a8999" : variant === "solid" ? colors.white : colors.text;
   return (
-    <Pressable onPress={onPress} disabled={disabled} style={[s.btn, { backgroundColor: bg, borderWidth: variant === "outline" ? 1 : 0, borderColor: colors.brand }]}>
-      <Text style={[s.btnText, { color: variant === "outline" ? colors.brand : colors.white }]}>{title}</Text>
+    <Pressable onPress={onPress} disabled={disabled} style={[s.btn, { backgroundColor: bg, borderColor: variant === "outline" ? colors.border : colors.text }]}>
+      <Text style={[s.btnText, { color: fg }]}>{title}</Text>
     </Pressable>
   );
 }
@@ -17,7 +18,7 @@ export function Card({ children, style }: { children: React.ReactNode; style?: V
 }
 
 export function Chip({ label, tone = "grey" }: { label: string; tone?: "grey" | "green" | "amber" }) {
-  const map = { grey: ["#f1f5f9", colors.muted], green: [colors.brandLight, colors.brand], amber: [colors.amberLight, colors.amber] } as const;
+  const map = { grey: ["#f4f4f8", colors.text], green: [colors.mint, colors.text], amber: [colors.sun, colors.text] } as const;
   const [bg, fg] = map[tone];
   return <Text style={[s.chip, { backgroundColor: bg, color: fg }]}>{label}</Text>;
 }
@@ -51,17 +52,17 @@ export function TeacherRow({ t, distanceKm }: { t: TeacherSummary; distanceKm?: 
 }
 
 export const s = StyleSheet.create({
-  btn: { borderRadius: 999, paddingVertical: 12, paddingHorizontal: 18, alignItems: "center" },
+  btn: { borderRadius: 8, borderWidth: 2, paddingVertical: 12, paddingHorizontal: 18, alignItems: "center" },
   btnText: { fontWeight: "600", fontSize: 15 },
-  card: { backgroundColor: colors.white, borderRadius: 16, borderWidth: 1, borderColor: colors.border, padding: 14 },
-  chip: { fontSize: 12, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999, overflow: "hidden" },
-  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: "#d1fae5", alignItems: "center", justifyContent: "center" },
-  avatarText: { color: colors.brand, fontWeight: "700", fontSize: 16 },
+  card: { backgroundColor: colors.white, borderRadius: 12, borderWidth: 2, borderColor: colors.border, padding: 14 },
+  chip: { fontSize: 12, fontWeight: "700", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, overflow: "hidden" },
+  avatar: { width: 64, height: 64, borderRadius: 8, backgroundColor: colors.sun, alignItems: "center", justifyContent: "center" },
+  avatarText: { color: colors.text, fontWeight: "800", fontSize: 22 },
   name: { fontWeight: "700", fontSize: 15, color: colors.text },
   muted: { color: colors.muted, fontSize: 13 },
   row: { flexDirection: "row", gap: 6, marginTop: 6, flexWrap: "wrap" },
-  h1: { fontSize: 24, fontWeight: "800", color: colors.text },
-  h2: { fontSize: 18, fontWeight: "700", color: colors.text, marginTop: 20, marginBottom: 10 },
+  h1: { fontSize: 34, fontWeight: "800", letterSpacing: -1, color: colors.text },
+  h2: { fontSize: 22, fontWeight: "800", letterSpacing: -0.5, color: colors.text, marginTop: 20, marginBottom: 10 },
   screen: { flex: 1, backgroundColor: colors.bg },
   pad: { padding: 16, gap: 10 },
 });

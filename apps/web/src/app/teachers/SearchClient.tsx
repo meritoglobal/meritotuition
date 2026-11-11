@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DHAKA_AREAS, SUBJECTS, searchTeachers, type ClassLevel, type Subject, type TeachingMode } from "@merito/core";
 import { TeacherCard } from "@/components/TeacherCard";
 
-const TutorMap = dynamic(() => import("@/components/TutorMap"), { ssr: false, loading: () => <div className="h-full animate-pulse rounded-2xl bg-slate-200" /> });
+const TutorMap = dynamic(() => import("@/components/TutorMap"), { ssr: false, loading: () => <div className="h-full bg-mist" /> });
 
 const UNIS = ["", "BUET", "University of Dhaka", "North South University", "Jahangirnagar University"];
 
@@ -17,85 +17,110 @@ export default function SearchClient(init: { subjects?: string; level?: string; 
   const [uni, setUni] = useState("");
   const [trial, setTrial] = useState(false);
   const [maxPrice, setMaxPrice] = useState(10000);
+  const [sort, setSort] = useState<"best" | "price" | "near">("best");
 
   const center = DHAKA_AREAS[area]!;
-  const hits = useMemo(
-    () =>
-      searchTeachers(DEMO_TEACHERS, {
-        subjects,
-        level: level || undefined,
-        mode: mode || undefined,
-        near: center,
-        maxDistanceKm: km,
-        university: uni || undefined,
-        freeTrialOnly: trial,
-        maxPrice,
-      }),
-    [subjects, level, mode, center, km, uni, trial, maxPrice],
-  );
+  const hits = useMemo(() => {
+    const list = searchTeachers(DEMO_TEACHERS, {
+      subjects,
+      level: level || undefined,
+      mode: mode || undefined,
+      near: center,
+      maxDistanceKm: km,
+      university: uni || undefined,
+      freeTrialOnly: trial,
+      maxPrice,
+    });
+    if (sort === "price") list.sort((a, b) => a.teacher.fromPrice - b.teacher.fromPrice);
+    if (sort === "near") list.sort((a, b) => (a.distanceKm ?? 99) - (b.distanceKm ?? 99));
+    return list;
+  }, [subjects, level, mode, center, km, uni, trial, maxPrice, sort]);
 
   const toggle = (s: Subject) => setSubjects((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[260px_1fr]">
-      <aside className="space-y-5 text-sm">
-        <div>
-          <div className="mb-2 font-semibold">How do you want to learn?</div>
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
-            {([["", "Any"], ["ONLINE", "Online"], ["OFFLINE", "At home"]] as const).map(([v, l]) => (
-              <button key={v} onClick={() => setMode(v)} className={`rounded-lg py-1.5 ${mode === v ? "bg-white font-medium shadow-sm" : "text-slate-600"}`}>{l}</button>
-            ))}
+    <>
+      <div className="border-b-2 border-ink bg-sun">
+        <div className="mx-auto max-w-7xl px-5 pb-6 pt-8">
+          <h1 className="font-display text-4xl font-extrabold sm:text-5xl">
+            {subjects.length ? subjects.join(" + ") : "All"} tutors {mode === "OFFLINE" ? `near ${area}` : mode === "ONLINE" ? "online" : "in Dhaka"}
+          </h1>
+          <div className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+            <label className="field">
+              <span>How</span>
+              <select value={mode} onChange={(e) => setMode(e.target.value as TeachingMode | "")}>
+                <option value="">Online or at home</option>
+                <option value="ONLINE">Online live class</option>
+                <option value="OFFLINE">Home tutor</option>
+              </select>
+            </label>
+            <label className="field">
+              <span>Class</span>
+              <select value={level} onChange={(e) => setLevel(e.target.value as ClassLevel | "")}>
+                <option value="">Any class</option>
+                {CLASS_LEVELS.map((l) => <option key={l} value={l}>{CLASS_LEVEL_LABEL[l]}</option>)}
+              </select>
+            </label>
+            <label className="field">
+              <span>I live in</span>
+              <select value={area} onChange={(e) => setArea(e.target.value)}>
+                {Object.keys(DHAKA_AREAS).map((a) => <option key={a}>{a}</option>)}
+              </select>
+            </label>
+            <label className="field">
+              <span>University</span>
+              <select value={uni} onChange={(e) => setUni(e.target.value)}>
+                {UNIS.map((u) => <option key={u} value={u}>{u || "Any university"}</option>)}
+              </select>
+            </label>
+            <label className="field">
+              <span>Budget: up to ৳{maxPrice.toLocaleString()}</span>
+              <input type="range" min={1000} max={10000} step={500} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="accent-ink" />
+            </label>
           </div>
-        </div>
-        <div>
-          <div className="mb-2 font-semibold">Subjects (pick all you need)</div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {SUBJECTS.map((s) => (
-              <button key={s} onClick={() => toggle(s)} className={`rounded-full border px-2.5 py-1 ${subjects.includes(s) ? "border-brand-600 bg-brand-50 text-brand-700" : "border-slate-200 bg-white"}`}>{s}</button>
+              <button key={s} onClick={() => toggle(s)} className={`rounded-lg border-2 px-3 py-1.5 text-sm font-semibold ${subjects.includes(s) ? "border-ink bg-ink text-white" : "border-ink/20 bg-paper hover:border-ink"}`}>
+                {s}
+              </button>
             ))}
+            <label className="ml-auto flex items-center gap-2 text-sm font-semibold">
+              <input type="checkbox" checked={trial} onChange={(e) => setTrial(e.target.checked)} className="h-4 w-4 accent-ink" /> Free trial open
+            </label>
           </div>
         </div>
-        <label className="block">
-          <span className="mb-1 block font-semibold">Class</span>
-          <select value={level} onChange={(e) => setLevel(e.target.value as ClassLevel | "")} className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2">
-            <option value="">Any class</option>
-            {CLASS_LEVELS.map((l) => <option key={l} value={l}>{CLASS_LEVEL_LABEL[l]}</option>)}
-          </select>
-        </label>
-        <label className="block">
-          <span className="mb-1 block font-semibold">My area</span>
-          <select value={area} onChange={(e) => setArea(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2">
-            {Object.keys(DHAKA_AREAS).map((a) => <option key={a}>{a}</option>)}
-          </select>
-        </label>
-        <label className="block">
-          <span className="mb-1 block font-semibold">Distance for home tutor: {km} km</span>
-          <input type="range" min={1} max={15} value={km} onChange={(e) => setKm(Number(e.target.value))} className="w-full accent-brand-600" />
-        </label>
-        <label className="block">
-          <span className="mb-1 block font-semibold">University</span>
-          <select value={uni} onChange={(e) => setUni(e.target.value)} className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2">
-            {UNIS.map((u) => <option key={u} value={u}>{u || "Any university"}</option>)}
-          </select>
-        </label>
-        <label className="block">
-          <span className="mb-1 block font-semibold">Budget up to ৳{maxPrice.toLocaleString()}/month</span>
-          <input type="range" min={1000} max={10000} step={500} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="w-full accent-brand-600" />
-        </label>
-        <label className="flex items-center gap-2">
-          <input type="checkbox" checked={trial} onChange={(e) => setTrial(e.target.checked)} className="accent-brand-600" /> Free trial available
-        </label>
-      </aside>
-      <section>
-        <div className="mb-4 h-72 overflow-hidden rounded-2xl border border-slate-200">
-          <TutorMap center={center} teachers={hits.map((h) => h.teacher)} radiusKm={km} />
-        </div>
-        <p className="mb-3 text-sm text-slate-500">{hits.length} tutor{hits.length === 1 ? "" : "s"} found near {area}</p>
-        <div className="space-y-3">
-          {hits.map((h) => <TeacherCard key={h.teacher.id} t={h.teacher} distanceKm={h.distanceKm} />)}
-          {hits.length === 0 && <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500">No tutors match. Try a wider distance or fewer subjects.</div>}
-        </div>
-      </section>
-    </div>
+      </div>
+
+      <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 lg:grid-cols-[1fr_380px]">
+        <section>
+          <div className="mb-4 flex items-center justify-between">
+            <p className="font-semibold">{hits.length} tutor{hits.length === 1 ? "" : "s"}</p>
+            <label className="field py-1!">
+              <span>Sort by</span>
+              <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}>
+                <option value="best">Best match</option>
+                <option value="price">Lowest price</option>
+                <option value="near">Nearest</option>
+              </select>
+            </label>
+          </div>
+          <div className="space-y-4">
+            {hits.map((h, i) => <TeacherCard key={h.teacher.id} t={h.teacher} distanceKm={h.distanceKm} highlight={i === 0} />)}
+            {hits.length === 0 && <div className="card p-10 text-center text-ink-2">No tutors match. Try a wider distance or fewer subjects.</div>}
+          </div>
+        </section>
+        <aside className="lg:sticky lg:top-20 lg:self-start">
+          <div className="card overflow-hidden p-0">
+            <div className="h-80">
+              <TutorMap center={center} teachers={hits.map((h) => h.teacher)} radiusKm={km} />
+            </div>
+            <div className="border-t-2 border-line p-4">
+              <label className="block text-sm font-semibold">Home tutor distance: {km} km from {area}</label>
+              <input type="range" min={1} max={15} value={km} onChange={(e) => setKm(Number(e.target.value))} className="mt-2 w-full accent-ink" />
+            </div>
+          </div>
+        </aside>
+      </div>
+    </>
   );
 }

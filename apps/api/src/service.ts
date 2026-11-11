@@ -129,6 +129,12 @@ export class Marketplace {
     return s;
   }
 
+  /** Student ids with an ACTIVE enrollment in this batch; empty if the slot is not this teacher's. */
+  activeStudentIds(slotId: string, teacherId: string): string[] {
+    if (!this.teachers.get(teacherId)?.routine.some((r) => r.id === slotId)) return [];
+    return [...new Set([...this.enrollments.values()].filter((e) => e.slotId === slotId && e.teacherId === teacherId && e.status === "ACTIVE" && !e.isTrial).map((e) => e.studentId))];
+  }
+
   isSuspended(teacherId: string, now = new Date()): boolean {
     return shouldSuspend(this.strikes.get(teacherId) ?? [], now);
   }

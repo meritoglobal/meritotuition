@@ -1,38 +1,63 @@
 import Link from "next/link";
-import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@merito/core";
+import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, openSeats, type TeacherSummary } from "@merito/core";
+
+const SWATCH = ["bg-sun", "bg-mint", "bg-lilac", "bg-coral/70"];
 
 export function initials(name: string) {
   return name.split(" ").map((p) => p[0]).join("").slice(0, 2);
 }
 
-export function TeacherCard({ t, distanceKm }: { t: TeacherSummary; distanceKm?: number }) {
-  const trial = t.routine.some(hasTrialSeat);
+export function Avatar({ t, size = "md" }: { t: TeacherSummary; size?: "md" | "lg" }) {
+  const i = t.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0) % SWATCH.length;
+  const dim = size === "lg" ? "h-36 w-36 text-5xl" : "h-28 w-28 text-4xl";
   return (
-    <Link href={`/teachers/${t.id}`} className="group flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-brand-500 hover:shadow-sm">
-      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-100 text-lg font-semibold text-brand-700">{initials(t.name)}</div>
+    <div className={`${dim} ${SWATCH[i]} grid shrink-0 place-items-center rounded-lg font-display font-extrabold text-ink`}>
+      {initials(t.name)}
+    </div>
+  );
+}
+
+/** Preply-style tutor row: photo, facts, stats, price block, two actions. */
+export function TeacherCard({ t, distanceKm, highlight }: { t: TeacherSummary; distanceKm?: number; highlight?: boolean }) {
+  const trial = t.routine.some(hasTrialSeat);
+  const seats = t.routine.reduce((a, s) => a + openSeats(s), 0);
+  return (
+    <article className={`card flex flex-col gap-5 p-5 sm:flex-row ${highlight ? "border-ink!" : ""}`}>
+      <Avatar t={t} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-semibold group-hover:text-brand-700">{t.name}</h3>
-          {t.verified && <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">✓ Verified</span>}
+          <Link href={`/teachers/${t.id}`} className="font-display text-2xl font-extrabold hover:underline">{t.name}</Link>
+          {t.verified && <span className="tag bg-ink text-white">✓ Verified</span>}
         </div>
-        <p className="text-sm text-slate-600">{t.university} · {t.department}</p>
-        <p className="mt-1 text-sm text-slate-500">
-          {t.subjects.join(", ")} · {t.levels.map((l) => CLASS_LEVEL_LABEL[l]).join(", ")}
-        </p>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-          <span className="font-medium text-amber-600">★ {t.rating.toFixed(1)} ({t.reviewCount})</span>
-          {t.modes.map((m) => (
-            <span key={m} className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{m === "ONLINE" ? "Online" : `Home tutor${t.area ? ` · ${t.area.name}` : ""}`}</span>
-          ))}
-          {distanceKm !== undefined && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-slate-600">{distanceKm.toFixed(1)} km away</span>}
-          {trial && <span className="rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">Free trial open</span>}
+        <p className="mt-1 text-[15px] font-medium">{t.university} · <span className="text-ink-2">{t.department}</span></p>
+        <ul className="mt-2 space-y-1 text-sm text-ink-2">
+          <li>📚 {t.subjects.join(", ")} · {t.levels.map((l) => CLASS_LEVEL_LABEL[l]).join(", ")}</li>
+          <li>
+            {t.modes.includes("ONLINE") && <span className="tag mr-1 bg-lilac text-ink">Online</span>}
+            {t.modes.includes("OFFLINE") && t.area && <span className="tag mr-1 bg-mint text-ink">Home · {t.area.name}{distanceKm !== undefined ? ` · ${distanceKm.toFixed(1)} km` : ""}</span>}
+          </li>
+        </ul>
+        <p className="mt-3 line-clamp-2 text-[15px]">{t.bio}</p>
+        <p className="mt-2 text-sm text-ink-2">⚡ {seats} seat{seats === 1 ? "" : "s"} open this month · {t.freeVideoCount} free classes</p>
+      </div>
+      <div className="flex shrink-0 flex-col gap-3 sm:w-56">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="font-display text-3xl font-extrabold">{formatTaka(t.fromPrice)}</div>
+            <div className="text-sm text-ink-2">per month, from</div>
+          </div>
         </div>
+        <div className="flex gap-5 text-sm">
+          <div><div className="text-lg font-bold">{t.rating.toFixed(1)} ★</div><div className="text-ink-2">{t.reviewCount} reviews</div></div>
+          <div><div className="text-lg font-bold">{t.freeVideoCount}</div><div className="text-ink-2">videos</div></div>
+        </div>
+        {trial ? (
+          <Link href={`/teachers/${t.id}#routine`} className="btn-sun">Book free trial</Link>
+        ) : (
+          <Link href={`/teachers/${t.id}#routine`} className="btn-ink">See routine</Link>
+        )}
+        <Link href={`/teachers/${t.id}`} className="btn-ghost">View profile</Link>
       </div>
-      <div className="text-right">
-        <div className="text-xs text-slate-500">from</div>
-        <div className="font-semibold">{formatTaka(t.fromPrice)}</div>
-        <div className="text-xs text-slate-500">/month</div>
-      </div>
-    </Link>
+    </article>
   );
 }

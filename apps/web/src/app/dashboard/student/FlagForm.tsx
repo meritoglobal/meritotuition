@@ -15,9 +15,9 @@ export default function FlagForm({ classes }: { classes: { id: string; label: st
   const [reason, setReason] = useState<string>("POOR_TEACHING");
   if (sent) {
     return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm">
+      <div className="card border-ink! bg-sun p-5 text-sm">
         <div className="font-semibold">Complaint received</div>
-        <p className="mt-1 text-slate-700">{sent}</p>
+        <p className="mt-1 text-ink">{sent}</p>
       </div>
     );
   }
@@ -32,20 +32,20 @@ export default function FlagForm({ classes }: { classes: { id: string; label: st
             : "A reviewer will look at the class record and both sides within 72 hours. Payment for this class is on hold until then.",
         );
       }}
-      className="rounded-2xl border border-slate-200 bg-white p-5"
+      className="card p-5"
     >
-      <h2 className="text-lg font-semibold">Flag a class</h2>
-      <p className="text-sm text-slate-500">You can flag a class up to 48 hours after it ends. Attendance problems are checked automatically.</p>
+      <h2 className="font-display text-2xl font-extrabold">Flag a class</h2>
+      <p className="text-sm text-ink-2">You can flag a class up to 48 hours after it ends. Attendance problems are checked automatically.</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <select className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        <select className="rounded-lg border-2 border-line px-3 py-2 text-sm font-medium">
           {classes.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
         </select>
-        <select value={reason} onChange={(e) => setReason(e.target.value)} className="rounded-lg border border-slate-200 px-3 py-2 text-sm">
+        <select value={reason} onChange={(e) => setReason(e.target.value)} className="rounded-lg border-2 border-line px-3 py-2 text-sm font-medium">
           {REASONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
         </select>
       </div>
-      <textarea placeholder="What happened?" className="mt-3 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" rows={3} />
-      <button className="mt-3 rounded-full bg-red-600 px-5 py-2 text-sm font-semibold text-white">Submit flag</button>
+      <textarea placeholder="What happened?" className="mt-3 w-full rounded-lg border-2 border-line px-3 py-2 text-sm font-medium" rows={3} />
+      <button className="mt-3 btn-ink">Submit flag</button>
     </form>
   );
 }

@@ -26,7 +26,7 @@ export default function TeacherScreen() {
             <Text style={s.muted}>{r.subjects.join(", ")} · {CLASS_LEVEL_LABEL[r.level]} · 1:{r.batchSize} · {r.mode === "ONLINE" ? "Online" : "At home"}</Text>
             <Text>{formatTaka(r.monthlyPrice)}/month · {seats > 0 ? `${seats} seat(s) open` : "Full"}</Text>
             <View style={{ flexDirection: "row", gap: 8 }}>
-              {r.trialSeats > 0 && seats > 0 && <View style={{ flex: 1 }}><Button title="Free trial" variant="outline" onPress={() => Alert.alert("Free trial booked", "We will remind you before the class.")} /></View>}
+              {r.trialSeats > 0 && seats > 0 && <View style={{ flex: 1 }}><Button title="Free trial" variant="sun" onPress={() => Alert.alert("Free trial booked", "We will remind you before the class.")} /></View>}
               {seats > 0 && <View style={{ flex: 1 }}><Button title={`Pay ${formatTaka(r.monthlyPrice)}`} onPress={() => Alert.alert("Payment", "Opens bKash / Nagad / card checkout.")} /></View>}
             </View>
           </Card>

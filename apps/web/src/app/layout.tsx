@@ -3,33 +3,72 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Merito Tuition — find your tutor, online or near home",
-  description: "1:1 and small-batch tutoring in Bangladesh with verified university tutors, free trial classes and money-back protection.",
+  title: "Merito Tuition — the right tutor, online or near home",
+  description: "1:1 and small-batch tutoring in Dhaka with verified university tutors, free trial classes and pay-per-class protection.",
 };
+
+function Logo() {
+  return (
+    <Link href="/" className="flex items-center gap-2">
+      <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink font-display text-lg font-extrabold text-sun">m</span>
+      <span className="font-display text-xl font-extrabold">
+        merito<span className="text-ink-3">tuition</span>
+      </span>
+    </Link>
+  );
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap"
+        />
+      </head>
       <body className="min-h-screen">
-        <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-          <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
-            <Link href="/" className="text-xl font-bold text-brand-700">
-              Merito <span className="font-normal text-slate-400">Tuition</span>
-            </Link>
-            <div className="hidden gap-5 text-sm text-slate-600 sm:flex">
-              <Link href="/teachers" className="hover:text-brand-700">Find a tutor</Link>
-              <Link href="/videos" className="hover:text-brand-700">Free classes</Link>
-              <Link href="/dashboard/student" className="hover:text-brand-700">My classes</Link>
-              <Link href="/dashboard/teacher" className="hover:text-brand-700">For teachers</Link>
+        <header className="sticky top-0 z-30 border-b border-line bg-paper">
+          <nav className="mx-auto flex max-w-7xl items-center gap-8 px-5 py-3">
+            <Logo />
+            <div className="hidden gap-6 text-[15px] font-medium md:flex">
+              <Link href="/teachers?mode=ONLINE" className="hover:underline underline-offset-4">Online tutors</Link>
+              <Link href="/teachers?mode=OFFLINE" className="hover:underline underline-offset-4">Home tutors</Link>
+              <Link href="/videos" className="hover:underline underline-offset-4">Free classes</Link>
+              <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">Teach on Merito</Link>
             </div>
-            <Link href="/teachers" className="ml-auto rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
-              Book a free trial
-            </Link>
+            <div className="ml-auto flex items-center gap-4">
+              <div className="hidden rounded-lg border-2 border-line p-0.5 text-xs font-semibold sm:flex">
+                <span className="rounded-md bg-ink px-2 py-1 text-white">EN</span>
+                <span className="px-2 py-1 text-ink-2">বাং</span>
+              </div>
+              <Link href="/dashboard/student" className="hidden text-[15px] font-semibold sm:block">My classes</Link>
+              <Link href="/teachers" className="btn-ink px-4! py-2!">Find a tutor</Link>
+            </div>
           </nav>
         </header>
         <main>{children}</main>
-        <footer className="mt-16 border-t border-slate-200 py-8 text-center text-sm text-slate-500">
-          Money-back protection on every class · Verified university tutors · bKash, Nagad, cards
+        <footer className="mt-24 bg-ink text-white">
+          <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:grid-cols-4">
+            <div>
+              <div className="font-display text-2xl font-extrabold">merito<span className="text-sun">tuition</span></div>
+              <p className="mt-2 text-sm text-white/60">Dhaka · bKash · Nagad · Cards</p>
+            </div>
+            {[
+              ["Students", ["Online tutors", "Home tutors", "Free classes", "How refunds work"]],
+              ["Teachers", ["Become a tutor", "Set your routine", "Earnings & payouts"]],
+              ["Company", ["About Merito", "Safety", "Contact"]],
+            ].map(([h, items]) => (
+              <div key={h as string}>
+                <div className="text-sm font-semibold">{h as string}</div>
+                <ul className="mt-3 space-y-2 text-sm text-white/60">
+                  {(items as string[]).map((i) => <li key={i}>{i}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
         </footer>
       </body>
     </html>

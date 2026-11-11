@@ -1,42 +1,42 @@
 import { CLASS_LEVEL_LABEL, WEEKDAY_LABEL, classesPerMonth, formatTaka, openSeats, timeLabel, type WeeklySlot } from "@merito/core";
 
+const DAYS = [6, 0, 1, 2, 3, 4, 5] as const; // BD week: Sat → Fri
+
 export function RoutineList({ slots, teacherId, actions = true }: { slots: WeeklySlot[]; teacherId: string; actions?: boolean }) {
   return (
-    <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white">
+    <div className="space-y-3">
       {slots.map((s) => {
         const seats = openSeats(s);
         return (
-          <div key={s.id} className="flex flex-wrap items-center gap-4 p-4">
-            <div className="min-w-48 flex-1">
-              <div className="font-medium">
-                {s.days.map((d) => WEEKDAY_LABEL[d]).join(" · ")} · {timeLabel(s.startTime)}
-              </div>
-              <div className="text-sm text-slate-500">
-                {s.subjects.join(", ")} · {CLASS_LEVEL_LABEL[s.level]} · {s.durationMin} min · {s.mode === "ONLINE" ? "Online live class" : "At home"}
+          <div key={s.id} className="card grid gap-4 p-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+            <div className="flex gap-1">
+              {DAYS.map((d) => (
+                <span key={d} className={`grid h-10 w-10 place-items-center rounded-md text-xs font-bold ${s.days.includes(d) ? "bg-ink text-white" : "bg-mist text-ink-3"}`}>
+                  {WEEKDAY_LABEL[d]}
+                </span>
+              ))}
+            </div>
+            <div>
+              <div className="text-lg font-bold">{timeLabel(s.startTime)} · {s.durationMin} min</div>
+              <div className="text-sm text-ink-2">
+                {s.subjects.join(", ")} · {CLASS_LEVEL_LABEL[s.level]} ·{" "}
+                <span className={`tag ${s.mode === "ONLINE" ? "bg-lilac" : "bg-mint"}`}>{s.mode === "ONLINE" ? "Online" : "At home"}</span>{" "}
+                <span className="tag bg-mist">1:{s.batchSize}</span>{" "}
+                <span className={`whitespace-nowrap font-semibold ${seats > 0 ? "text-leaf" : "text-coral"}`}>{seats > 0 ? `${seats} seat${seats > 1 ? "s" : ""} left` : "Full"}</span>
               </div>
             </div>
-            <div className="text-sm">
-              <div className="font-medium">1:{s.batchSize} batch</div>
-              <div className={seats > 0 ? "text-brand-700" : "text-red-600"}>{seats > 0 ? `${seats} seat${seats > 1 ? "s" : ""} open` : "Full"}</div>
-            </div>
-            <div className="text-sm">
-              <div className="font-semibold">{formatTaka(s.monthlyPrice)}/month</div>
-              <div className="text-slate-500">{classesPerMonth(s)} classes</div>
-            </div>
-            {actions && (
-              <div className="flex gap-2">
-                {s.trialSeats > 0 && seats > 0 && (
-                  <a href={`/book/${teacherId}/${s.id}?trial=1`} className="rounded-full border border-brand-600 px-3 py-1.5 text-sm font-medium text-brand-700 hover:bg-brand-50">
-                    Free trial
-                  </a>
-                )}
-                {seats > 0 && (
-                  <a href={`/book/${teacherId}/${s.id}`} className="rounded-full bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700">
-                    Enroll
-                  </a>
-                )}
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className="font-display text-xl font-extrabold">{formatTaka(s.monthlyPrice)}</div>
+                <div className="text-xs text-ink-2">{classesPerMonth(s)} classes / month</div>
               </div>
-            )}
+              {actions && seats > 0 && (
+                <div className="flex flex-col gap-1.5">
+                  {s.trialSeats > 0 && <a href={`/book/${teacherId}/${s.id}?trial=1`} className="btn-sun px-3! py-1.5! text-sm!">Free trial</a>}
+                  <a href={`/book/${teacherId}/${s.id}`} className="btn-ink px-3! py-1.5! text-sm!">Enroll</a>
+                </div>
+              )}
+            </div>
           </div>
         );
       })}

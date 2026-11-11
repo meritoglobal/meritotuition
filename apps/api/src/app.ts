@@ -3,6 +3,8 @@ import cors from "@fastify/cors";
 import Fastify, { type FastifyInstance } from "fastify";
 import { z } from "zod";
 import { BATCH_SIZES, CLASS_LEVELS, DEMO_VIDEOS, SUBJECTS, roomState, searchTeachers, teacherReceives, type BatchSize } from "@merito/core";
+import { seedLibrary } from "@merito/content/content/index";
+import { registerContentRoutes } from "./content-routes";
 import { roomToken } from "./livekit";
 import { DomainError, Marketplace } from "./service";
 
@@ -21,6 +23,10 @@ export function buildApp(market = new Marketplace()): FastifyInstance {
 
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof DomainError) return reply.status(err.status).send({ error: err.code, message: err.message });
+    const coded = err as { status?: unknown; code?: unknown; message?: unknown };
+    if (typeof coded.status === "number" && typeof coded.code === "string") {
+      return reply.status(coded.status).send({ error: coded.code, message: String(coded.message) });
+    }
     if (err instanceof z.ZodError) return reply.status(400).send({ error: "BAD_REQUEST", message: err.issues.map((i) => i.message).join("; ") });
     return reply.status(500).send({ error: "INTERNAL", message: err instanceof Error ? err.message : String(err) });
   });
@@ -205,6 +211,12 @@ export function buildApp(market = new Marketplace()): FastifyInstance {
   });
 
   app.get("/me/notifications", async (req) => ({ results: market.notifier.forUser(userOf(req.headers)).slice(-50).reverse() }));
+
+  // Teacher content library, lecture sheets, slides and exams (packages/content).
+  registerContentRoutes(app, seedLibrary(), {
+    userOf,
+    studentsOfSlot: (slotId, teacherId) => market.activeStudentIds(slotId, teacherId),
+  });
 
   return app;
 }
