@@ -29,6 +29,15 @@ pnpm --filter @mastermoshai/mobile start # Expo Go on your phone
 The web and mobile screens use demo data from `@mastermoshai/core` until they are wired to the API.
 The API currently uses an in-memory store with the same methods the Prisma repository will implement.
 
+## Live classes (LiveKit)
+
+Set these in Netlify (Site configuration, Environment variables), then redeploy:
+
+- `LIVEKIT_URL`: the project's `wss://...livekit.cloud` address
+- `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET`: from LiveKit Cloud, Settings, API Keys
+
+Without them `/class/[id]` runs the simulated demo. Attendance webhook: `/api/livekit/webhook`.
+
 ## Money rules (packages/core)
 
 - Student pays the month up front; it sits in `escrow`.
