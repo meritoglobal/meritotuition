@@ -6,9 +6,37 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "plugins": ["expo-router", "expo-notifications"],
-    "android": { "package": "com.mastermoshai.app", "permissions": ["ACCESS_FINE_LOCATION", "CAMERA", "RECORD_AUDIO"] },
-    "ios": { "bundleIdentifier": "com.mastermoshai.app" },
-    "experiments": { "typedRoutes": false }
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-mark.png",
+          "imageWidth": 180,
+          "backgroundColor": "#ffd84d",
+          "resizeMode": "contain"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.mastermoshai.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/splash-mark.png",
+        "backgroundColor": "#ff6b4a"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.mastermoshai.app"
+    },
+    "experiments": {
+      "typedRoutes": false
+    },
+    "icon": "./assets/icon.png"
   }
 }

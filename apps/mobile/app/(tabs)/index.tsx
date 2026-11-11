@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { Link } from "expo-router";
 import { DEMO_TEACHERS, DEMO_VIDEOS, rankScore } from "@mastermoshai/core";
 import { Card, TeacherRow, s } from "../../src/ui";
@@ -9,6 +9,7 @@ export default function Home() {
   return (
     <ScrollView style={s.screen} contentContainerStyle={s.pad}>
       <View style={{ backgroundColor: colors.sun, borderWidth: 2, borderColor: colors.text, borderRadius: 12, padding: 18, gap: 6 }}>
+        <Image source={require("../../assets/splash-mark.png")} style={{ width: 56, height: 56 }} accessibilityLabel="Mastermoshai" />
         <Text style={s.h1}>আজ কী পড়বে?</Text>
         <Text style={{ color: colors.text, fontSize: 15 }}>A tutor who actually shows up. First class free, missed classes refunded.</Text>
       </View>

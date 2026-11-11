@@ -3,17 +3,19 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://mastermoshai.net"),
+  manifest: "/manifest.webmanifest",
+  icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/brand/favicon-32.png", sizes: "32x32" }], apple: "/apple-icon.png" },
+  openGraph: { siteName: "Mastermoshai", images: ["/brand/logo-horizontal@4x.png"] },
   title: "Mastermoshai — the right tutor, online or near home",
   description: "1:1 and small-batch tutoring in Dhaka with verified university tutors, free trial classes and pay-per-class protection.",
 };
 
 function Logo() {
   return (
-    <Link href="/" className="flex items-center gap-2">
-      <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink font-display text-lg font-extrabold text-sun">m</span>
-      <span className="font-display text-xl font-extrabold">
-        master<span className="text-ink-3">moshai</span>
-      </span>
+    <Link href="/" aria-label="Mastermoshai home" className="flex items-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/logo-horizontal-en-only.svg" alt="Mastermoshai" width={172} height={40} className="h-10 w-auto" />
     </Link>
   );
 }
@@ -53,7 +55,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-24 bg-ink text-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:grid-cols-4">
             <div>
-              <div className="font-display text-2xl font-extrabold">master<span className="text-sun">moshai</span></div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/logo-horizontal-on-dark.svg" alt="Mastermoshai · মাস্টারমশাই" width={240} height={56} className="h-14 w-auto" />
               <p className="mt-2 text-sm text-white/60">mastermoshai.net · Dhaka · bKash · Nagad · Cards</p>
             </div>
             {[
