@@ -44,6 +44,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-screen">
         <LangProvider lang={lang}>
+        {process.env.NEXT_PUBLIC_PREVIEW !== "off" && (
+          <div className="bg-gold px-4 py-2 text-center text-[13px] font-medium text-ink">{c.preview}</div>
+        )}
         <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
           <nav className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-8 sm:px-5">
             <Logo bn={lang === "bn"} />

@@ -16,6 +16,7 @@ const bn = {
     description: "ঢাকার বুয়েট-ঢাবির যাচাই করা টিউটর, অনলাইনে কিংবা বাসায়। প্রথম ক্লাস ফ্রি, ক্লাস হলে তবেই টাকা।",
   },
   nav: { online: "অনলাইন টিউটর", home: "বাসার টিউটর", free: "ফ্রি ক্লাস", teach: "পড়াতে চাই", mine: "আমার ক্লাস", find: "টিউটর খুঁজি", login: "ঢুকি", logout: "বের হই" },
+  preview: "আমরা এখনো চক-ডাস্টার গোছাচ্ছি। এখানকার টিচার, দাম আর রেটিং নমুনা মাত্র, আসল ভর্তি শুরু হচ্ছে শিগগিরই।",
   footer: {
     tagline: "ফাঁকি নয়, পড়া।",
     line: "mastermoshai.net · ঢাকা · বিকাশ · নগদ · কার্ড",
@@ -188,6 +189,7 @@ const en: Copy = {
     description: "Verified BUET and DU tutors in Dhaka, online or at home. First class free, and you pay only for classes that happen.",
   },
   nav: { online: "Online tutors", home: "Home tutors", free: "Free classes", teach: "Teach with us", mine: "My classes", find: "Find a tutor", login: "Log in", logout: "Log out" },
+  preview: "We're still setting up the classroom. Tutors, prices and ratings here are samples; real enrolment opens soon.",
   footer: {
     tagline: "Less bunking. More learning.",
     line: "mastermoshai.net · Dhaka · bKash · Nagad · Cards",
