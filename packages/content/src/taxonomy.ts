@@ -1,7 +1,7 @@
 /**
- * Porao curriculum taxonomy: every segment a Bangladeshi student can be in,
+ * Mastermoshai curriculum taxonomy: every segment a Bangladeshi student can be in,
  * from pre-primary to job/MBA prep. Codes are stable keys shared with
- * @porao/core (TeacherProfile.levels, RoutineSlot.level) and the content tree.
+ * @mastermoshai/core (TeacherProfile.levels, RoutineSlot.level) and the content tree.
  *
  * Shape: Segment > Track (a "level" a teacher can teach / a student belongs to)
  * Each Track lists the subject codes it uses and, where relevant, the
@@ -275,7 +275,7 @@ export function findTrack(code: string): { segment: Segment; track: Track } | un
 }
 
 /**
- * Maps the coarse level codes @porao/core used before this taxonomy existed
+ * Maps the coarse level codes @mastermoshai/core used before this taxonomy existed
  * to the fine-grained track codes here, so existing rows keep working.
  */
 export const LEGACY_LEVEL_MAP: Record<string, string[]> = {
@@ -290,7 +290,7 @@ export const LEGACY_LEVEL_MAP: Record<string, string[]> = {
   ADMISSION: ['ADM_ENGINEERING', 'ADM_MEDICAL', 'ADM_VARSITY_SCIENCE', 'ADM_VARSITY_HUMANITIES', 'ADM_VARSITY_BUSINESS', 'ADM_FINE_ARTS', 'ADM_AGRI', 'ADM_IBA_BBA', 'ADM_BUP', 'ADM_NURSING'],
 };
 
-/** @merito/core SUBJECTS (display strings) -> subject codes here. */
+/** @mastermoshai/core SUBJECTS (display strings) -> subject codes here. */
 export const LEGACY_SUBJECT_MAP: Record<string, string[]> = {
   Math: ['MATH'],
   'Higher Math': ['HIGHER_MATH', 'HIGHER_MATH_1', 'HIGHER_MATH_2'],

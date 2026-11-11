@@ -56,7 +56,7 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 /** Render to standalone printable HTML (A4). PDF = print this page. */
 export function renderSheetHtml(s: LectureSheetBody, opts: { brand?: string; teacherName?: string; withTeacherNotes?: boolean } = {}): string {
-  const brand = opts.brand ?? 'Merito Tuition';
+  const brand = opts.brand ?? 'Mastermoshai';
   const b = s.blocks.map(renderBlock).join('\n');
   const notes = opts.withTeacherNotes
     ? `<section class="notes"><h2>টিচার নোট</h2>

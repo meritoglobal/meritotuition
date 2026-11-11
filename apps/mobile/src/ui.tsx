@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View, type ViewStyle } from "react-native";
 import { Link } from "expo-router";
-import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@merito/core";
+import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, type TeacherSummary } from "@mastermoshai/core";
 import { colors } from "./theme";
 
 export function Button({ title, onPress, variant = "solid", disabled }: { title: string; onPress?: () => void; variant?: "solid" | "outline" | "danger" | "sun"; disabled?: boolean }) {

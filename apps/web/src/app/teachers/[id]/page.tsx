@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, formatTaka, hasTrialSeat } from "@merito/core";
+import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, formatTaka, hasTrialSeat } from "@mastermoshai/core";
 import { RoutineList } from "@/components/Routine";
 import { Avatar } from "@/components/TeacherCard";
 import { VideoCard } from "@/components/VideoCard";
@@ -62,7 +62,7 @@ export default async function TeacherPage({ params }: { params: Promise<{ id: st
             <div className="text-ink-2">per month, from</div>
             <a href="#routine" className={`${trial ? "btn-sun" : "btn-ink"} mt-5 w-full`}>{trial ? "Book free trial" : "Choose a batch"}</a>
             <ul className="mt-5 space-y-3 text-sm">
-              <li><b>Paid class by class.</b> Your money is held by Merito and released after each class.</li>
+              <li><b>Paid class by class.</b> Your money is held by Mastermoshai and released after each class.</li>
               <li><b>No-show refund.</b> Tutor absent 15 min, that class comes back to you.</li>
               <li><b>Stop any time.</b> Untaught classes are refunded.</li>
             </ul>

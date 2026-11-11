@@ -1,4 +1,4 @@
-// Merito Tuition data model. PostgreSQL + PostGIS.
+// Mastermoshai data model. PostgreSQL + PostGIS.
 // Money is stored as whole BDT integers. Every balance change is a LedgerEntry
 // (double-entry), so the escrow can always be reconciled.
 
@@ -233,7 +233,7 @@ model SessionAttendance {
   enrollmentId  String
   enrollment    Enrollment      @relation(fields: [enrollmentId], references: [id])
   classShare    Int
-  outcome       String? // SessionOutcome from @merito/core
+  outcome       String? // SessionOutcome from @mastermoshai/core
   state         SettlementState @default(HELD)
   releaseAt     DateTime?
   teacherNet    Int?
@@ -405,7 +405,7 @@ enum ContentStatus {
 }
 
 enum ContentOwner {
-  PLATFORM // made by Merito Tuition, free for every verified teacher
+  PLATFORM // made by Mastermoshai, free for every verified teacher
   TEACHER  // a teacher's own upload or edited copy
 }
 

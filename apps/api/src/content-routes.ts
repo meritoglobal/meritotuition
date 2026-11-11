@@ -4,7 +4,7 @@
  */
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { ContentError, ContentLibrary, PRESETS, SEGMENTS, SUBJECTS } from "@merito/content";
+import { ContentError, ContentLibrary, PRESETS, SEGMENTS, SUBJECTS } from "@mastermoshai/content";
 
 interface Deps {
   userOf: (headers: Record<string, unknown>) => string;

@@ -20,10 +20,10 @@ importers:
       '@fastify/cors':
         specifier: ^11.0.0
         version: 11.4.1
-      '@merito/content':
+      '@mastermoshai/content':
         specifier: workspace:*
         version: link:../../packages/content
-      '@merito/core':
+      '@mastermoshai/core':
         specifier: workspace:*
         version: link:../../packages/core
       fastify:
@@ -51,7 +51,7 @@ importers:
 
   apps/mobile:
     dependencies:
-      '@merito/core':
+      '@mastermoshai/core':
         specifier: workspace:*
         version: link:../../packages/core
       expo:
@@ -94,7 +94,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@merito/core':
+      '@mastermoshai/core':
         specifier: workspace:*
         version: link:../../packages/core
       leaflet:

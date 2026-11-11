@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { DEMO_TEACHERS, type DemoVideo } from "@merito/core";
+import { DEMO_TEACHERS, type DemoVideo } from "@mastermoshai/core";
 
 const BG = ["bg-sun", "bg-lilac", "bg-mint", "bg-coral/80"];
 

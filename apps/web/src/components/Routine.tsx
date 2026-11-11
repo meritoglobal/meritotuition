@@ -1,4 +1,4 @@
-import { CLASS_LEVEL_LABEL, WEEKDAY_LABEL, classesPerMonth, formatTaka, openSeats, timeLabel, type WeeklySlot } from "@merito/core";
+import { CLASS_LEVEL_LABEL, WEEKDAY_LABEL, classesPerMonth, formatTaka, openSeats, timeLabel, type WeeklySlot } from "@mastermoshai/core";
 
 const DAYS = [6, 0, 1, 2, 3, 4, 5] as const; // BD week: Sat → Fri
 

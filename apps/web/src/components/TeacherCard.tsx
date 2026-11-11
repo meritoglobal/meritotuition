@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, openSeats, type TeacherSummary } from "@merito/core";
+import { CLASS_LEVEL_LABEL, formatTaka, hasTrialSeat, openSeats, type TeacherSummary } from "@mastermoshai/core";
 
 const SWATCH = ["bg-sun", "bg-mint", "bg-lilac", "bg-coral/70"];
 

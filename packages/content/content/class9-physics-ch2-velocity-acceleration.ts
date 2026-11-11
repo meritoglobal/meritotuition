@@ -1,6 +1,6 @@
 /**
  * Sample platform content: Class 9 Physics, Chapter 2 (গতি), topic "বেগ ও ত্বরণ".
- * Original text written for Merito Tuition, aligned to the NCTB SSC syllabus.
+ * Original text written for Mastermoshai, aligned to the NCTB SSC syllabus.
  */
 import type { LectureSheetBody } from '../src/lecture-sheet';
 import type { BankQuestion } from '../src/questions';

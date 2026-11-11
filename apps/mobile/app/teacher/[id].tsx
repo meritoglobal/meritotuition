@@ -1,6 +1,6 @@
 import { Alert, ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, WEEKDAY_LABEL, formatTaka, openSeats, timeLabel } from "@merito/core";
+import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, WEEKDAY_LABEL, formatTaka, openSeats, timeLabel } from "@mastermoshai/core";
 import { Button, Card, Chip, s } from "../../src/ui";
 
 export default function TeacherScreen() {
@@ -32,7 +32,7 @@ export default function TeacherScreen() {
           </Card>
         );
       })}
-      <Text style={[s.muted, { marginTop: 8 }]}>Your payment is held by Merito Tuition and released to the tutor class by class. Missed classes are refunded.</Text>
+      <Text style={[s.muted, { marginTop: 8 }]}>Your payment is held by Mastermoshai and released to the tutor class by class. Missed classes are refunded.</Text>
     </ScrollView>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { roomState, type ClassRoomState } from "@merito/core";
+import { roomState, type ClassRoomState } from "@mastermoshai/core";
 
 /**
  * Live class panel. Production: fetch GET /sessions/:id/room for state, then

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { DEMO_TEACHERS, DHAKA_AREAS, SUBJECTS, searchTeachers, type Subject, type TeachingMode } from "@merito/core";
+import { DEMO_TEACHERS, DHAKA_AREAS, SUBJECTS, searchTeachers, type Subject, type TeachingMode } from "@mastermoshai/core";
 import { TeacherRow, s } from "../../src/ui";
 import { colors } from "../../src/theme";
 

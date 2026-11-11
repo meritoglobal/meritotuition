@@ -22,7 +22,7 @@ import {
   type Settlement,
   type TeacherSummary,
   type WeeklySlot,
-} from "@merito/core";
+} from "@mastermoshai/core";
 import { Ledger } from "./ledger";
 import { Notifier } from "./notify";
 

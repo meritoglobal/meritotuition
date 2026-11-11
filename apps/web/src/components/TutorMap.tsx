@@ -1,7 +1,7 @@
 "use client";
 import "leaflet/dist/leaflet.css";
 import { Circle, CircleMarker, MapContainer, Popup, TileLayer } from "react-leaflet";
-import type { GeoPoint, TeacherSummary } from "@merito/core";
+import type { GeoPoint, TeacherSummary } from "@mastermoshai/core";
 
 export default function TutorMap({ center, teachers, radiusKm }: { center: GeoPoint; teachers: TeacherSummary[]; radiusKm: number }) {
   return (

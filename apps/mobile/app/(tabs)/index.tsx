@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from "react-native";
 import { Link } from "expo-router";
-import { DEMO_TEACHERS, DEMO_VIDEOS, rankScore } from "@merito/core";
+import { DEMO_TEACHERS, DEMO_VIDEOS, rankScore } from "@mastermoshai/core";
 import { Card, TeacherRow, s } from "../../src/ui";
 import { colors } from "../../src/theme";
 

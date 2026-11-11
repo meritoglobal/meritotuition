@@ -1,4 +1,4 @@
-// Monorepo: let Metro resolve workspace packages like @merito/core.
+// Monorepo: let Metro resolve workspace packages like @mastermoshai/core.
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
 

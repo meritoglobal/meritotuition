@@ -1,4 +1,4 @@
-import { DEMO_TEACHERS, formatTaka, teacherReceives } from "@merito/core";
+import { DEMO_TEACHERS, formatTaka, teacherReceives } from "@mastermoshai/core";
 import { RoutineList } from "@/components/Routine";
 import { demoTeacherEarnings } from "@/lib/demo";
 
@@ -27,7 +27,7 @@ export default function TeacherDashboard() {
 
       <div className="mt-6 grid gap-3 sm:grid-cols-4">
         <Card k="Earned (after commission)" v={formatTaka(e.net)} strong />
-        <Card k={`Merito commission (${Math.round(e.rate * 100)}%)`} v={formatTaka(e.commission)} />
+        <Card k={`Mastermoshai commission (${Math.round(e.rate * 100)}%)`} v={formatTaka(e.commission)} />
         <Card k="On hold (48 h flag window)" v={formatTaka(e.pending)} />
         <Card k="Available to withdraw" v={formatTaka(e.available)} />
       </div>

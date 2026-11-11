@@ -3,7 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Merito Tuition — the right tutor, online or near home",
+  title: "Mastermoshai — the right tutor, online or near home",
   description: "1:1 and small-batch tutoring in Dhaka with verified university tutors, free trial classes and pay-per-class protection.",
 };
 
@@ -12,7 +12,7 @@ function Logo() {
     <Link href="/" className="flex items-center gap-2">
       <span className="grid h-8 w-8 place-items-center rounded-lg bg-ink font-display text-lg font-extrabold text-sun">m</span>
       <span className="font-display text-xl font-extrabold">
-        merito<span className="text-ink-3">tuition</span>
+        master<span className="text-ink-3">moshai</span>
       </span>
     </Link>
   );
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/teachers?mode=ONLINE" className="hover:underline underline-offset-4">Online tutors</Link>
               <Link href="/teachers?mode=OFFLINE" className="hover:underline underline-offset-4">Home tutors</Link>
               <Link href="/videos" className="hover:underline underline-offset-4">Free classes</Link>
-              <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">Teach on Merito</Link>
+              <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">Teach on Mastermoshai</Link>
             </div>
             <div className="ml-auto flex items-center gap-4">
               <div className="hidden rounded-lg border-2 border-line p-0.5 text-xs font-semibold sm:flex">
@@ -53,13 +53,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-24 bg-ink text-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:grid-cols-4">
             <div>
-              <div className="font-display text-2xl font-extrabold">merito<span className="text-sun">tuition</span></div>
-              <p className="mt-2 text-sm text-white/60">Dhaka · bKash · Nagad · Cards</p>
+              <div className="font-display text-2xl font-extrabold">master<span className="text-sun">moshai</span></div>
+              <p className="mt-2 text-sm text-white/60">mastermoshai.net · Dhaka · bKash · Nagad · Cards</p>
             </div>
             {[
               ["Students", ["Online tutors", "Home tutors", "Free classes", "How refunds work"]],
               ["Teachers", ["Become a tutor", "Set your routine", "Earnings & payouts"]],
-              ["Company", ["About Merito", "Safety", "Contact"]],
+              ["Company", ["About Mastermoshai", "Safety", "Contact"]],
             ].map(([h, items]) => (
               <div key={h as string}>
                 <div className="text-sm font-semibold">{h as string}</div>

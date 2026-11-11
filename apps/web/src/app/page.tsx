@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, DHAKA_AREAS, SUBJECTS, rankScore } from "@merito/core";
+import { CLASS_LEVELS, CLASS_LEVEL_LABEL, DEMO_TEACHERS, DEMO_VIDEOS, DHAKA_AREAS, SUBJECTS, rankScore } from "@mastermoshai/core";
 import { TeacherCard } from "@/components/TeacherCard";
 import { VideoCard } from "@/components/VideoCard";
 
@@ -161,7 +161,7 @@ export default function Home() {
       {/* TEACH */}
       <section className="mx-auto mt-20 grid max-w-7xl gap-8 px-5 md:grid-cols-2 md:items-center">
         <div>
-          <h2 className="font-display text-4xl font-extrabold leading-none sm:text-6xl">Teach on Merito.</h2>
+          <h2 className="font-display text-4xl font-extrabold leading-none sm:text-6xl">Teach on Mastermoshai.</h2>
           <p className="mt-4 text-lg text-ink-2">Set your weekly routine, choose online or home tuition, post free classes to get students, and withdraw to bKash every week.</p>
           <Link href="/dashboard/teacher" className="btn-ink mt-6">Become a tutor</Link>
         </div>

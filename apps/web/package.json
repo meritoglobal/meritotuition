@@ -1,5 +1,5 @@
 {
-  "name": "@merito/web",
+  "name": "@mastermoshai/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@merito/core": "workspace:*",
+    "@mastermoshai/core": "workspace:*",
     "leaflet": "^1.9.4",
     "next": "^16.0.0",
     "react": "^19.1.0",

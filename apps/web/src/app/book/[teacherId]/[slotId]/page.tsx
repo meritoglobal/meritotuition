@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, WEEKDAY_LABEL, classesPerMonth, formatTaka, timeLabel, upcomingOccurrences } from "@merito/core";
+import { CLASS_LEVEL_LABEL, DEMO_TEACHERS, WEEKDAY_LABEL, classesPerMonth, formatTaka, timeLabel, upcomingOccurrences } from "@mastermoshai/core";
 
 export default async function BookPage({ params, searchParams }: { params: Promise<{ teacherId: string; slotId: string }>; searchParams: Promise<{ trial?: string }> }) {
   const { teacherId, slotId } = await params;
@@ -17,7 +17,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
         <Row k="Tutor" v={`${t.name} · ${t.university}`} />
         <Row k="Subjects" v={`${s.subjects.join(", ")} · ${CLASS_LEVEL_LABEL[s.level]}`} />
         <Row k="Routine" v={`${s.days.map((d) => WEEKDAY_LABEL[d]).join(", ")} at ${timeLabel(s.startTime)} · ${s.durationMin} min`} />
-        <Row k="Batch" v={`1:${s.batchSize} · ${s.mode === "ONLINE" ? "Online live class in Merito Tuition" : "At your home"}`} />
+        <Row k="Batch" v={`1:${s.batchSize} · ${s.mode === "ONLINE" ? "Online live class in Mastermoshai" : "At your home"}`} />
         <Row k={isTrial ? "Trial class" : "First classes"} v={next.map(fmt).join(" · ")} />
         <hr className="border-line" />
         {isTrial ? (
@@ -25,7 +25,7 @@ export default async function BookPage({ params, searchParams }: { params: Promi
         ) : (
           <>
             <Row k={`${classesPerMonth(s)} classes (1 month)`} v={formatTaka(s.monthlyPrice)} strong />
-            <p className="text-xs text-ink-2">Held safely by Merito Tuition. Released to the tutor one class at a time, 48 hours after each class. Missed classes are refunded.</p>
+            <p className="text-xs text-ink-2">Held safely by Mastermoshai. Released to the tutor one class at a time, 48 hours after each class. Missed classes are refunded.</p>
           </>
         )}
       </div>
