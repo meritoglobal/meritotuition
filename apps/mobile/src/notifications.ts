@@ -1,30 +1,19 @@
 /**
- * Push setup. The API stores the Expo push token on the Device model and sends
- * CLASS_REMINDER (24h, 1h, 10 min) and CLASS_STARTED when the teacher taps Start.
- * Tapping CLASS_STARTED opens the class room for that session.
+ * Notification taps. When the server starts sending pushes (CLASS_STARTED with
+ * data.path = "/class/<id>"), tapping one opens that page inside the app.
+ * Registering the device token comes with the push step.
  */
 import * as Notifications from "expo-notifications";
-import { router } from "expo-router";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }),
 });
 
-export async function registerForPush(apiBase: string, userId: string): Promise<void> {
-  const { status } = await Notifications.requestPermissionsAsync();
-  if (status !== "granted") return;
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
-  await fetch(`${apiBase}/me/devices`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-user-id": userId },
-    body: JSON.stringify({ pushToken: token }),
-  }).catch(() => undefined);
-}
-
-export function listenForClassStart(): () => void {
+export function onNotificationOpen(open: (path: string) => void): () => void {
   const sub = Notifications.addNotificationResponseReceivedListener((res) => {
-    const sessionId = res.notification.request.content.data?.sessionId;
-    if (typeof sessionId === "string") router.push(`/class/${sessionId}`);
+    const data = res.notification.request.content.data ?? {};
+    const path = typeof data.path === "string" ? data.path : typeof data.sessionId === "string" ? `/class/${data.sessionId}` : null;
+    if (path?.startsWith("/")) open(path);
   });
   return () => sub.remove();
 }

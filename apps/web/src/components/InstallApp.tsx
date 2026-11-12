@@ -23,7 +23,7 @@ export default function InstallApp() {
     const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone;
     let dismissed = false;
     try { dismissed = Number(localStorage.getItem(KEY) ?? 0) > Date.now(); } catch { /* private mode */ }
-    if (standalone || dismissed) return;
+    if (standalone || dismissed || navigator.userAgent.includes("MastermoshaiApp")) return;
     const onPrompt = (e: Event) => { e.preventDefault(); setEvt(e as BIPEvent); setShow(true); };
     window.addEventListener("beforeinstallprompt", onPrompt);
     const ua = navigator.userAgent;

@@ -85,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <img src="/brand/logo-horizontal-on-dark.svg" alt="Mastermoshai · মাস্টারমশাই" width={240} height={56} className="h-14 w-auto" />
               <p className="mt-3 text-lg font-semibold text-gold">{c.footer.tagline}</p>
               <p className="mt-2 text-sm text-white/60">{c.footer.line}</p>
+              <Link href="/privacy" className="mt-2 inline-block text-sm text-white/60 underline underline-offset-4">{lang === "en" ? "Privacy policy" : "গোপনীয়তা নীতি"}</Link>
             </div>
             {c.footer.cols.map(([h, items]) => (
               <div key={h}>

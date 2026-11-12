@@ -1,19 +1,9 @@
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { listenForClassStart } from "../src/notifications";
-import { colors } from "../src/theme";
+import * as SplashScreen from "expo-splash-screen";
+
+// Keep the splash up until the first page has loaded (index.tsx hides it).
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  useEffect(() => listenForClassStart(), []);
-  return (
-    <>
-      <StatusBar style="dark" />
-      <Stack screenOptions={{ headerTintColor: colors.brand, contentStyle: { backgroundColor: colors.bg } }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="teacher/[id]" options={{ title: "Tutor" }} />
-        <Stack.Screen name="class/[id]" options={{ title: "Class room" }} />
-      </Stack>
-    </>
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

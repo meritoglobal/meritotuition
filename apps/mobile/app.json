@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Mastermoshai",
+    "name": "মাস্টারমশাই",
     "slug": "mastermoshai",
     "scheme": "mastermoshai",
-    "version": "0.1.0",
-    "orientation": "portrait",
+    "version": "1.0.0",
+    "orientation": "default",
     "userInterfaceStyle": "light",
     "plugins": [
       "expo-router",
@@ -22,21 +22,46 @@
     "android": {
       "package": "com.mastermoshai.app",
       "permissions": [
-        "ACCESS_FINE_LOCATION",
         "CAMERA",
-        "RECORD_AUDIO"
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/splash-mark.png",
         "backgroundColor": "#ff6b4a"
-      }
+      },
+      "versionCode": 1,
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
     },
     "ios": {
-      "bundleIdentifier": "com.mastermoshai.app"
+      "bundleIdentifier": "com.mastermoshai.app",
+      "buildNumber": "1",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "লাইভ ক্লাসে টিচার আর সহপাঠীরা যেন তোমাকে দেখতে পায়, তাই ক্যামেরা লাগবে।",
+        "NSMicrophoneUsageDescription": "লাইভ ক্লাসে প্রশ্ন করতে আর উত্তর দিতে মাইক লাগবে।",
+        "NSLocationWhenInUseUsageDescription": "তোমার কাছের বাসার টিউটর খুঁজে দিতে লোকেশন লাগবে।",
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
     },
     "experiments": {
       "typedRoutes": false
     },
-    "icon": "./assets/icon.png"
+    "icon": "./assets/icon.png",
+    "description": "যে মাস্টারমশাই ফাঁকি দেন না। ঢাকার অনলাইন আর বাসার টিউটর, লাইভ ক্লাস, পরীক্ষা।",
+    "backgroundColor": "#f6f3ec",
+    "primaryColor": "#163129",
+    "extra": {
+      "siteUrl": "https://mastermoshai.netlify.app"
+    }
   }
 }
