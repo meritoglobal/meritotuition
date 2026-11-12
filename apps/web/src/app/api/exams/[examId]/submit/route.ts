@@ -1,4 +1,4 @@
-import { classViewer } from "@/lib/class-access";
+import { classAccess, denied } from "@/lib/class-access";
 import { fail, json } from "@/lib/api";
 import { DATA_LIVE, db } from "@/lib/data";
 import { cleanAnswers, getExam, gradeExam } from "@/lib/exams";
@@ -7,12 +7,12 @@ export const dynamic = "force-dynamic";
 
 /** POST (student) { answers }: one submission per student; MCQ is marked on the spot. */
 export async function POST(req: Request, ctx: { params: Promise<{ examId: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
-  if (v.role !== "student") return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
   const e = await getExam((await ctx.params).examId);
   if (!e || !e.published) return fail("not-found", 404);
+  const v = await classAccess(req, e.class_id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
+  if (v.role !== "student") return fail("forbidden", 403);
   const b = (await req.json().catch(() => null)) as { answers?: unknown } | null;
   const answers = cleanAnswers(e.questions, b?.answers);
   const r = gradeExam(e.questions, answers);

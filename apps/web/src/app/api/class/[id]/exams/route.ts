@@ -1,4 +1,4 @@
-import { classViewer } from "@/lib/class-access";
+import { classAccess, denied } from "@/lib/class-access";
 import { fail, json } from "@/lib/api";
 import { DATA_LIVE, db, safeClassId } from "@/lib/data";
 import { cleanQuestions, gradeExam, validateExam } from "@/lib/exams";
@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 
 /** GET: this class's exams. Students see published ones plus their own result. */
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
-  if (!DATA_LIVE) return fail("data-off", 503);
   const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
+  if (!DATA_LIVE) return fail("data-off", 503);
   const s = db();
   let q = s.from("exams").select("id,title,duration_min,max_marks,published,created_at,questions").eq("class_id", id).order("created_at", { ascending: false });
   if (v.role === "student") q = q.eq("published", true);
@@ -40,11 +40,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 
 /** POST (tutor): create an exam. { title, instructions?, durationMin?, questions, publish } */
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
+  const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
   if (v.role !== "teacher") return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const id = safeClassId((await ctx.params).id);
   const b = (await req.json().catch(() => null)) as Record<string, unknown> | null;
   const title = String(b?.title ?? "").trim().slice(0, 200);
   const questions = cleanQuestions(b?.questions);

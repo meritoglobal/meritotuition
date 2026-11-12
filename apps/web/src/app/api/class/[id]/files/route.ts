@@ -1,4 +1,4 @@
-import { classViewer } from "@/lib/class-access";
+import { classAccess, denied } from "@/lib/class-access";
 import { fail, json } from "@/lib/api";
 import { BUCKET, DATA_LIVE, db, safeClassId } from "@/lib/data";
 
@@ -7,9 +7,10 @@ const HOUR = 3600;
 
 /** GET: class materials and recordings, each with a 1-hour download link. */
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  if (!(await classViewer(req))) return fail("login", 401);
-  if (!DATA_LIVE) return fail("data-off", 503);
   const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
+  if (!DATA_LIVE) return fail("data-off", 503);
   const s = db();
   const { data: rows, error } = await s.from("class_materials").select("id,title,path,size_bytes,mime,created_at").eq("class_id", id).order("created_at", { ascending: false });
   if (error) return fail("db", 500);
@@ -26,11 +27,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 
 /** POST (tutor): register a file already uploaded through the signed upload link. */
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
+  const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
   if (v.role !== "teacher") return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const id = safeClassId((await ctx.params).id);
   const b = (await req.json().catch(() => null)) as { path?: string; title?: string; size?: number; mime?: string } | null;
   if (!b?.path?.startsWith(`materials/${id}/`) || b.path.includes("..")) return fail("bad-path", 400);
   const { error } = await db().from("class_materials").insert({
@@ -42,11 +43,11 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
 /** DELETE ?mid= (tutor): remove a material. */
 export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
+  const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
   if (v.role !== "teacher") return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const id = safeClassId((await ctx.params).id);
   const mid = new URL(req.url).searchParams.get("mid") ?? "";
   const s = db();
   const { data: row } = await s.from("class_materials").select("path").eq("id", mid).eq("class_id", id).maybeSingle();

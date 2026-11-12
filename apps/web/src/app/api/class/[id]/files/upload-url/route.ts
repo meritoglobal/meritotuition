@@ -1,4 +1,4 @@
-import { classViewer } from "@/lib/class-access";
+import { classAccess, denied } from "@/lib/class-access";
 import { fail, json } from "@/lib/api";
 import { BUCKET, DATA_LIVE, db, safeClassId } from "@/lib/data";
 
@@ -12,11 +12,11 @@ const MAX = 100 * 1024 * 1024;
  * uploads straight to storage, so big PDFs/PPTs never pass through our server.
  */
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  const v = await classViewer(req);
-  if (!v) return fail("login", 401);
+  const id = safeClassId((await ctx.params).id);
+  const v = await classAccess(req, id);
+  if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
   if (v.role !== "teacher") return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const id = safeClassId((await ctx.params).id);
   const b = (await req.json().catch(() => null)) as { name?: string; size?: number } | null;
   const name = (b?.name ?? "").normalize("NFKC");
   if (!ALLOWED.test(name)) return fail("type", 400);

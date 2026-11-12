@@ -54,7 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/teachers/online" className="hover:underline underline-offset-4">{c.nav.online}</Link>
               <Link href="/teachers/home" className="hover:underline underline-offset-4">{c.nav.home}</Link>
               <Link href="/videos" className="hover:underline underline-offset-4">{c.nav.free}</Link>
-              <Link href="/dashboard/teacher" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
+              <Link href="/teach" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
             </div>
             <div className="ml-auto flex items-center gap-3 whitespace-nowrap sm:gap-4">
               <LangToggle />

@@ -3,6 +3,12 @@ import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
 import { demoStudentPlan } from "@/lib/demo";
 import FlagForm from "./FlagForm";
+import Link from "next/link";
+import type { ClassLevel } from "@mastermoshai/core";
+import { getUser } from "@/lib/auth/session";
+import { nextClass, studentBatches } from "@/lib/batches";
+import { toolsCopy } from "@/lib/copy-tools";
+import { DATA_LIVE } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -22,9 +28,33 @@ export default async function StudentDashboard() {
   const refunded = plan.classes.reduce((a, c) => a + c.refund, 0);
   const next = plan.classes.find((c) => !c.outcome);
   const past = plan.classes.filter((c) => c.outcome);
+  const user = await getUser();
+  const t = toolsCopy(lang).teach;
+  const mine = DATA_LIVE && user?.email ? await studentBatches(user.email) : [];
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <h1 className="font-display text-4xl">{c.h1}</h1>
+
+      {mine.length > 0 && (
+        <section className="mt-6">
+          <h2 className="font-display text-2xl">{t.myBatches}</h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {mine.map((b) => {
+              const at = nextClass(b.schedule);
+              return (
+                <div key={b.id} className="card flex flex-wrap items-center gap-3 p-4">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold">{b.title}</div>
+                    <div className="text-xs text-ink-3">{b.teacher_name ? `${t.withT(b.teacher_name)} · ` : ""}{L.subject(b.subject, lang)} · {L.level(b.level as ClassLevel, lang)}</div>
+                    {at && <div className="text-xs text-ink-2">{c.next}: {fmt(at)}</div>}
+                  </div>
+                  <Link href={`/class/${b.class_id}`} className="btn-board px-3! py-1.5! text-sm">{c.open}</Link>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {next && (
         <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl bg-board p-6 text-white">

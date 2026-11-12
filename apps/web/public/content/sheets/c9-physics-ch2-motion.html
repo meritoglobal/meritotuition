@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>গতি · ক্লাস ৯ পদার্থবিজ্ঞান</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+/* Plain white A4-style sheet: black text, thin grey rules, one blue accent for formulas, red only for mistakes. Single light theme by choice. */
+:root{
+  --paper:#ffffff; --sheet:#ffffff; --ink:#111111; --muted:#555555; --line:#d9d9d9;
+  --board:#f4f6f8; --chalk:#111111; --chalk-dim:#555555; --gold:#1f4fbf; --gold-ink:#333333;
+  --red:#c0392b; --tint:#f2f2f2; --rule:#e5e5e5; --accent:#1f4fbf;
+  --f-body:'Noto Sans Bengali','Inter',system-ui,sans-serif;
+  --f-hand:'Noto Sans Bengali','Inter',system-ui,sans-serif;
+  --f-num:'Inter','Noto Sans Bengali',system-ui,sans-serif;
+  color-scheme:light;
+}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.75}
+.wrap{max-width:780px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;line-height:1.35;font-weight:700}
+h2{font-size:1.4rem;margin:0}
+h3{font-size:1.1rem;margin:1.5rem 0 .4rem}
+p{margin:.7rem 0}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+.band{background:var(--paper);color:var(--ink);border-bottom:2px solid var(--ink)}
+.band .wrap{padding-block:28px 18px}
+.crumbs{font-size:.88rem;color:var(--muted)}
+.band h1{font-size:2.1rem;margin:.2rem 0 0}
+.scribble{display:none}
+.band p{max-width:65ch}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem;color:var(--muted);margin-top:10px}
+
+main{padding-block:6px 60px}
+section.part{padding-top:28px;border-top:1px solid var(--line);margin-top:28px}
+section.part:first-of-type{border-top:0;margin-top:6px}
+.part-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.part-no{font-family:var(--f-num);font-weight:700;color:var(--muted);font-size:.95rem}
+
+.say{font-style:italic;color:var(--gold-ink);margin:1rem 0;padding-left:12px;border-left:2px solid var(--line)}
+.say::before{content:"মাস্টারমশাই: ";font-style:normal;font-weight:700;color:var(--muted)}
+
+.def{border:1px solid var(--ink);padding:10px 14px;margin:1rem 0}
+.def .t{font-weight:700}
+
+.board{background:var(--board);border:1px solid var(--line);padding:14px 16px;margin:1rem 0}
+.board .f{font-family:var(--f-num);font-size:1.25rem;color:var(--accent);font-weight:600}
+.board .f + .f{margin-top:4px}
+.board small{display:block;color:var(--muted);font-size:.85rem;margin-top:6px}
+.board ul{margin:.3rem 0 0;padding-left:1.1rem;color:var(--muted);font-size:.9rem}
+
+.ex{border:1px solid var(--line);padding:12px 16px;margin:1rem 0}
+.ex .h{font-weight:700}
+.ex ol{margin:.4rem 0 0;padding-left:1.3rem}
+.ex .ans{font-weight:700}
+
+.think{margin:1rem 0;padding:8px 0 8px 14px;border-left:3px solid var(--line)}
+.think .h{font-weight:700;font-size:.9rem;color:var(--muted)}
+
+.oops{margin:1rem 0}
+.oops .h{color:var(--red);font-weight:700}
+.oops s{text-decoration-color:var(--red);text-decoration-thickness:2px;color:var(--muted)}
+
+figure{margin:1.2rem 0}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:6px}
+.fig-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+.tbl{overflow-x:auto;margin:1rem 0}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{font-weight:700;background:var(--tint);font-size:.88rem}
+ul.goals{padding-left:1.2rem}
+
+.s-ink{stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.s-thin{stroke:var(--muted);fill:none;stroke-width:1.2}
+.s-red{stroke:var(--red);fill:none;stroke-width:2.4;stroke-linecap:round}
+.s-gold{stroke:var(--accent);fill:none;stroke-width:3;stroke-linecap:round}
+.s-board{stroke:var(--accent);fill:none;stroke-width:3;stroke-linecap:round}
+.f-sheet{fill:#ffffff} .f-tint{fill:var(--tint)} .f-ink{fill:var(--ink)} .f-muted{fill:var(--muted)}
+.f-gold{fill:#cfdcf7} .f-red{fill:var(--red)} .f-board{fill:var(--accent)} .f-none{fill:none}
+svg text{font-family:var(--f-body);fill:var(--ink);font-size:14px}
+svg text.sm{font-size:12px;fill:var(--muted)}
+svg text.hand{font-size:15px;fill:var(--red)}
+
+.mcq{border-top:1px solid var(--line);padding:12px 0}
+.mcq .q{font-weight:600}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.opts button{font:inherit;font-size:.95rem;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer}
+.opts button:hover{border-color:var(--muted)}
+.opts button:focus-visible,summary:focus-visible,.conv input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.opts button.right{border-color:#1e7d3a;color:#1e7d3a;font-weight:700}
+.opts button.wrong{border-color:var(--red);color:var(--red)}
+.why{font-size:.92rem;color:var(--muted);margin-top:8px}
+
+details{border:1px solid var(--line);padding:4px 14px;margin:1rem 0}
+summary{cursor:pointer;font-weight:700;padding:8px 0}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+
+.conv{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}
+.conv input{font:inherit;width:110px;padding:5px 10px;border:1px solid var(--line);border-radius:4px;background:#fff;color:var(--ink)}
+.conv output{font-family:var(--f-num);font-weight:700;color:var(--accent)}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;font-size:.85rem;color:var(--muted)}
+@media (max-width:520px){.band h1{font-size:1.8rem}body{font-size:16px}.board .f{font-size:1.1rem}}
+</style>
+
+<header class="band">
+  <div class="wrap">
+    <div class="crumbs">ক্লাস ৯–১০ · পদার্থবিজ্ঞান · অধ্যায় ২</div>
+    <h1>গতি</h1>
+    <svg class="scribble" viewBox="0 0 170 14" aria-hidden="true"><path d="M3 9 C 30 3, 55 12, 85 7 S 140 4, 167 8" class="s-gold"/></svg>
+    <p>পৃথিবী ঘুরছে, তুমি বসে আছ, আর পাশের বাসটা আগাচ্ছে। এর মধ্যে কে আসলে চলছে? এই অধ্যায়ে সেই প্রশ্নের উত্তর খুঁজব, আর শেষে দেখবে ছাদ থেকে একটা ঢিল কয় সেকেন্ডে মাটিতে পড়বে সেটা কাগজে-কলমে বের করে ফেলতে পারছ।</p>
+    <div class="meta"><span>৪টা ক্লাস (৬০ মিনিট করে)</span><span>NCTB পাঠ্যবইয়ের অধ্যায় ২-এর ক্রম মেনে</span><span>Mastermoshai লেকচার শিট</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section class="part">
+  <p class="say">একটা কথা দিয়ে শুরু করি। এই অধ্যায়ের সূত্রগুলো মুখস্থ করার জিনিস না। প্রতিটা সূত্র আসলে একটা ছোট্ট গল্প। গল্পটা বুঝলে সূত্র নিজে থেকেই মনে থাকবে।</p>
+  <h3>এই অধ্যায় শেষে তুমি পারবে</h3>
+  <ul class="goals">
+    <li>কোনো কিছু স্থির না গতিশীল, সেটা "কার সাপেক্ষে" বলতে হয় কেন, বুঝিয়ে বলতে</li>
+    <li>রৈখিক, ঘূর্ণন, চলন, পর্যাবৃত্ত আর স্পন্দন গতি চারপাশে চিনে নিতে</li>
+    <li>দূরত্ব-সরণ, দ্রুতি-বেগ, আর স্কেলার-ভেক্টরের পার্থক্য করতে</li>
+    <li>ত্বরণ বের করতে, আর গতির চারটা সমীকরণ দিয়ে অঙ্ক কষতে</li>
+    <li>পড়ন্ত বস্তুর হিসাব করতে, আর গ্রাফ দেখে গতির গল্প পড়তে</li>
+  </ul>
+</section>
+
+<!-- 2.1 -->
+<section class="part" id="rest-motion">
+  <div class="part-head"><span class="part-no">২.১</span><h2>স্থিতি আর গতি: "কার সাপেক্ষে?"</h2></div>
+  <p>মিরপুর ১০-এর জ্যামে তুমি বাসে বসে আছ। জানালা দিয়ে তাকিয়ে আছ পাশের বাসটার দিকে। হঠাৎ মনে হলো তোমার বাস পেছনের দিকে গড়াচ্ছে! ঘাবড়ে গিয়ে রাস্তার দিকে তাকালে, দেখলে তোমার বাস যেখানে ছিল সেখানেই আছে। আসলে আগাচ্ছিল পাশের বাসটা।</p>
+  <figure>
+    <svg viewBox="0 0 640 200" role="img" aria-label="দুটো বাস পাশাপাশি; পাশের বাস সামনে আগাচ্ছে, তোমার বাস থেমে আছে">
+      <line x1="10" y1="170" x2="630" y2="170" class="s-thin"/>
+      <g>
+        <rect x="30" y="70" width="250" height="84" rx="12" class="s-ink f-sheet"/>
+        <rect x="50" y="86" width="40" height="28" rx="4" class="s-ink f-tint"/><rect x="100" y="86" width="40" height="28" rx="4" class="s-ink f-tint"/><rect x="150" y="86" width="40" height="28" rx="4" class="s-ink f-tint"/><rect x="200" y="86" width="40" height="28" rx="4" class="s-ink f-tint"/>
+        <circle cx="118" cy="100" r="7" class="s-ink f-gold"/>
+        <circle cx="80" cy="156" r="14" class="s-ink f-sheet"/><circle cx="230" cy="156" r="14" class="s-ink f-sheet"/>
+        <text x="40" y="58">তোমার বাস (আসলে থেমে আছে)</text>
+      </g>
+      <g>
+        <rect x="350" y="70" width="250" height="84" rx="12" class="s-ink f-tint"/>
+        <rect x="370" y="86" width="40" height="28" rx="4" class="s-ink f-sheet"/><rect x="420" y="86" width="40" height="28" rx="4" class="s-ink f-sheet"/><rect x="470" y="86" width="40" height="28" rx="4" class="s-ink f-sheet"/><rect x="520" y="86" width="40" height="28" rx="4" class="s-ink f-sheet"/>
+        <circle cx="400" cy="156" r="14" class="s-ink f-sheet"/><circle cx="550" cy="156" r="14" class="s-ink f-sheet"/>
+        <path d="M420 40 H590 M576 30 L592 40 L576 50" class="s-red"/>
+        <text x="430" y="28" class="hand">পাশের বাস আগায়</text>
+      </g>
+      <path d="M150 38 C 220 10, 300 10, 330 30" class="s-thin" stroke-dasharray="4 4"/>
+      <text x="170" y="190" class="sm">জানালা দিয়ে শুধু পাশের বাস দেখলে মনে হয় তুমিই পিছিয়ে যাচ্ছ</text>
+    </svg>
+    <figcaption>ছবি ১: কে চলছে, সেটা নির্ভর করে তুমি কোন জিনিসটার সাথে তুলনা করছ তার ওপর।</figcaption>
+  </figure>
+  <p>তোমার মগজ কিন্তু ভুল করেনি। সে শুধু পাশের বাসটাকে "স্থির" ধরে নিয়ে হিসাব করেছিল। পদার্থবিজ্ঞানে যে জিনিসটাকে স্থির ধরে বাকিদের মাপা হয়, তাকে বলে <b>প্রসঙ্গ কাঠামো</b>।</p>
+  <div class="def"><span class="t">স্থিতি ও গতি:</span> সময়ের সাথে কোনো বস্তুর অবস্থান যদি প্রসঙ্গ কাঠামোর সাপেক্ষে না বদলায়, বস্তুটা স্থির। আর বদলালে গতিশীল। প্রসঙ্গ কাঠামো না বললে "স্থির" কথাটার কোনো মানে হয় না।</div>
+  <p>তাহলে এখন তুমি পড়ার টেবিলে বসে আছ। তুমি কি স্থির? ঘরের সাপেক্ষে, হ্যাঁ। কিন্তু পৃথিবী নিজের অক্ষে ঘুরছে, আর ঢাকার মতো জায়গায় সেই ঘূর্ণনে তুমি ঘণ্টায় প্রায় দেড় হাজার কিলোমিটার বেগে পূর্ব দিকে ছুটছ। সূর্যের সাপেক্ষে তো আরও অনেক জোরে। তাই মহাবিশ্বে একদম পরম স্থির বলে কিছু খুঁজে পাওয়া যায় না। সব স্থিতি আর সব গতিই <b>আপেক্ষিক</b>।</p>
+  <div class="think"><div class="h">ভেবে দেখো</div>ট্রেনে তোমার মুখোমুখি বসা বন্ধু তোমার সাপেক্ষে স্থির। কিন্তু প্ল্যাটফর্মে দাঁড়ানো চাচার সাপেক্ষে? আর ট্রেনের ভেতরে হাঁটতে থাকা চা-ওয়ালা মামা তোমার সাপেক্ষে কী?</div>
+</section>
+
+<!-- 2.2 -->
+<section class="part" id="kinds">
+  <div class="part-head"><span class="part-no">২.২</span><h2>গতির রকমফের</h2></div>
+  <p>সব গতি একরকম না। ড্রয়ার টেনে খোলা আর সিলিং ফ্যানের ঘোরা, দুটোই গতি, কিন্তু চেহারা একদম আলাদা। বইয়ে পাঁচ রকম গতির কথা আছে। আগে ছবিতে চারটা চিনে নাও, তারপর টেবিলে পাঁচটাই।</p>
+  <figure>
+    <svg viewBox="0 0 640 190" role="img" aria-label="চার রকম গতির ছবি: চলন, ঘূর্ণন, পর্যাবৃত্ত, স্পন্দন">
+      <g>
+        <rect x="14" y="70" width="70" height="44" class="s-ink f-tint"/>
+        <rect x="64" y="70" width="70" height="44" class="s-ink f-sheet" stroke-dasharray="5 4"/>
+        <path d="M30 136 H130 M118 128 L132 136 L118 144" class="s-red"/>
+        <text x="40" y="40">চলন</text>
+        <text x="22" y="172" class="sm">ড্রয়ার, লিফট</text>
+      </g>
+      <g transform="translate(220 92)">
+        <circle r="10" class="s-ink f-gold"/>
+        <path d="M0 -10 L-12 -52 L12 -52 Z" class="s-ink f-tint"/>
+        <path d="M9 5 L52 18 L40 40 Z" class="s-ink f-tint"/>
+        <path d="M-9 5 L-40 40 L-52 18 Z" class="s-ink f-tint"/>
+        <path d="M40 -46 A 62 62 0 0 1 60 -10" class="s-red"/><path d="M52 -16 L60 -8 L64 -20" class="s-red"/>
+        <text x="-30" y="-58">ঘূর্ণন</text>
+        <text x="-62" y="80" class="sm">ফ্যান, চরকি, চাকা</text>
+      </g>
+      <g transform="translate(380 96)">
+        <circle r="46" class="s-ink f-sheet"/>
+        <line x1="0" y1="0" x2="0" y2="-34" class="s-ink"/><line x1="0" y1="0" x2="24" y2="10" class="s-red"/>
+        <circle r="3" class="f-ink"/>
+        <text x="-36" y="-60">পর্যাবৃত্ত</text>
+        <text x="-70" y="76" class="sm">ঘড়ির কাঁটা, পৃথিবীর ঘোরা</text>
+      </g>
+      <g transform="translate(548 34)">
+        <line x1="-40" y1="0" x2="40" y2="0" class="s-ink"/>
+        <line x1="0" y1="0" x2="0" y2="100" class="s-ink"/><circle cx="0" cy="110" r="10" class="s-ink f-gold"/>
+        <line x1="0" y1="0" x2="-42" y2="92" class="s-thin" stroke-dasharray="4 4"/><circle cx="-46" cy="101" r="10" class="s-thin f-none"/>
+        <line x1="0" y1="0" x2="42" y2="92" class="s-thin" stroke-dasharray="4 4"/><circle cx="46" cy="101" r="10" class="s-thin f-none"/>
+        <path d="M-40 128 Q 0 146 40 128" class="s-red"/>
+        <text x="-26" y="-12">স্পন্দন</text>
+        <text x="-64" y="150" class="sm">দোলনা, গিটারের তার</text>
+      </g>
+    </svg>
+    <figcaption>ছবি ২: চলন, ঘূর্ণন, পর্যাবৃত্ত আর স্পন্দন গতি।</figcaption>
+  </figure>
+  <div class="tbl"><table>
+    <tr><th>গতির নাম</th><th>চেনার উপায়</th><th>তোমার চারপাশে</th></tr>
+    <tr><td><b>রৈখিক গতি</b></td><td>বস্তু সরলরেখা ধরে চলে</td><td>সোজা রাস্তায় বাস, ওপর থেকে ছেড়ে দেওয়া ঢিল</td></tr>
+    <tr><td><b>চলন গতি</b></td><td>বস্তুর সব অংশ একই দিকে একই দূরত্ব সরে; পথ সোজা না হলেও চলে</td><td>ড্রয়ার খোলা, লিফট ওঠা, বাঁক নেওয়া গাড়ির বডি</td></tr>
+    <tr><td><b>ঘূর্ণন গতি</b></td><td>একটা অক্ষ বা বিন্দুকে ঘিরে ঘোরে</td><td>সিলিং ফ্যান, সাইকেলের চাকা</td></tr>
+    <tr><td><b>পর্যাবৃত্ত গতি</b></td><td>নির্দিষ্ট সময় পর পর একই অবস্থায় ফিরে আসে; ঐ সময়কে বলে পর্যায়কাল</td><td>ঘড়ির কাঁটা, হৃৎস্পন্দন, চাঁদের পৃথিবী ঘোরা</td></tr>
+    <tr><td><b>স্পন্দন গতি</b></td><td>পর্যাবৃত্ত গতির মধ্যে একটা মাঝের অবস্থানের দুই পাশে আসা-যাওয়া</td><td>দোলনা, গিটারের টানা তার</td></tr>
+  </table></div>
+  <p class="say">মজার ব্যাপার, একটা জিনিসে একসাথে কয়েক রকম গতি থাকতে পারে। চলন্ত সাইকেলের চাকা নিজে ঘোরে (ঘূর্ণন), আবার পুরো সাইকেলের সাথে সামনে আগায় (চলন)।</p>
+  <div class="oops"><span class="h">সাধারণ ভুল:</span> <s>সব পর্যাবৃত্ত গতিই স্পন্দন।</s> উল্টোটা ঠিক। সব স্পন্দন গতি পর্যাবৃত্ত, কিন্তু ঘড়ির কাঁটা পর্যাবৃত্ত হয়েও এদিক-ওদিক দোলে না, তাই সেটা স্পন্দন না।</div>
+</section>
+
+<!-- 2.3 -->
+<section class="part" id="scalar-vector">
+  <div class="part-head"><span class="part-no">২.৩</span><h2>স্কেলার আর ভেক্টর: "কতটুকু" বনাম "কতটুকু আর কোন দিকে"</h2></div>
+  <p>ধরো তোমার এক বন্ধু ফোনে বলল, "বাসা থেকে ৫০০ মিটার হেঁটে আয়, আমি দাঁড়িয়ে আছি।" তুমি কি তাকে খুঁজে পাবে? না, কারণ সে দিক বলেনি। কিন্তু সে যদি বলত "বাসা থেকে উত্তরে ৫০০ মিটার", তাহলে তুমি সোজা হাজির।</p>
+  <p>কিছু রাশির জন্য শুধু মান বললেই চলে, যেমন তোমার ভর ৪৫ kg, ক্লাস ৪০ মিনিট। এরা <b>স্কেলার</b>। আর কিছু রাশির জন্য দিক না বললে কথা অসম্পূর্ণ, যেমন বন্ধুর অবস্থান। এরা <b>ভেক্টর</b>।</p>
+  <div class="tbl"><table>
+    <tr><th>স্কেলার (শুধু মান)</th><th>ভেক্টর (মান + দিক)</th></tr>
+    <tr><td>দূরত্ব, দ্রুতি, ভর, সময়, তাপমাত্রা, কাজ</td><td>সরণ, বেগ, ত্বরণ, বল, ওজন</td></tr>
+  </table></div>
+  <p>ভেক্টরকে আমরা তীর দিয়ে আঁকি। তীরের দৈর্ঘ্য বলে মান কত, আর মাথা বলে কোন দিকে।</p>
+  <div class="think"><div class="h">ভেবে দেখো</div>আবহাওয়ার খবরে বলে "ঘণ্টায় ৬০ কিলোমিটার বেগে দক্ষিণ-পূর্ব দিক থেকে ঝড়ো হাওয়া বইতে পারে।" এখানে কোন অংশটা মান আর কোন অংশটা দিক?</div>
+</section>
+
+<!-- 2.4 -->
+<section class="part" id="distance-displacement">
+  <div class="part-head"><span class="part-no">২.৪</span><h2>দূরত্ব আর সরণ</h2></div>
+  <p>নাফিসের বাসা থেকে স্কুল সোজাসুজি ২ কিলোমিটার। কিন্তু মাঝখানে একটা ঝিল, তাই রিকশা ঘুরে ঘুরে যায়, আর মিটারে উঠে ৩ কিলোমিটার। তাহলে নাফিস কতটুকু গেল?</p>
+  <figure>
+    <svg viewBox="0 0 640 230" role="img" aria-label="বাসা থেকে স্কুলে ঘুরপথ ও সোজা সরণের তীর">
+      <ellipse cx="320" cy="130" rx="110" ry="46" class="s-thin f-tint"/>
+      <text x="300" y="135" class="sm">ঝিল</text>
+      <path d="M70 190 C 120 220, 240 210, 330 196 S 520 170, 540 120 S 560 70, 560 60" class="s-red" stroke-dasharray="7 6"/>
+      <path d="M74 186 L556 64" class="s-board"/><path d="M540 60 L558 63 L548 78" class="s-board"/>
+      <rect x="40" y="176" width="40" height="34" class="s-ink f-sheet"/><path d="M36 178 L60 156 L84 178" class="s-ink"/>
+      <text x="22" y="226">বাসা</text>
+      <rect x="548" y="22" width="64" height="38" class="s-ink f-sheet"/><path d="M572 60 V44 H588 V60" class="s-ink"/>
+      <text x="556" y="16">স্কুল</text>
+      <text x="380" y="216" class="hand">দূরত্ব = ৩ কিমি (ঘুরপথ)</text>
+      <text x="150" y="100" fill="currentColor" style="fill:var(--accent);font-weight:700">সরণ = ২ কিমি, উত্তর-পূর্বে</text>
+    </svg>
+    <figcaption>ছবি ৩: লাল ডটেড পথ হলো দূরত্ব, নীল সোজা তীর হলো সরণ।</figcaption>
+  </figure>
+  <div class="def"><span class="t">দূরত্ব:</span> বস্তু আসলে যে পথ ধরে গেছে, সেই পথের মোট দৈর্ঘ্য। এটা স্কেলার।<br><span class="t">সরণ:</span> শুরুর জায়গা থেকে শেষের জায়গা পর্যন্ত সোজা দূরত্ব, নির্দিষ্ট দিকে। এটা ভেক্টর।</div>
+  <div class="ex">
+    <div class="h">উদাহরণ ১: স্কুলের মাঠে এক চক্কর</div>
+    <p>স্কুলের ৪০০ মিটার ট্র্যাকে তুমি যেখান থেকে দৌড় শুরু করলে, ঠিক সেখানে এসেই থামলে। তোমার দূরত্ব আর সরণ কত?</p>
+    <ol>
+      <li>যে পথ দৌড়েছ তার মোট দৈর্ঘ্য ৪০০ m, তাই দূরত্ব = <span class="num">400 m</span>।</li>
+      <li>শুরু আর শেষ একই বিন্দু, মাঝে কোনো সোজা দূরত্ব নেই। তাই সরণ = <span class="ans num">0 m</span>।</li>
+    </ol>
+    <p>এত ঘাম ঝরিয়েও সরণ শূন্য! পদার্থবিজ্ঞান মাঝে মাঝে বড় নিষ্ঠুর।</p>
+  </div>
+  <div class="oops"><span class="h">সাধারণ ভুল:</span> <s>সরণ কখনো দূরত্বের চেয়ে বড় হতে পারে।</s> হতে পারে না। সরণ বড়জোর দূরত্বের সমান হয়, যখন বস্তু একদম সোজা পথে একই দিকে যায়।</div>
+</section>
+
+<!-- 2.5 -->
+<section class="part" id="speed-velocity">
+  <div class="part-head"><span class="part-no">২.৫</span><h2>দ্রুতি আর বেগ</h2></div>
+  <p>কে বেশি জোরে যায়, সেটা মাপতে শুধু দূরত্ব দেখলে হবে না, সময়ও দেখতে হবে। একক সময়ে কতটা দূরত্ব যাওয়া হলো, সেটাই <b>দ্রুতি</b>।</p>
+  <div class="board">
+    <div class="f">দ্রুতি = দূরত্ব ÷ সময় &nbsp;&nbsp; v = s / t</div>
+    <small>SI একক: m/s (মিটার প্রতি সেকেন্ড)। রাস্তায় আমরা বলি km/h।</small>
+  </div>
+  <p>এখন একই হিসাব যদি সরণ দিয়ে করো, মানে দিকসহ, তাহলে পাবে <b>বেগ</b>। দ্রুতি স্কেলার, বেগ ভেক্টর। "ঘণ্টায় ৬০ কিমি" হলো দ্রুতি, "ঘণ্টায় ৬০ কিমি, চট্টগ্রামের দিকে" হলো বেগ।</p>
+  <div class="ex">
+    <div class="h">উদাহরণ ২: মেট্রোরেল</div>
+    <p>ধরো মেট্রোরেল উত্তরা থেকে মতিঝিল প্রায় ২০ কিলোমিটার পথ যায় ৪০ মিনিটে। গড় দ্রুতি কত km/h আর কত m/s?</p>
+    <ol>
+      <li>সময় = ৪০ মিনিট = <span class="num">40/60 h = 2/3 h</span></li>
+      <li>গড় দ্রুতি = <span class="num">20 km ÷ (2/3) h = 30 km/h</span></li>
+      <li>m/s-এ নিতে: <span class="num">30 × 1000 ÷ 3600 = 8.33 m/s</span> (প্রায়)</li>
+    </ol>
+    <p>উত্তর: <span class="ans num">30 km/h ≈ 8.33 m/s</span>। মাঝে স্টেশনে থামে বলে এটা <b>গড়</b> দ্রুতি। দুই স্টেশনের মাঝে ট্রেন এর চেয়ে অনেক জোরে চলে।</p>
+  </div>
+  <div class="board">
+    <div class="f">km/h → m/s : × 5/18 &nbsp;&nbsp; m/s → km/h : × 18/5</div>
+    <small>কারণ 1 km/h = 1000 m ÷ 3600 s = 5/18 m/s। নিচে একটা সংখ্যা দিয়ে দেখো:</small>
+    <div class="conv"><label for="kmh">km/h</label><input id="kmh" type="number" inputmode="decimal" value="72"> <span>=</span> <output id="ms" for="kmh">20 m/s</output></div>
+  </div>
+  <figure>
+    <svg viewBox="0 0 640 200" role="img" aria-label="স্পিডোমিটার, কাঁটা ৬০ কিমি প্রতি ঘণ্টায়">
+      <path d="M200 170 A 120 120 0 0 1 440 170" class="s-ink"/>
+      <g class="s-thin">
+        <line x1="210" y1="170" x2="224" y2="170"/><line x1="236" y1="110" x2="248" y2="117"/><line x1="280" y1="66" x2="287" y2="78"/><line x1="320" y1="50" x2="320" y2="64"/><line x1="360" y1="66" x2="353" y2="78"/><line x1="404" y1="110" x2="392" y2="117"/><line x1="430" y1="170" x2="416" y2="170"/>
+      </g>
+      <text x="228" y="176" class="sm">0</text><text x="252" y="128" class="sm">20</text><text x="290" y="92" class="sm">40</text><text x="312" y="80" class="sm">60</text><text x="340" y="92" class="sm">80</text><text x="370" y="128" class="sm">100</text><text x="390" y="176" class="sm">120</text>
+      <line x1="320" y1="170" x2="320" y2="74" class="s-red"/><circle cx="320" cy="170" r="7" class="f-ink"/>
+      <text x="292" y="196" class="sm">km/h</text>
+      <text x="470" y="90" class="hand">এই মুহূর্তের দ্রুতি</text>
+      <path d="M466 96 Q 420 100 340 90" class="s-thin" stroke-dasharray="4 4"/>
+    </svg>
+    <figcaption>ছবি ৪: বাসের স্পিডোমিটার গড় দ্রুতি দেখায় না, দেখায় ঠিক এই মুহূর্তের দ্রুতি (তাৎক্ষণিক দ্রুতি)।</figcaption>
+  </figure>
+  <div class="think"><div class="h">মজার প্রশ্ন</div>সুতোয় ঢিল বেঁধে মাথার ওপর একই গতিতে ঘোরাচ্ছ। ঢিলটার দ্রুতি কি বদলাচ্ছে? বেগ? (উত্তর: দ্রুতি একই থাকে, কিন্তু প্রতি মুহূর্তে দিক বদলায়, তাই বেগ বদলাচ্ছে। মানে সমদ্রুতিতে চললেও ত্বরণ থাকতে পারে!)</div>
+  <p>কোনো বস্তু যদি সমান সময়ে সমান দূরত্ব যায়, তার দ্রুতি <b>সুষম</b>। আর সমান সময়ে একই দিকে সমান সরণ হলে বেগ সুষম। ঢাকার রাস্তায় সুষম বেগ পাওয়া প্রায় অসম্ভব, কিন্তু ফাঁকা হাইওয়েতে ক্রুজ কন্ট্রোল চালু করা গাড়ি এর কাছাকাছি যায়।</p>
+  <div class="ex">
+    <div class="h">উদাহরণ ৩: আবার সেই মাঠ</div>
+    <p>৪০০ মিটারের এক চক্কর তুমি দৌড়ালে ৮০ সেকেন্ডে। গড় দ্রুতি আর গড় বেগ কত?</p>
+    <ol>
+      <li>গড় দ্রুতি = দূরত্ব ÷ সময় = <span class="num">400 ÷ 80 = 5 m/s</span></li>
+      <li>গড় বেগ = সরণ ÷ সময় = <span class="num">0 ÷ 80 = 0 m/s</span></li>
+    </ol>
+    <p>উত্তর: দ্রুতি <span class="ans num">5 m/s</span>, কিন্তু বেগ <span class="ans num">0</span>। এই একটা উদাহরণ মনে রাখলেই দ্রুতি আর বেগের পার্থক্য আর কোনোদিন গুলিয়ে যাবে না।</p>
+  </div>
+  <div class="think"><div class="h">মজার প্রশ্ন</div>একজন ফাস্ট বোলার ঘণ্টায় ১৪৪ কিলোমিটার বেগে বল করলেন। সেটা কত m/s? আর প্রায় ২০ মিটার পিচ পার হতে বলটার কত সময় লাগে? (উত্তর: 40 m/s, মাত্র 0.5 s। ব্যাটসম্যান কত কম সময় পান, ভাবো!)</div>
+</section>
+
+<!-- 2.6 -->
+<section class="part" id="acceleration">
+  <div class="part-head"><span class="part-no">২.৬</span><h2>ত্বরণ: বেগ কত দ্রুত বদলায়</h2></div>
+  <p>সিগন্যাল সবুজ হলো। পাশের মোটরসাইকেলটা থেমে থাকা অবস্থা থেকে শোঁ করে বেরিয়ে গেল, আর রিকশাটা ধীরে ধীরে গতি তুলল। শেষে দুজনেই হয়তো একই বেগে চলবে, কিন্তু মোটরসাইকেলের বেগ <b>বেশি দ্রুত</b> বেড়েছে। এই "বেগ বাড়ার হার"-ই <b>ত্বরণ</b>।</p>
+  <div class="board">
+    <div class="f">ত্বরণ = বেগের পরিবর্তন ÷ সময় &nbsp;&nbsp; a = (v − u) / t</div>
+    <small>u = আদিবেগ (শুরুর বেগ), v = শেষবেগ, t = সময়। একক: m/s² (মিটার প্রতি বর্গ সেকেন্ড)।</small>
+  </div>
+  <figure>
+    <svg viewBox="0 0 640 150" role="img" aria-label="প্রতি সেকেন্ডে মোটরসাইকেলের অবস্থান, ফাঁক ক্রমশ বাড়ছে">
+      <line x1="20" y1="100" x2="620" y2="100" class="s-thin"/>
+      <g>
+        <circle cx="40" cy="80" r="11" class="s-ink f-gold"/><circle cx="70" cy="80" r="11" class="s-ink f-gold"/><circle cx="160" cy="80" r="11" class="s-ink f-gold"/><circle cx="310" cy="80" r="11" class="s-ink f-gold"/><circle cx="520" cy="80" r="11" class="s-ink f-gold"/>
+      </g>
+      <text x="26" y="124" class="sm">0 s</text><text x="60" y="140" class="sm">1 s</text><text x="148" y="124" class="sm">2 s</text><text x="298" y="124" class="sm">3 s</text><text x="508" y="124" class="sm">4 s</text>
+      <path d="M170 50 Q 240 20 300 50" class="s-red"/><path d="M320 50 Q 420 10 510 50" class="s-red"/>
+      <text x="340" y="26" class="hand">ফাঁক বড় হচ্ছে, মানে বেগ বাড়ছে</text>
+    </svg>
+    <figcaption>ছবি ৫: প্রতি সেকেন্ডে একটা করে ছবি তুললে ত্বরণশীল বস্তুর ফাঁকগুলো ক্রমশ বড় হয়।</figcaption>
+  </figure>
+  <div class="ex">
+    <div class="h">উদাহরণ ৪: সিগন্যালের মোটরসাইকেল</div>
+    <p>মোটরসাইকেলটা থেমে থাকা অবস্থা থেকে ১০ সেকেন্ডে 20 m/s বেগে উঠল। ত্বরণ কত?</p>
+    <ol>
+      <li>u = 0, v = 20 m/s, t = 10 s</li>
+      <li><span class="num">a = (20 − 0) ÷ 10 = 2 m/s²</span></li>
+    </ol>
+    <p>উত্তর: <span class="ans num">2 m/s²</span>। মানে প্রতি সেকেন্ডে বেগ 2 m/s করে বাড়ছে: 0, 2, 4, 6 … 20।</p>
+  </div>
+  <p>বেগ কমতে থাকলে ত্বরণ ঋণাত্মক হয়। একে আমরা আদর করে ডাকি <b>মন্দন</b>। ব্রেক চাপলে গাড়ির মন্দন হয়।</p>
+  <div class="oops"><span class="h">সাধারণ ভুল:</span> <s>বেগ বেশি মানে ত্বরণও বেশি।</s> একদম না। হাইওয়েতে 25 m/s সুষম বেগে চলা বাসের ত্বরণ শূন্য, কারণ বেগ বদলাচ্ছে না। আর সিগন্যালে মাত্র চলতে শুরু করা রিকশার বেগ কম হলেও ত্বরণ আছে।</div>
+</section>
+
+<!-- 2.7 -->
+<section class="part" id="equations">
+  <div class="part-head"><span class="part-no">২.৭</span><h2>গতির চার সমীকরণ</h2></div>
+  <p class="say">এগুলোকে মুখস্থের তালিকা ভেবো না। সবগুলো একটা ছবি থেকেই বের হয়, নিচের বেগ-সময় গ্রাফটা থেকে। গ্রাফটা বুঝলে সূত্র ভুলে গেলেও আবার বানিয়ে নিতে পারবে।</p>
+  <figure>
+    <svg viewBox="0 0 640 260" role="img" aria-label="বেগ-সময় লেখচিত্র: আদিবেগ u থেকে শেষবেগ v পর্যন্ত সরলরেখা, নিচের ক্ষেত্রফল সরণ">
+      <line x1="80" y1="220" x2="600" y2="220" class="s-ink"/><line x1="80" y1="220" x2="80" y2="20" class="s-ink"/>
+      <path d="M594 214 L604 220 L594 226 M74 26 L80 16 L86 26" class="s-ink"/>
+      <rect x="80" y="150" width="400" height="70" class="f-tint"/>
+      <path d="M80 150 L480 60 L480 150 Z" fill="#cfdcf7" fill-opacity=".8"/>
+      <line x1="80" y1="150" x2="480" y2="60" class="s-red"/>
+      <line x1="480" y1="60" x2="480" y2="220" class="s-thin" stroke-dasharray="4 4"/>
+      <line x1="80" y1="150" x2="480" y2="150" class="s-thin" stroke-dasharray="4 4"/>
+      <text x="56" y="155">u</text><text x="56" y="65">v</text><line x1="72" y1="60" x2="480" y2="60" class="s-thin" stroke-dasharray="2 5"/>
+      <text x="474" y="240">t</text><text x="560" y="244" class="sm">সময়</text><text x="88" y="30" class="sm">বেগ</text>
+      <text x="230" y="192">আয়তক্ষেত্র = u × t</text>
+      <text x="330" y="132">ত্রিভুজ = ½ × t × (v−u)</text>
+      <text x="500" y="110" class="hand">ঢাল = ত্বরণ a</text>
+    </svg>
+    <figcaption>ছবি ৬: সমত্বরণে বেগ-সময় গ্রাফ একটা সোজা ঢালু রেখা। রেখার ঢাল হলো ত্বরণ, আর নিচের মোট ক্ষেত্রফল হলো সরণ।</figcaption>
+  </figure>
+  <p>গ্রাফ থেকে গল্পটা এরকম:</p>
+  <ul>
+    <li>রেখাটা u থেকে শুরু, প্রতি সেকেন্ডে a করে ওঠে। t সেকেন্ড পরে উঠবে at। তাই <b>v = u + at</b>।</li>
+    <li>সরণ = নিচের ক্ষেত্রফল = আয়তক্ষেত্র ut + ত্রিভুজ ½·t·(at)। তাই <b>s = ut + ½at²</b>।</li>
+    <li>ক্ষেত্রফলটা আসলে একটা ট্রাপিজিয়াম, যার দুই সমান্তরাল বাহু u আর v। তাই <b>s = ½(u + v)t</b>।</li>
+    <li>প্রথম সূত্র থেকে t = (v−u)/a, তৃতীয়টায় বসাও। পাবে <b>v² = u² + 2as</b>। এই সূত্রে সময় নেই, তাই সময় না জানলে এটাই ভরসা।</li>
+  </ul>
+  <div class="board">
+    <div class="f">v = u + at</div>
+    <div class="f">s = ut + ½at²</div>
+    <div class="f">v² = u² + 2as</div>
+    <div class="f">s = ½(u + v)t</div>
+    <ul><li>শর্ত: ত্বরণ সুষম (সমান) হতে হবে, আর গতি সরলরেখায়।</li><li>কোন সূত্র নেবে? প্রশ্নে যে রাশিটা নেই, সেটা যে সূত্রে নেই, সেটা নাও।</li></ul>
+  </div>
+  <div class="ex">
+    <div class="h">উদাহরণ ৫: পদ্মা সেতুতে হঠাৎ ব্রেক</div>
+    <p>একটা গাড়ি ঘণ্টায় ৭২ কিলোমিটার বেগে সেতুর ওপর যাচ্ছিল। সামনে হঠাৎ একটা ছাগল! চালক ব্রেক কষলেন, আর গাড়িটা ৫০ মিটার গিয়ে থামল। মন্দন কত, আর থামতে কত সময় লাগল?</p>
+    <ol>
+      <li>u = 72 km/h = 72 × 5/18 = 20 m/s, v = 0, s = 50 m। সময় জানা নেই, তাই v² = u² + 2as নিই।</li>
+      <li><span class="num">0 = 20² + 2 × a × 50 → a = −400 ÷ 100 = −4 m/s²</span></li>
+      <li>সময়: <span class="num">v = u + at → 0 = 20 − 4t → t = 5 s</span></li>
+    </ol>
+    <p>উত্তর: মন্দন <span class="ans num">4 m/s²</span>, সময় <span class="ans num">5 s</span>। ছাগলটা বেঁচে গেছে।</p>
+  </div>
+  <div class="ex">
+    <div class="h">উদাহরণ ৬: মোটরসাইকেল কতদূর গেল?</div>
+    <p>উদাহরণ ৪-এর মোটরসাইকেলটা ঐ ১০ সেকেন্ডে কত দূর গেল?</p>
+    <ol>
+      <li>u = 0, a = 2 m/s², t = 10 s</li>
+      <li><span class="num">s = ut + ½at² = 0 + ½ × 2 × 10² = 100 m</span></li>
+      <li>মিলিয়ে নাও: <span class="num">s = ½(u+v)t = ½ × (0+20) × 10 = 100 m</span>। দুই রাস্তায় একই উত্তর।</li>
+    </ol>
+  </div>
+  <div class="oops"><span class="h">সাধারণ ভুল:</span> <s>km/h আর সেকেন্ড একসাথে সূত্রে বসিয়ে দেওয়া।</s> অঙ্ক শুরুর আগে সব রাশি একই এককে নাও। সবচেয়ে নিরাপদ: সব m, s আর m/s-এ।</div>
+</section>
+
+<!-- 2.8 -->
+<section class="part" id="free-fall">
+  <div class="part-head"><span class="part-no">২.৮</span><h2>পড়ন্ত বস্তু</h2></div>
+  <p>প্রায় দুই হাজার বছর মানুষ বিশ্বাস করত, ভারী জিনিস হালকা জিনিসের চেয়ে আগে মাটিতে পড়ে। শুনতে ঠিকই লাগে, তাই না? একটা ইট আর একটা কাগজ একসাথে ছাড়ো, ইট আগে পড়বে। ষোলো শতকে গ্যালিলিও ব্যাপারটা পরীক্ষা করে দেখলেন। তিনি বুঝলেন, কাগজ দেরিতে পড়ে বাতাসের বাধার জন্য, ভারের জন্য না।</p>
+  <p>বাতাস সরিয়ে দিলে, মানে বায়ুশূন্য জায়গায়, একটা পালক আর একটা কয়েন একসাথে ছেড়ে দিলে দুটো একসাথে পড়ে। চাঁদে বাতাস নেই। সেখানে একজন নভোচারী সত্যি সত্যি একটা হাতুড়ি আর একটা পালক একসাথে ফেলে দেখিয়েছিলেন, দুটোই একসাথে মাটি ছুঁয়েছিল।</p>
+  <div class="def"><span class="t">গ্যালিলিওর পড়ন্ত বস্তুর সূত্র (বায়ুর বাধা না থাকলে):</span><br>১. স্থির অবস্থা থেকে একই উচ্চতা থেকে ছাড়লে হালকা-ভারী সব বস্তু একই সময়ে মাটিতে পড়ে।<br>২. পড়ার সময় বেগ সময়ের সমানুপাতে বাড়ে (v ∝ t)।<br>৩. পড়ে আসা দূরত্ব সময়ের বর্গের সমানুপাতে বাড়ে (h ∝ t²)।</div>
+  <figure>
+    <svg viewBox="0 0 640 300" role="img" aria-label="ছাদ থেকে পড়া বলের প্রতি অর্ধ সেকেন্ডের অবস্থান, ফাঁক বাড়ছে">
+      <rect x="40" y="20" width="120" height="270" class="s-ink f-sheet"/>
+      <g class="s-thin"><rect x="60" y="40" width="30" height="30"/><rect x="110" y="40" width="30" height="30"/><rect x="60" y="100" width="30" height="30"/><rect x="110" y="100" width="30" height="30"/><rect x="60" y="160" width="30" height="30"/><rect x="110" y="160" width="30" height="30"/><rect x="60" y="220" width="30" height="30"/><rect x="110" y="220" width="30" height="30"/></g>
+      <line x1="20" y1="290" x2="620" y2="290" class="s-ink"/>
+      <circle cx="200" cy="24" r="9" class="s-ink f-gold"/><circle cx="200" cy="39" r="9" class="s-ink f-gold"/><circle cx="200" cy="84" r="9" class="s-ink f-gold"/><circle cx="200" cy="159" r="9" class="s-ink f-gold"/><circle cx="200" cy="264" r="9" class="s-ink f-gold"/>
+      <g class="sm"><text x="222" y="28" class="sm">0 s</text><text x="222" y="44" class="sm">0.5 s</text><text x="222" y="88" class="sm">1 s</text><text x="222" y="163" class="sm">1.5 s</text><text x="222" y="268" class="sm">2 s</text></g>
+      <text x="330" y="80" class="hand">প্রতিবার ফাঁক বাড়ছে</text>
+      <text x="330" y="130">g = 9.8 m/s²</text>
+      <text x="330" y="156" class="sm">প্রতি সেকেন্ডে বেগ বাড়ে 9.8 m/s করে</text>
+      <text x="330" y="200" class="sm">2 সেকেন্ডে পড়ে 19.6 m, প্রায় ছয়তলা</text>
+    </svg>
+    <figcaption>ছবি ৭: ছাদ থেকে ছেড়ে দেওয়া বল। প্রতি আধা সেকেন্ডে অবস্থান দেখানো হয়েছে।</figcaption>
+  </figure>
+  <p>পড়ন্ত বস্তুর ত্বরণকে বলে <b>অভিকর্ষজ ত্বরণ</b>, চিহ্ন <b>g</b>। পৃথিবীর পৃষ্ঠে এর মান প্রায় <span class="num">9.8 m/s²</span>। গতির চার সমীকরণে a-এর জায়গায় g, আর s-এর জায়গায় উচ্চতা h বসালেই পড়ন্ত বস্তুর সূত্র পেয়ে যাবে।</p>
+  <div class="ex">
+    <div class="h">উদাহরণ ৭: ছাদ থেকে ঢিল</div>
+    <p>ছাদ থেকে একটা ঢিল ছেড়ে দিলে (ছুড়ে না, শুধু ছেড়ে দিলে) সেটা ২ সেকেন্ডে মাটিতে পড়ল। ছাদ কত উঁচু, আর মাটিতে পড়ার মুহূর্তে বেগ কত? (বাতাসের বাধা বাদ)</p>
+    <ol>
+      <li>u = 0, g = 9.8 m/s², t = 2 s</li>
+      <li><span class="num">h = ½gt² = ½ × 9.8 × 4 = 19.6 m</span></li>
+      <li><span class="num">v = gt = 9.8 × 2 = 19.6 m/s</span></li>
+    </ol>
+    <p>উত্তর: উচ্চতা <span class="ans num">19.6 m</span>, বেগ <span class="ans num">19.6 m/s</span> (ঘণ্টায় প্রায় ৭০ কিমি!)। এজন্যই ছাদ থেকে কিছু ফেলা বিপজ্জনক।</p>
+  </div>
+  <div class="ex">
+    <div class="h">উদাহরণ ৮: ক্রিকেট বল সোজা ওপরে</div>
+    <p>ক্যাচ প্র্যাকটিসে তুমি একটা বল 19.6 m/s বেগে সোজা ওপরে ছুড়লে। বলটা কত উঁচুতে উঠবে, আর উঠতে কত সময় লাগবে?</p>
+    <ol>
+      <li>ওপরে উঠতে উঠতে বেগ কমে, তাই ত্বরণ = −g। সবচেয়ে উঁচুতে v = 0।</li>
+      <li><span class="num">v = u − gt → 0 = 19.6 − 9.8t → t = 2 s</span></li>
+      <li><span class="num">v² = u² − 2gh → 0 = 19.6² − 2 × 9.8 × h → h = 19.6 m</span></li>
+    </ol>
+    <p>উত্তর: <span class="ans num">19.6 m</span> উঁচুতে, <span class="ans num">2 s</span>-এ। মজার ব্যাপার দেখো, উদাহরণ ৭-এর ঠিক উল্টো গল্প। নামতেও আবার ঠিক ২ সেকেন্ড লাগবে।</p>
+  </div>
+  <div class="oops"><span class="h">সাধারণ ভুল:</span> <s>সবচেয়ে উঁচু বিন্দুতে বলের ত্বরণ শূন্য।</s> ওখানে বেগ শূন্য, কিন্তু ত্বরণ তখনও g, নিচের দিকে। ত্বরণ শূন্য হলে বল আকাশে ঝুলে থাকত!</div>
+</section>
+
+<!-- 2.9 -->
+<section class="part" id="graphs">
+  <div class="part-head"><span class="part-no">নিজে করো</span><h2>গ্রাফ পড়ে গতির গল্প বোঝা</h2></div>
+  <p>গ্রাফ হলো গতির ছোট্ট কমিকস। একবার দেখলেই বোঝা যায় বস্তুটা কী করছিল।</p>
+  <div class="fig-row">
+    <figure>
+      <svg viewBox="0 0 300 200" role="img" aria-label="দূরত্ব-সময় লেখচিত্র: সোজা রেখা সুষম দ্রুতি, বাঁকা রেখা ত্বরণ">
+        <line x1="40" y1="170" x2="285" y2="170" class="s-ink"/><line x1="40" y1="170" x2="40" y2="15" class="s-ink"/>
+        <line x1="40" y1="170" x2="250" y2="50" class="s-board"/>
+        <path d="M40 170 Q 180 165 250 25" class="s-red"/>
+        <text x="190" y="188" class="sm">সময়</text><text x="46" y="24" class="sm">দূরত্ব</text>
+        <text x="150" y="128" style="fill:var(--accent);font-size:13px">সোজা: সুষম দ্রুতি</text>
+        <text x="160" y="58" class="hand" style="font-size:14px">বাঁকা: দ্রুতি বাড়ছে</text>
+      </svg>
+      <figcaption>দূরত্ব-সময় গ্রাফ: রেখার ঢাল = দ্রুতি। খাড়া রেখা মানে বেশি দ্রুতি, আনুভূমিক রেখা মানে বস্তু থেমে আছে।</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 300 200" role="img" aria-label="বেগ-সময় লেখচিত্র: আনুভূমিক রেখা সুষম বেগ, ঢালু রেখা সমত্বরণ">
+        <line x1="40" y1="170" x2="285" y2="170" class="s-ink"/><line x1="40" y1="170" x2="40" y2="15" class="s-ink"/>
+        <line x1="40" y1="110" x2="270" y2="110" class="s-board"/>
+        <line x1="40" y1="170" x2="250" y2="30" class="s-red"/>
+        <text x="190" y="188" class="sm">সময়</text><text x="46" y="24" class="sm">বেগ</text>
+        <text x="170" y="128" style="fill:var(--accent);font-size:13px">সুষম বেগ</text>
+        <text x="150" y="54" class="hand" style="font-size:14px">সমত্বরণ</text>
+      </svg>
+      <figcaption>বেগ-সময় গ্রাফ: রেখার ঢাল = ত্বরণ, আর রেখার নিচের ক্ষেত্রফল = সরণ।</figcaption>
+    </figure>
+  </div>
+  <div class="think"><div class="h">ভেবে দেখো</div>দূরত্ব-সময় গ্রাফে একটা খাড়া দেয়ালের মতো সোজা ওপরে ওঠা রেখা কি কখনো সম্ভব? (ইঙ্গিত: শূন্য সময়ে কিছু দূরত্ব যাওয়া মানে দ্রুতি কত?)</div>
+</section>
+
+<!-- Practice -->
+<section class="part" id="practice">
+  <div class="part-head"><span class="part-no">অনুশীলনী</span><h2>নিজে যাচাই করো</h2></div>
+  <p>উত্তরে চাপ দাও। সঠিক হলে সবুজ, ভুল হলে লাল হবে, সাথে ব্যাখ্যাও আসবে।</p>
+  <div id="mcqs"></div>
+
+  <h3>সৃজনশীল প্রশ্ন</h3>
+  <div class="ex">
+    <p>রাফি সাইকেলে স্থির অবস্থা থেকে যাত্রা শুরু করে 2 m/s² সুষম ত্বরণে ৫ সেকেন্ড চলল। এরপর পাওয়া বেগে আরও ১০ সেকেন্ড সমবেগে চলল। শেষে ব্রেক কষে সমমন্দনে ৪ সেকেন্ডে থেমে গেল।</p>
+    <ol type="a" style="list-style:none;padding-left:0">
+      <li>(ক) ত্বরণ কাকে বলে? <span class="num">[১]</span></li>
+      <li>(খ) চলন্ত বাসে বসা যাত্রী একই সাথে স্থির আবার গতিশীল, ব্যাখ্যা করো। <span class="num">[২]</span></li>
+      <li>(গ) প্রথম ৫ সেকেন্ড শেষে রাফির বেগ আর এই সময়ে অতিক্রান্ত দূরত্ব নির্ণয় করো। <span class="num">[৩]</span></li>
+      <li>(ঘ) পুরো যাত্রার বেগ-সময় লেখচিত্র এঁকে মোট দূরত্ব ও গড় দ্রুতি বিশ্লেষণ করো। <span class="num">[৪]</span></li>
+    </ol>
+  </div>
+  <details>
+    <summary>নমুনা উত্তর দেখো (আগে নিজে চেষ্টা করো)</summary>
+    <p><b>(ক)</b> সময়ের সাথে বস্তুর বেগ বৃদ্ধির হারকে ত্বরণ বলে।</p>
+    <p><b>(খ)</b> যাত্রী বাসের সাপেক্ষে নিজের অবস্থান বদলাচ্ছেন না, তাই বাসের সাপেক্ষে তিনি স্থির। কিন্তু রাস্তার পাশের গাছ বা বাড়ির সাপেক্ষে তাঁর অবস্থান প্রতি মুহূর্তে বদলাচ্ছে, তাই তাদের সাপেক্ষে তিনি গতিশীল। স্থিতি আর গতি দুটোই প্রসঙ্গ কাঠামোর ওপর নির্ভর করে।</p>
+    <p><b>(গ)</b> u = 0, a = 2 m/s², t = 5 s। v = u + at = 0 + 2×5 = <b>10 m/s</b>। s = ut + ½at² = ½×2×25 = <b>25 m</b>।</p>
+    <p><b>(ঘ)</b> বেগ-সময় লেখচিত্রে তিনটা অংশ: (০→৫ s) 0 থেকে 10 m/s পর্যন্ত ঢালু রেখা, (৫→১৫ s) 10 m/s-এ আনুভূমিক রেখা, (১৫→১৯ s) 10 থেকে 0 পর্যন্ত নামা রেখা। ক্ষেত্রফল = সরণ:<br>
+    প্রথম অংশ: ½×5×10 = 25 m; দ্বিতীয়: 10×10 = 100 m; তৃতীয়: ½×4×10 = 20 m। মোট দূরত্ব = <b>145 m</b>।<br>
+    মোট সময় = 5 + 10 + 4 = 19 s। গড় দ্রুতি = 145 ÷ 19 ≈ <b>7.63 m/s</b>। এটা সর্বোচ্চ বেগ 10 m/s-এর চেয়ে কম, কারণ শুরু আর শেষে রাফি ধীরে চলছিল।</p>
+  </details>
+
+  <h3>বাড়ির কাজ (বাস্তবে করে দেখো)</h3>
+  <ol>
+    <li>বাসার সামনে ২০ মিটার মেপে নাও (৩০টা বড় পা ধরে নিতে পারো)। মোবাইলের স্টপওয়াচ দিয়ে হেঁটে আর দৌড়ে কত সেকেন্ড লাগে মাপো। দুটো দ্রুতিই m/s আর km/h-এ বের করো।</li>
+    <li>পরের বার বাস বা গাড়িতে উঠলে কোনো এক মিনিটে স্পিডোমিটারের মান তিনবার লিখে রাখো। বেগ সুষম ছিল কি না, যুক্তি দিয়ে লেখো।</li>
+    <li>একটা কাগজ আর একটা বই একসাথে ছাড়ো। এবার কাগজটা বইয়ের ওপরে রেখে ছাড়ো। কী দেখলে, আর কেন, তিন লাইনে লেখো।</li>
+  </ol>
+</section>
+
+<!-- Summary -->
+<section class="part" id="summary">
+  <div class="part-head"><span class="part-no">এক নজরে</span><h2>পুরো অধ্যায় এক পাতায়</h2></div>
+  <ul class="summary">
+    <li>স্থিতি আর গতি আপেক্ষিক। সবসময় প্রশ্ন করো: "কার সাপেক্ষে?"</li>
+    <li>গতি পাঁচ রকম: রৈখিক, ঘূর্ণন, চলন, পর্যাবৃত্ত, স্পন্দন।</li>
+    <li>স্কেলারের শুধু মান, ভেক্টরের মান আর দিক দুটোই।</li>
+    <li>দূরত্ব হলো আসল পথ, সরণ হলো সোজা তীর। এক চক্কর ঘুরে এলে সরণ শূন্য।</li>
+    <li>দ্রুতি = দূরত্ব ÷ সময়; বেগ = সরণ ÷ সময়। km/h থেকে m/s করতে × 5/18।</li>
+    <li>ত্বরণ = বেগ বদলের হার, a = (v−u)/t। বেগ কমলে মন্দন।</li>
+    <li>চার সূত্র: v = u+at, s = ut+½at², v² = u²+2as, s = ½(u+v)t। এগুলো সবই বেগ-সময় গ্রাফ থেকে আসে।</li>
+    <li>বাতাস না থাকলে সব বস্তু একসাথে পড়ে; g ≈ 9.8 m/s²।</li>
+    <li>দূরত্ব-সময় গ্রাফের ঢাল = দ্রুতি; বেগ-সময় গ্রাফের ঢাল = ত্বরণ, ক্ষেত্রফল = সরণ।</li>
+  </ul>
+</section>
+
+<details id="teacher">
+  <summary>শিক্ষকের জন্য: ক্লাস পরিকল্পনা ও টিপস</summary>
+  <h3>৪ ক্লাসে ভাগ (প্রতিটা ৬০ মিনিট)</h3>
+  <div class="tbl"><table>
+    <tr><th>ক্লাস</th><th>অংশ</th><th>কী করাবেন</th></tr>
+    <tr><td class="num">১</td><td>২.১–২.৩</td><td>১০ মিনিট বাসের গল্প ও আলোচনা; ১৫ মিনিট গতির ধরন, ছাত্রদের দিয়েই ক্লাসরুমে উদাহরণ খোঁজানো; ২০ মিনিট স্কেলার-ভেক্টর; শেষ ১৫ মিনিটে ৪টা MCQ।</td></tr>
+    <tr><td class="num">২</td><td>২.৪–২.৫</td><td>বোর্ডে বাসা-স্কুলের ম্যাপ এঁকে দূরত্ব-সরণ; মাঠের উদাহরণ; km/h↔m/s রূপান্তরের ৫টা দ্রুত অনুশীলন।</td></tr>
+    <tr><td class="num">৩</td><td>২.৬–২.৭</td><td>ত্বরণ; বেগ-সময় গ্রাফ এঁকে চার সূত্র বোর্ডে নিজে বের করে দেখানো (মুখস্থ নয়); উদাহরণ ৫ ও ৬।</td></tr>
+    <tr><td class="num">৪</td><td>২.৮ ও নিজে করো</td><td>কাগজ-বই পরীক্ষা ক্লাসেই দেখান; পড়ন্ত বস্তুর অঙ্ক; গ্রাফ পড়া; সৃজনশীল প্রশ্ন ক্লাসে আলোচনা, এক্সাম অ্যাপে MCQ টেস্ট দিন।</td></tr>
+  </table></div>
+  <h3>ক্লাসে জিজ্ঞেস করার প্রশ্ন</h3>
+  <ul>
+    <li>তুমি এখন কার সাপেক্ষে স্থির, আর কার সাপেক্ষে গতিশীল?</li>
+    <li>দূরত্ব শূন্য কিন্তু সরণ শূন্য নয়, এমন হতে পারে কি?</li>
+    <li>বেগ শূন্য অথচ ত্বরণ আছে, এমন একটা মুহূর্তের উদাহরণ দাও।</li>
+  </ul>
+  <h3>শিক্ষার্থীরা যেখানে আটকায়</h3>
+  <ul>
+    <li>একক মেলানো (km/h বনাম m/s)। প্রতিটা অঙ্কের শুরুতে "দেওয়া আছে" লিখে একক রূপান্তর করানোর অভ্যাস করান।</li>
+    <li>কোন সূত্র নেবে বুঝতে না পারা। "যে রাশি নেই" নিয়মটা বারবার বলুন।</li>
+    <li>ওপরে ছোড়া বস্তুর চিহ্ন (−g)। ওপরের দিক ধনাত্মক ধরলে g ঋণাত্মক, এটা একবার বোর্ডে তীর এঁকে দেখান।</li>
+    <li>গাণিতিক প্রস্তুতি: বর্গ ও বর্গমূল, আর রৈখিক সমীকরণ থেকে একটা অজানা বের করা। দুর্বল শিক্ষার্থীকে আগে ৫ মিনিটের রিভিশন দিন।</li>
+  </ul>
+</details>
+
+<footer>Mastermoshai লেকচার শিট · ক্লাস ৯–১০ পদার্থবিজ্ঞান, অধ্যায় ২ (গতি)। জাতীয় শিক্ষাক্রম ও পাঠ্যপুস্তক বোর্ডের পাঠ্যবইয়ের অধ্যায়ক্রম অনুসারে নিজস্ব ভাষায় লেখা। উদাহরণের সংখ্যাগুলো হিসাবের সুবিধার জন্য গোল করে ধরা।</footer>
+</main>
+
+<script>
+(function(){
+  var kmh=document.getElementById('kmh'), ms=document.getElementById('ms');
+  function conv(){var v=parseFloat(kmh.value);ms.textContent=isNaN(v)?'—':(Math.round(v*5/18*100)/100)+' m/s';}
+  kmh.addEventListener('input',conv);conv();
+
+  var Q=[
+    {q:'নিচের কোনটি ভেক্টর রাশি?',o:['দ্রুতি','দূরত্ব','বেগ','সময়'],a:2,w:'বেগের মান আর দিক দুটোই আছে। বাকি তিনটার শুধু মান।'},
+    {q:'৪০০ m ট্র্যাকে এক চক্কর দৌড়ে শুরুর জায়গায় ফিরলে সরণ কত?',o:['400 m','200 m','0 m','800 m'],a:2,w:'শুরু আর শেষ একই বিন্দু, তাই সরণ শূন্য। দূরত্ব অবশ্য 400 m।'},
+    {q:'54 km/h = কত m/s?',o:['15 m/s','5.4 m/s','194.4 m/s','20 m/s'],a:0,w:'54 × 5/18 = 15 m/s।'},
+    {q:'একটা গাড়ি স্থির অবস্থা থেকে 4 s-এ 12 m/s বেগ পেল। ত্বরণ কত?',o:['48 m/s²','3 m/s²','8 m/s²','0.33 m/s²'],a:1,w:'a = (12 − 0) ÷ 4 = 3 m/s²।'},
+    {q:'বেগ-সময় লেখচিত্রের ঢাল কী নির্দেশ করে?',o:['সরণ','দ্রুতি','ত্বরণ','দূরত্ব'],a:2,w:'বেগ কত দ্রুত বদলায়, সেটাই ঢাল, অর্থাৎ ত্বরণ। ক্ষেত্রফল দেয় সরণ।'},
+    {q:'চলন্ত সিলিং ফ্যানের পাখার গতি কোন ধরনের?',o:['চলন','ঘূর্ণন','স্পন্দন','রৈখিক'],a:1,w:'পাখা একটা অক্ষকে ঘিরে ঘোরে, তাই ঘূর্ণন গতি।'},
+    {q:'স্থির অবস্থা থেকে পড়ন্ত বস্তুর 3 s পর বেগ কত? (g = 9.8 m/s²)',o:['9.8 m/s','29.4 m/s','44.1 m/s','3.27 m/s'],a:1,w:'v = gt = 9.8 × 3 = 29.4 m/s।'},
+    {q:'(i) সুষম বেগে চলা বস্তুর ত্বরণ শূন্য (ii) মন্দন মানে ঋণাত্মক ত্বরণ (iii) দ্রুতি ঋণাত্মক হতে পারে। কোনটি সঠিক?',o:['i ও ii','i ও iii','ii ও iii','i, ii ও iii'],a:0,w:'দ্রুতি স্কেলার আর দূরত্ব কখনো ঋণাত্মক হয় না, তাই দ্রুতিও ঋণাত্মক হয় না।'}
+  ];
+  var bn='০১২৩৪৫৬৭৮৯', L=['ক','খ','গ','ঘ'];
+  function b(n){return String(n).replace(/\d/g,function(d){return bn[d];});}
+  var root=document.getElementById('mcqs');
+  Q.forEach(function(it,i){
+    var box=document.createElement('div');box.className='mcq';
+    var q=document.createElement('div');q.className='q';q.textContent=b(i+1)+'. '+it.q;box.appendChild(q);
+    var opts=document.createElement('div');opts.className='opts';
+    var why=document.createElement('div');why.className='why';why.hidden=true;
+    it.o.forEach(function(t,j){
+      var btn=document.createElement('button');btn.type='button';btn.id='q'+i+'o'+j;btn.textContent='('+L[j]+') '+t;
+      btn.addEventListener('click',function(){
+        Array.prototype.forEach.call(opts.children,function(x,k){x.classList.remove('right','wrong');if(k===it.a)x.classList.add('right');});
+        if(j!==it.a)btn.classList.add('wrong');
+        why.textContent=(j===it.a?'ঠিক! ':'হয়নি। সঠিক উত্তর ('+L[it.a]+')। ')+it.w;why.hidden=false;
+      });
+      opts.appendChild(btn);
+    });
+    box.appendChild(opts);box.appendChild(why);root.appendChild(box);
+  });
+})();
+</script>
