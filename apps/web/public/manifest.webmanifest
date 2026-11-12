@@ -1,26 +1,23 @@
 {
-  "name": "Mastermoshai",
-  "short_name": "Mastermoshai",
-  "start_url": "/",
+  "id": "/",
+  "name": "মাস্টারমশাই · Mastermoshai",
+  "short_name": "মাস্টারমশাই",
+  "description": "যে মাস্টারমশাই ফাঁকি দেন না। ঢাকার অনলাইন আর বাসার টিউটর, লাইভ ক্লাস, পরীক্ষা।",
+  "lang": "bn",
+  "start_url": "/?source=app",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ff6b4a",
+  "orientation": "any",
+  "background_color": "#f6f3ec",
+  "theme_color": "#163129",
+  "categories": ["education"],
   "icons": [
-    {
-      "src": "/brand/app-icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/brand/app-icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/brand/app-icon-square-1024.png",
-      "sizes": "1024x1024",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/brand/app-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/brand/app-icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/brand/app-icon-square-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "আমার ক্লাস", "url": "/dashboard/student?source=app", "icons": [{ "src": "/brand/app-icon-192.png", "sizes": "192x192" }] },
+    { "name": "টিচার প্যানেল", "url": "/teach?source=app", "icons": [{ "src": "/brand/app-icon-192.png", "sizes": "192x192" }] }
   ]
 }

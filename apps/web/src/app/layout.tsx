@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
 import { copy } from "@/lib/copy";
@@ -6,6 +6,9 @@ import { signOut } from "@/lib/auth/actions";
 import { getUser } from "@/lib/auth/session";
 import { getLang } from "@/lib/lang";
 import { LangProvider, LangToggle } from "@/lib/lang-client";
+import InstallApp from "@/components/InstallApp";
+
+export const viewport: Viewport = { themeColor: "#163129", width: "device-width", initialScale: 1 };
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getLang();
@@ -15,6 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     manifest: "/manifest.webmanifest",
     icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/brand/favicon-32.png", sizes: "32x32" }], apple: "/apple-icon.png" },
     openGraph: { siteName: lang === "bn" ? "মাস্টারমশাই" : "Mastermoshai", images: ["/brand/logo-horizontal@4x.png"] },
+    appleWebApp: { capable: true, title: lang === "bn" ? "মাস্টারমশাই" : "Mastermoshai", statusBarStyle: "default" },
     title: c.meta.title,
     description: c.meta.description,
   };
@@ -73,6 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </nav>
         </header>
         <main>{children}</main>
+        <InstallApp />
         <footer className="mt-24 bg-board text-white">
           <div className="mx-auto grid max-w-7xl gap-8 px-5 py-14 sm:grid-cols-4">
             <div>
