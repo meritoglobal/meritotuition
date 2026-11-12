@@ -19,7 +19,7 @@ export const DEMO_COOKIE = "mm_demo_user";
 export const DEMO_CODE = "123456";
 
 /** Pages that need a signed-in user. */
-export const PROTECTED_PREFIXES = ["/dashboard", "/book", "/class"];
+export const PROTECTED_PREFIXES = ["/dashboard", "/book", "/class", "/exams", "/teach"];
 export const AFTER_LOGIN = "/dashboard/student";
 
 /** Only allow same-site relative redirects after login. */

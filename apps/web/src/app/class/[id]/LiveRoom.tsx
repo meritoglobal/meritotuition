@@ -19,6 +19,7 @@ import {
 import { ConnectionState, MediaDeviceFailure, RoomEvent, Track, VideoPresets, type Participant, type RoomOptions } from "livekit-client";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
+import { toolsCopy } from "@/lib/copy-tools";
 import { useLang } from "@/lib/lang-client";
 import { PollAnswer, PollComposer, PollLive, usePolls } from "./Polls";
 
@@ -44,10 +45,11 @@ const ROOM_OPTIONS: RoomOptions = {
   },
 };
 
-export default function LiveRoom({ url, token, title, role, onLeave }: { url: string; token: string; title: string; role: Role; onLeave: (how: "left" | "failed") => void }) {
+export default function LiveRoom({ classId, url, token, title, role, onLeave }: { classId: string; url: string; token: string; title: string; role: Role; onLeave: (how: "left" | "failed") => void }) {
   const c = copy(useLang()).room.lk;
   const [err, setErr] = useState("");
   const connected = useRef(false);
+  const [recording, setRecording] = useState(false);
   // Full screen: native where the browser allows it (Android, desktop), and a
   // fixed overlay everywhere (iPhone Safari cannot full-screen a div).
   const wrap = useRef<HTMLDivElement>(null);
@@ -75,20 +77,27 @@ export default function LiveRoom({ url, token, title, role, onLeave }: { url: st
       audio
       video
       options={ROOM_OPTIONS}
-      onConnected={() => { connected.current = true; }}
+      onConnected={() => {
+        connected.current = true;
+        // Tutor in the room → start the class recording (no-op if already running or not set up).
+        if (role === "teacher") {
+          void fetch(`/api/class/${encodeURIComponent(classId)}/record?as=teacher`, { method: "POST" })
+            .then((r) => r.json()).then((j) => setRecording(j.state === "started" || j.state === "already")).catch(() => {});
+        }
+      }}
       onDisconnected={() => onLeave(connected.current ? "left" : "failed")}
       onMediaDeviceFailure={(f) => setErr(f === MediaDeviceFailure.PermissionDenied ? c.noPerm : c.failed)}
       onError={() => setErr(c.failed)}
       className={`flex flex-col overflow-hidden bg-board text-white ${fs ? "h-dvh" : "h-[78vh] min-h-[520px] rounded-xl"}`}
     >
-      <Stage title={title} role={role} err={err} fs={fs} toggleFs={toggleFs} />
+      <Stage title={title} role={role} err={err} fs={fs} toggleFs={toggleFs} recording={recording} />
       <RoomAudioRenderer />
     </LiveKitRoom>
     </div>
   );
 }
 
-function Stage({ title, role, err, fs, toggleFs }: { title: string; role: Role; err: string; fs: boolean; toggleFs: () => void }) {
+function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; role: Role; err: string; fs: boolean; toggleFs: () => void; recording: boolean }) {
   const lang = useLang();
   const c = copy(lang).room;
   const room = useRoomContext();
@@ -130,6 +139,7 @@ function Stage({ title, role, err, fs, toggleFs }: { title: string; role: Role; 
         <span className="truncate font-medium">{title}</span>
         <span className="flex shrink-0 items-center gap-3">
           <NetBadge />
+          {recording && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" />{toolsCopy(lang).rec.recording}</span>}
           <span className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-redpen" /> {c.live}</span>
         </span>
       </div>

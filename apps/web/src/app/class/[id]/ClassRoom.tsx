@@ -68,7 +68,7 @@ export default function ClassRoom({ classId, live, title, teacher, role }: { cla
   const mmss = L.num(`${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`, lang);
 
   if (joined && live && conn && !ended) {
-    return <LiveRoom url={conn.url} token={conn.token} title={title} role={role} onLeave={(how) => {
+    return <LiveRoom classId={classId} url={conn.url} token={conn.token} title={title} role={role} onLeave={(how) => {
       setJoined(false); setConn(null);
       if (how === "left") setEnded(true);
       else { setErr(c.lk.failed); if (role === "teacher") setTeacherStarted(false); }

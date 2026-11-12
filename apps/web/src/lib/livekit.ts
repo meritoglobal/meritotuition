@@ -1,5 +1,8 @@
 import "server-only";
-import { AccessToken, RoomServiceClient, TrackSource, WebhookReceiver } from "livekit-server-sdk";
+import {
+  AccessToken, EgressClient, EncodedFileOutput, EncodedFileType, EncodingOptionsPreset, RoomServiceClient, S3Upload, TrackSource, WebhookReceiver,
+} from "livekit-server-sdk";
+import { s3Target } from "@/lib/data";
 
 /**
  * LiveKit settings, read from server env (never NEXT_PUBLIC: the secret must
@@ -54,3 +57,31 @@ export async function teacherPresent(classId: string): Promise<boolean> {
 }
 
 export const webhookReceiver = () => new WebhookReceiver(KEY, SECRET);
+
+export type RecordState = "started" | "already" | "off" | "failed";
+
+/**
+ * Record the whole class (tutor camera, screen share and everyone's audio) into
+ * the class-files bucket under recordings/<classId>/. LiveKit stops and uploads
+ * the file by itself when the room empties.
+ */
+export async function startRecording(classId: string): Promise<RecordState> {
+  const s3 = s3Target();
+  if (!LK_LIVE || !s3) return "off";
+  const eg = new EgressClient(httpUrl(URL_), KEY, SECRET);
+  const room = roomName(classId);
+  try {
+    const active = await eg.listEgress({ roomName: room, active: true });
+    if (active.length > 0) return "already";
+    const output = new EncodedFileOutput({
+      fileType: EncodedFileType.MP4,
+      filepath: `recordings/${classId}/{time}.mp4`,
+      output: { case: "s3", value: new S3Upload({ ...s3, forcePathStyle: true }) },
+    });
+    await eg.startRoomCompositeEgress(room, output, { layout: "speaker", encodingOptions: EncodingOptionsPreset.H264_720P_30 });
+    return "started";
+  } catch (e) {
+    console.error("[recording]", (e as Error).message);
+    return "failed";
+  }
+}
