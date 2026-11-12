@@ -20,6 +20,7 @@ import { ConnectionState, MediaDeviceFailure, RoomEvent, Track, VideoPresets, ty
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
+import { PollAnswer, PollComposer, PollLive, usePolls } from "./Polls";
 
 type Role = "teacher" | "student";
 const roleOf = (p?: Participant) => (p?.attributes?.role === "teacher" ? "teacher" : "student");
@@ -47,7 +48,26 @@ export default function LiveRoom({ url, token, title, role, onLeave }: { url: st
   const c = copy(useLang()).room.lk;
   const [err, setErr] = useState("");
   const connected = useRef(false);
+  // Full screen: native where the browser allows it (Android, desktop), and a
+  // fixed overlay everywhere (iPhone Safari cannot full-screen a div).
+  const wrap = useRef<HTMLDivElement>(null);
+  const [fs, setFs] = useState(false);
+  useEffect(() => {
+    const f = () => { if (!document.fullscreenElement) setFs(false); };
+    document.addEventListener("fullscreenchange", f);
+    return () => document.removeEventListener("fullscreenchange", f);
+  }, []);
+  const toggleFs = () => {
+    if (fs) {
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+      setFs(false);
+    } else {
+      setFs(true);
+      void wrap.current?.requestFullscreen?.().catch(() => {});
+    }
+  };
   return (
+    <div ref={wrap} className={fs ? "fixed inset-0 z-[70] bg-board" : ""}>
     <LiveKitRoom
       serverUrl={url}
       token={token}
@@ -59,20 +79,24 @@ export default function LiveRoom({ url, token, title, role, onLeave }: { url: st
       onDisconnected={() => onLeave(connected.current ? "left" : "failed")}
       onMediaDeviceFailure={(f) => setErr(f === MediaDeviceFailure.PermissionDenied ? c.noPerm : c.failed)}
       onError={() => setErr(c.failed)}
-      className="flex h-[78vh] min-h-[520px] flex-col overflow-hidden rounded-xl bg-board text-white"
+      className={`flex flex-col overflow-hidden bg-board text-white ${fs ? "h-dvh" : "h-[78vh] min-h-[520px] rounded-xl"}`}
     >
-      <Stage title={title} role={role} err={err} />
+      <Stage title={title} role={role} err={err} fs={fs} toggleFs={toggleFs} />
       <RoomAudioRenderer />
     </LiveKitRoom>
+    </div>
   );
 }
 
-function Stage({ title, role, err }: { title: string; role: Role; err: string }) {
+function Stage({ title, role, err, fs, toggleFs }: { title: string; role: Role; err: string; fs: boolean; toggleFs: () => void }) {
   const lang = useLang();
   const c = copy(lang).room;
   const room = useRoomContext();
   const state = useConnectionState();
   const [chatOpen, setChatOpen] = useState(false);
+  const [screenOnly, setScreenOnly] = useState(false);
+  const [composing, setComposing] = useState(false);
+  const polls = usePolls(role);
   const [, bump] = useState(0);
   // Chat lives here (always mounted) so messages sent while the panel is closed are kept.
   const chat = useChat();
@@ -97,6 +121,7 @@ function Stage({ title, role, err }: { title: string; role: Role; err: string })
   const teacherCam = tracks.find((t) => t.source === Track.Source.Camera && roleOf(t.participant) === "teacher");
   const main = screen ?? teacherCam;
   const strip = tracks.filter((t) => t.source === Track.Source.Camera && t !== main);
+  const focus = screenOnly && !!screen; // student chose to watch the shared screen only
   const hands = participants.filter((p) => p.attributes?.hand === "1").map((p) => (p.isLocal ? c.lk.you : p.name || p.identity));
 
   return (
@@ -114,14 +139,14 @@ function Stage({ title, role, err }: { title: string; role: Role; err: string })
           {err || (state === ConnectionState.Reconnecting ? c.lk.reconnecting : c.lk.connecting)}
         </div>
       )}
-      {hands.length > 0 && <div className="mx-2 mb-2 rounded-lg bg-white/10 px-3 py-2 text-sm">{c.lk.hands(hands.join(", "))}</div>}
+      {!focus && hands.length > 0 && <div className="mx-2 mb-2 rounded-lg bg-white/10 px-3 py-2 text-sm">{c.lk.hands(hands.join(", "))}</div>}
 
-      <div className="flex min-h-0 flex-1 gap-2 px-2">
+      <div className="relative flex min-h-0 flex-1 gap-2 px-2">
         <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row">
           <div className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-black/40">
             {main ? <Tile t={main} fit={main === screen ? "contain" : "cover"} big /> : <Empty>{c.lk.noTeacherVideo}</Empty>}
           </div>
-          {strip.length > 0 && (
+          {!focus && strip.length > 0 && (
             <div className="flex shrink-0 gap-2 overflow-x-auto md:w-48 md:flex-col md:overflow-y-auto">
               {strip.map((t) => (
                 <div key={`${t.participant.identity}-${t.source}`} className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-black/40 md:w-full">
@@ -131,10 +156,17 @@ function Stage({ title, role, err }: { title: string; role: Role; err: string })
             </div>
           )}
         </div>
-        {chatOpen && <ChatPanel chat={chat} />}
+        {chatOpen && !focus && <ChatPanel chat={chat} />}
+        {role === "teacher" && (composing ? <PollComposer polls={polls} onClose={() => setComposing(false)} /> : <PollLive polls={polls} students={participants.filter((p) => !p.isLocal && roleOf(p) === "student").length} />)}
+        {role === "student" && <PollAnswer polls={polls} />}
       </div>
 
-      <Controls role={role} chatOpen={chatOpen} unread={unread} toggleChat={() => setChatOpen((v) => !v)} />
+      <Controls
+        role={role} chatOpen={chatOpen} unread={unread} toggleChat={() => setChatOpen((v) => !v)}
+        fs={fs} toggleFs={toggleFs}
+        hasScreen={!!screen} screenOnly={screenOnly} toggleScreenOnly={() => setScreenOnly((v) => !v)}
+        pollBusy={composing || !!polls.active} openPoll={() => setComposing(true)}
+      />
       <StartAudio label="🔊" className="sr-only" />
     </>
   );
@@ -174,7 +206,12 @@ function NetBadge() {
   return <span className="hidden items-center gap-1.5 text-xs text-white/80 sm:flex"><span className={`h-2 w-2 rounded-full ${color}`} />{label}</span>;
 }
 
-function Controls({ role, chatOpen, unread, toggleChat }: { role: Role; chatOpen: boolean; unread: number; toggleChat: () => void }) {
+function Controls(props: {
+  role: Role; chatOpen: boolean; unread: number; toggleChat: () => void;
+  fs: boolean; toggleFs: () => void; hasScreen: boolean; screenOnly: boolean; toggleScreenOnly: () => void;
+  pollBusy: boolean; openPoll: () => void;
+}) {
+  const { role, chatOpen, unread, toggleChat } = props;
   const lang = useLang();
   const c = copy(useLang()).room;
   const room = useRoomContext();
@@ -203,6 +240,13 @@ function Controls({ role, chatOpen, unread, toggleChat }: { role: Role; chatOpen
         {c.lk.chat}
         {unread > 0 && <span className="absolute -right-1.5 -top-1.5 min-w-5 rounded-full bg-redpen px-1.5 text-xs leading-5 text-white">{L.num(String(unread), lang)}</span>}
       </button>
+      {role === "teacher" && <button disabled={props.pollBusy} onClick={props.openPoll} className={`${btn(true)} disabled:opacity-50`}>{c.poll.btn}</button>}
+      {role === "student" && props.hasScreen && (
+        <button onClick={props.toggleScreenOnly} className={props.screenOnly ? "rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-board sm:px-4" : btn(true)}>
+          {props.screenOnly ? c.lk.screenAll : c.lk.screenOnly}
+        </button>
+      )}
+      <button onClick={props.toggleFs} aria-label={props.fs ? c.lk.fullExit : c.lk.full} title={props.fs ? c.lk.fullExit : c.lk.full} className={btn(true)}>{props.fs ? "⤡" : "⛶"}<span className="ml-1.5 hidden sm:inline">{props.fs ? c.lk.fullExit : c.lk.full}</span></button>
       <button onClick={() => room.disconnect()} className="rounded-lg bg-redpen px-3 py-2 text-sm font-semibold text-white sm:px-4">{c.leave}</button>
     </div>
   );
