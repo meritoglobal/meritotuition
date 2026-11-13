@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
+import { uploadClassFile } from "@/lib/class/upload";
 
 type Role = "teacher" | "student";
 type Tab = "files" | "recordings" | "exams";
@@ -76,23 +77,8 @@ function Files({ classId, role }: { classId: string; role: Role }) {
 
   async function upload(f: File) {
     setErr("");
-    const r = await fetch(`${base}/upload-url${asQ(role)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: f.name, size: f.size }) });
-    if (!r.ok) { setErr(r.status === 400 ? t.files.bad : t.error); return; }
-    const { path, signedUrl } = (await r.json()) as { path: string; signedUrl: string };
-    // XHR so we can show progress on slow connections.
-    const ok = await new Promise<boolean>((res) => {
-      const x = new XMLHttpRequest();
-      x.open("PUT", signedUrl);
-      x.setRequestHeader("content-type", f.type || "application/octet-stream");
-      x.setRequestHeader("x-upsert", "false");
-      x.upload.onprogress = (e) => e.lengthComputable && setProgress(Math.round((100 * e.loaded) / e.total));
-      x.onload = () => res(x.status >= 200 && x.status < 300);
-      x.onerror = () => res(false);
-      setProgress(0);
-      x.send(f);
-    });
-    if (ok) await fetch(`${base}${asQ(role)}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ path, title: f.name, size: f.size, mime: f.type }) });
-    else setErr(t.error);
+    const res = await uploadClassFile(classId, asQ(role), f, setProgress);
+    if (res !== "ok") setErr(res === "bad" ? t.files.bad : t.error);
   }
 
   if (state === "off") return <Note>{t.off}</Note>;

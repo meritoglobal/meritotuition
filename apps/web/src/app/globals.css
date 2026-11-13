@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant short (@media (max-height: 500px));
 
 /*
  * Mastermoshai design tokens, v2 (Nov 2026).

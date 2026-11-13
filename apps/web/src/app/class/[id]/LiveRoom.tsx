@@ -22,6 +22,8 @@ import { L } from "@/lib/l10n";
 import { toolsCopy } from "@/lib/copy-tools";
 import { useLang } from "@/lib/lang-client";
 import { PollAnswer, PollComposer, PollLive, usePolls } from "./Polls";
+import Board from "./Board";
+import { isTouchDevice, portraitProcessor } from "@/lib/class/portrait";
 
 type Role = "teacher" | "student";
 const roleOf = (p?: Participant) => (p?.attributes?.role === "teacher" ? "teacher" : "student");
@@ -47,6 +49,13 @@ const ROOM_OPTIONS: RoomOptions = {
 
 export default function LiveRoom({ classId, url, token, title, role, onLeave }: { classId: string; url: string; token: string; title: string; role: Role; onLeave: (how: "left" | "failed") => void }) {
   const c = copy(useLang()).room.lk;
+  // Tutor on a phone: send the camera as a tall 9:16 frame even when the phone lies sideways.
+  const options = useMemo<RoomOptions>(
+    () => (role === "teacher" && isTouchDevice()
+      ? { ...ROOM_OPTIONS, videoCaptureDefaults: { ...ROOM_OPTIONS.videoCaptureDefaults, processor: portraitProcessor() } }
+      : ROOM_OPTIONS),
+    [role],
+  );
   const [err, setErr] = useState("");
   const connected = useRef(false);
   const [recording, setRecording] = useState(false);
@@ -55,7 +64,12 @@ export default function LiveRoom({ classId, url, token, title, role, onLeave }: 
   const wrap = useRef<HTMLDivElement>(null);
   const [fs, setFs] = useState(false);
   useEffect(() => {
-    const f = () => { if (!document.fullscreenElement) setFs(false); };
+    const f = () => {
+      if (!document.fullscreenElement) {
+        setFs(false);
+        try { screen.orientation?.unlock?.(); } catch {}
+      }
+    };
     document.addEventListener("fullscreenchange", f);
     return () => document.removeEventListener("fullscreenchange", f);
   }, []);
@@ -68,6 +82,14 @@ export default function LiveRoom({ classId, url, token, title, role, onLeave }: 
       void wrap.current?.requestFullscreen?.().catch(() => {});
     }
   };
+  // Board on a phone: go full screen and turn sideways, so the PDF gets the whole width.
+  const landscape = async () => {
+    setFs(true);
+    try {
+      if (!document.fullscreenElement) await wrap.current?.requestFullscreen?.();
+      await (screen.orientation as ScreenOrientation & { lock?: (o: string) => Promise<void> })?.lock?.("landscape");
+    } catch {}
+  };
   return (
     <div ref={wrap} className={fs ? "fixed inset-0 z-[70] bg-board" : ""}>
     <LiveKitRoom
@@ -76,7 +98,7 @@ export default function LiveRoom({ classId, url, token, title, role, onLeave }: 
       connect
       audio
       video
-      options={ROOM_OPTIONS}
+      options={options}
       onConnected={() => {
         connected.current = true;
         // Tutor in the room → start the class recording (no-op if already running or not set up).
@@ -90,14 +112,14 @@ export default function LiveRoom({ classId, url, token, title, role, onLeave }: 
       onError={() => setErr(c.failed)}
       className={`flex flex-col overflow-hidden bg-board text-white ${fs ? "h-dvh" : "h-[78vh] min-h-[520px] rounded-xl"}`}
     >
-      <Stage title={title} role={role} err={err} fs={fs} toggleFs={toggleFs} recording={recording} />
+      <Stage classId={classId} title={title} role={role} err={err} fs={fs} toggleFs={toggleFs} landscape={landscape} recording={recording} />
       <RoomAudioRenderer />
     </LiveKitRoom>
     </div>
   );
 }
 
-function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; role: Role; err: string; fs: boolean; toggleFs: () => void; recording: boolean }) {
+function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }: { classId: string; title: string; role: Role; err: string; fs: boolean; toggleFs: () => void; landscape: () => Promise<void>; recording: boolean }) {
   const lang = useLang();
   const c = copy(lang).room;
   const room = useRoomContext();
@@ -106,6 +128,10 @@ function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; r
   const [screenOnly, setScreenOnly] = useState(false);
   const [composing, setComposing] = useState(false);
   const polls = usePolls(role);
+  const [board, setBoard] = useState(false);
+  const saveBoard = useRef<(() => Promise<void>) | null>(null);
+  const [note, setNote] = useState("");
+  useEffect(() => { if (!note) return; const k = setTimeout(() => setNote(""), 6000); return () => clearTimeout(k); }, [note]);
   const [, bump] = useState(0);
   // Chat lives here (always mounted) so messages sent while the panel is closed are kept.
   const chat = useChat();
@@ -129,13 +155,14 @@ function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; r
   const screen = tracks.find((t) => t.source === Track.Source.ScreenShare && isTrackReference(t));
   const teacherCam = tracks.find((t) => t.source === Track.Source.Camera && roleOf(t.participant) === "teacher");
   const main = screen ?? teacherCam;
+  // While the tutor has the board open, their own board track is shown as the interactive board instead.
   const strip = tracks.filter((t) => t.source === Track.Source.Camera && t !== main);
   const focus = screenOnly && !!screen; // student chose to watch the shared screen only
   const hands = participants.filter((p) => p.attributes?.hand === "1").map((p) => (p.isLocal ? c.lk.you : p.name || p.identity));
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 text-sm short:py-1.5">
         <span className="truncate font-medium">{title}</span>
         <span className="flex shrink-0 items-center gap-3">
           <NetBadge />
@@ -149,20 +176,26 @@ function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; r
           {err || (state === ConnectionState.Reconnecting ? c.lk.reconnecting : c.lk.connecting)}
         </div>
       )}
+      {note && <div className="mx-2 mb-2 rounded-lg bg-white/10 px-3 py-2 text-sm">{note}</div>}
       {!focus && hands.length > 0 && <div className="mx-2 mb-2 rounded-lg bg-white/10 px-3 py-2 text-sm">{c.lk.hands(hands.join(", "))}</div>}
 
       <div className="relative flex min-h-0 flex-1 gap-2 px-2">
-        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row">
-          <div className="relative min-h-0 flex-1 overflow-hidden rounded-lg bg-black/40">
-            {main ? <Tile t={main} fit={main === screen ? "contain" : "cover"} big /> : <Empty>{c.lk.noTeacherVideo}</Empty>}
+        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row landscape:flex-row">
+          <div className={`relative min-h-0 flex-1 overflow-hidden rounded-lg ${board ? "" : "bg-black/40"}`}>
+            {board ? (
+              <Board classId={classId} saveRef={saveBoard} onClose={() => setBoard(false)} onStatus={setNote} />
+            ) : main ? <Tile t={main} fit="contain" big /> : <Empty>{c.lk.noTeacherVideo}</Empty>}
           </div>
           {!focus && strip.length > 0 && (
-            <div className="flex shrink-0 gap-2 overflow-x-auto md:w-48 md:flex-col md:overflow-y-auto">
-              {strip.map((t) => (
-                <div key={`${t.participant.identity}-${t.source}`} className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-black/40 md:w-full">
-                  <Tile t={t} fit="cover" />
-                </div>
-              ))}
+            <div className="flex shrink-0 gap-2 overflow-x-auto md:w-48 md:flex-col md:overflow-y-auto landscape:w-32 landscape:flex-col landscape:overflow-x-hidden landscape:overflow-y-auto md:landscape:w-48">
+              {strip.map((t) => {
+                const tall = roleOf(t.participant) === "teacher"; // tutor camera is sent as a 9:16 frame from phones
+                return (
+                  <div key={`${t.participant.identity}-${t.source}`} className={`relative shrink-0 overflow-hidden rounded-lg bg-black/40 md:w-full landscape:w-full ${tall ? "aspect-[9/16] w-24 md:aspect-[3/4]" : "aspect-video w-40"}`}>
+                    <Tile t={t} fit="cover" />
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -176,6 +209,13 @@ function Stage({ title, role, err, fs, toggleFs, recording }: { title: string; r
         fs={fs} toggleFs={toggleFs}
         hasScreen={!!screen} screenOnly={screenOnly} toggleScreenOnly={() => setScreenOnly((v) => !v)}
         pollBusy={composing || !!polls.active} openPoll={() => setComposing(true)}
+        board={board}
+        toggleBoard={() => {
+          if (board) { void saveBoard.current?.().then(() => setBoard(false)); return; }
+          setBoard(true);
+          if (isTouchDevice()) void landscape();
+        }}
+        beforeLeave={async () => { if (board) await saveBoard.current?.(); }}
       />
       <StartAudio label="🔊" className="sr-only" />
     </>
@@ -220,6 +260,7 @@ function Controls(props: {
   role: Role; chatOpen: boolean; unread: number; toggleChat: () => void;
   fs: boolean; toggleFs: () => void; hasScreen: boolean; screenOnly: boolean; toggleScreenOnly: () => void;
   pollBusy: boolean; openPoll: () => void;
+  board: boolean; toggleBoard: () => void; beforeLeave: () => Promise<void>;
 }) {
   const { role, chatOpen, unread, toggleChat } = props;
   const lang = useLang();
@@ -230,13 +271,22 @@ function Controls(props: {
   const cam = useTrackToggle({ source: Track.Source.Camera });
   const scr = useTrackToggle({ source: Track.Source.ScreenShare, captureOptions: { audio: true, resolution: VideoPresets.h1080.resolution } });
   const handUp = localParticipant.attributes?.hand === "1";
+  // Phones can't share their screen; they use the PDF board instead.
+  const [canShare, setCanShare] = useState(false);
+  useEffect(() => { setCanShare(!!navigator.mediaDevices?.getDisplayMedia && !isTouchDevice()); }, []);
+  const [leaving, setLeaving] = useState(false);
 
-  const btn = (on: boolean) => `rounded-lg px-3 py-2 text-sm font-semibold sm:px-4 ${on ? "bg-white/15 hover:bg-white/25" : "bg-white text-board"}`;
+  const btn = (on: boolean) => `rounded-lg px-3 py-2 text-sm font-semibold sm:px-4 short:py-1.5 ${on ? "bg-white/15 hover:bg-white/25" : "bg-white text-board"}`;
   return (
-    <div className="flex flex-wrap justify-center gap-2 p-3 sm:gap-3 sm:p-4">
+    <div className="flex flex-wrap justify-center gap-2 p-3 sm:gap-3 sm:p-4 short:gap-1.5 short:p-1.5">
       <button disabled={mic.pending} onClick={() => mic.toggle()} className={btn(mic.enabled)}>{mic.enabled ? c.lk.mic : c.lk.micOff}</button>
       <button disabled={cam.pending} onClick={() => cam.toggle()} className={btn(cam.enabled)}>{cam.enabled ? c.lk.cam : c.lk.camOff}</button>
       {role === "teacher" && (
+        <button onClick={props.toggleBoard} className={props.board ? "rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-board sm:px-4 short:py-1.5" : btn(true)}>
+          {props.board ? toolsCopy(lang).board.close : toolsCopy(lang).board.open}
+        </button>
+      )}
+      {role === "teacher" && canShare && !props.board && (
         <button disabled={scr.pending} onClick={() => scr.toggle()} className={scr.enabled ? "rounded-lg bg-gold px-3 py-2 text-sm font-semibold text-board sm:px-4" : btn(true)}>
           {scr.enabled ? c.lk.screenOff : c.lk.screen}
         </button>
@@ -257,7 +307,7 @@ function Controls(props: {
         </button>
       )}
       <button onClick={props.toggleFs} aria-label={props.fs ? c.lk.fullExit : c.lk.full} title={props.fs ? c.lk.fullExit : c.lk.full} className={btn(true)}>{props.fs ? "⤡" : "⛶"}<span className="ml-1.5 hidden sm:inline">{props.fs ? c.lk.fullExit : c.lk.full}</span></button>
-      <button onClick={() => room.disconnect()} className="rounded-lg bg-redpen px-3 py-2 text-sm font-semibold text-white sm:px-4">{c.leave}</button>
+      <button disabled={leaving} onClick={async () => { setLeaving(true); await props.beforeLeave().catch(() => {}); void room.disconnect(); }} className="rounded-lg bg-redpen px-3 py-2 text-sm font-semibold text-white sm:px-4 short:py-1.5 disabled:opacity-60">{c.leave}</button>
     </div>
   );
 }
