@@ -1,0 +1,61 @@
+# Builds a test APK of the mobile app on every app change, and publishes it as
+# the "android-test" release so it can be downloaded straight onto a phone.
+# No expo.dev account needed. Signed with the debug key: fine for testing,
+# not for the Play Store (that build goes through EAS).
+name: Android test APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install (hoisted, so React Native's Gradle build finds every package)
+        run: pnpm install --frozen-lockfile --config.node-linker=hoisted
+      - name: Generate the Android project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform android --no-install
+      - name: Build the APK
+        working-directory: apps/mobile/android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+      - name: Rename
+        run: cp apps/mobile/android/app/build/outputs/apk/release/app-release.apk mastermoshai-test.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mastermoshai-test-apk
+          path: mastermoshai-test.apk
+      - name: Publish as the "android-test" release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-test
+          name: Mastermoshai test app (Android)
+          prerelease: true
+          make_latest: false
+          body: |
+            Test build of the Mastermoshai Android app, built from ${{ github.sha }}.
+            Download mastermoshai-test.apk on an Android phone and install it (allow "install unknown apps" when asked).
+          files: mastermoshai-test.apk
