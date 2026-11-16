@@ -20,7 +20,7 @@ APK link; open it on an Android phone and install.
 2. Create app "মাস্টারমশাই", default language Bangla.
 3. expo.dev → New build → Android, profile **production** → download the `.aab`.
 4. Upload the `.aab` to Internal testing first, then Production.
-5. Privacy policy URL: https://mastermoshai.netlify.app/privacy
+5. Privacy policy URL: https://mastermoshai.net/privacy
 6. Data safety: collects name, email, phone (account), audio/video (live class, not shared),
    files uploaded by teachers. Data encrypted in transit; users can ask for deletion.
 

@@ -42,7 +42,7 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
           <form action={setBatchActive.bind(null, b.id, !b.active)}><button className="btn-ghost text-sm">{b.active ? t.batch.archive : t.batch.unarchive}</button></form>
         </div>
       </div>
-      <p className="mt-3 text-xs text-ink-3">{t.batch.link}: <code className="select-all rounded bg-mist px-1.5 py-0.5">https://mastermoshai.netlify.app/class/{b.class_id}</code></p>
+      <p className="mt-3 text-xs text-ink-3">{t.batch.link}: <code className="select-all rounded bg-mist px-1.5 py-0.5">https://mastermoshai.net/class/{b.class_id}</code></p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.4fr]">
         <section className="card p-5">
