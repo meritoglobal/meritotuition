@@ -21,6 +21,10 @@ const FILE_RE = /\.(pdf|pptx?|docx?|xlsx?|zip|mp4)(\?|$)/i;
 const isOurs = (url: string) => {
   try { return SITE_HOSTS.includes(new URL(url).host); } catch { return false; }
 };
+// bKash checkout stays inside the app so the payment callback lands back on our page.
+const isPayment = (url: string) => {
+  try { return /(^|\.)(bka\.sh|bkash\.com)$/.test(new URL(url).host); } catch { return false; }
+};
 const isClass = (url: string) => /\/class\/[^/?#]+/.test(url);
 
 async function askCameraMic() {
@@ -66,7 +70,7 @@ export default function WebPage() {
   const onRequest = useCallback((req: { url: string; isTopFrame?: boolean }) => {
     const { url } = req;
     if (url.startsWith("about:") || url.startsWith("blob:") || url.startsWith("data:")) return true;
-    if (isOurs(url) && !FILE_RE.test(url)) return true;
+    if ((isOurs(url) || isPayment(url)) && !FILE_RE.test(url)) return true;
     if (req.isTopFrame === false) return true; // embedded frames (e.g. video players)
     void Linking.openURL(url);
     return false;
