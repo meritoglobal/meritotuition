@@ -4,15 +4,20 @@ import { getUser } from "@/lib/auth/session";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
 import { getLang } from "@/lib/lang";
+import { growthCopy } from "@/lib/copy-growth";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeachLayout({ children }: { children: React.ReactNode }) {
   if (!(await getUser())) redirect("/login?next=/teach");
-  const t = toolsCopy(await getLang()).teach;
+  const lang = await getLang();
+  const t = toolsCopy(lang).teach;
+  const g = growthCopy(lang).nav;
   const nav = [
     ["/teach", t.nav.home],
     ["/teach/content", t.nav.content],
+    ["/teach/packages", g.packages],
+    ["/teach/questions", g.questions],
     ["/teach/profile", t.nav.profile],
     ["/dashboard/teacher", t.nav.earnings],
   ] as const;

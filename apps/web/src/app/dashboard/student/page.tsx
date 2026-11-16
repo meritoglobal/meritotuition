@@ -10,6 +10,10 @@ import { getUser } from "@/lib/auth/session";
 import { nextClass, studentBatches } from "@/lib/batches";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
+import { MoreTiles } from "@/components/growth/MoreTiles";
+import { unreadCount } from "@/lib/growth/chat";
+import { claimReferral } from "@/lib/growth/page";
+import { keyOf } from "@/lib/growth/people";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +36,13 @@ export default async function StudentDashboard() {
   const user = await getUser();
   const t = toolsCopy(lang).teach;
   const mine = DATA_LIVE && user?.email ? await studentBatches(user.email) : [];
+  if (DATA_LIVE && user) await claimReferral(keyOf(user));
+  const unread = DATA_LIVE && user ? await unreadCount(keyOf(user)).catch(() => 0) : 0;
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <h1 className="font-display text-4xl">{c.h1}</h1>
       <DeviceRecordings className="card mt-6 p-4 sm:p-5" />
+      <MoreTiles lang={lang} unread={unread} />
 
       {mine.length > 0 && (
         <section className="mt-6">

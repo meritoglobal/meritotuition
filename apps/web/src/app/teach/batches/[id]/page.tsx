@@ -9,8 +9,12 @@ import { contentFor } from "@/lib/content-catalog";
 import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
-import { addStudent, removeStudent, setBatchActive } from "../../actions";
+import { addStudent, removeStudent, saveNote, setBatchActive } from "../../actions";
 import AddStudent from "./AddStudent";
+import NoteForm from "./NoteForm";
+import { db } from "@/lib/data";
+import { growthCopy } from "@/lib/copy-growth";
+import { weekStart } from "@/lib/growth/people";
 
 export default async function BatchPage({ params }: { params: Promise<{ id: string }> }) {
   if (!DATA_LIVE) return null; // the layout shows the setup note
@@ -22,6 +26,8 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
   if (!b) notFound();
   const students = await batchStudents(b.id);
   const content = contentFor(b.subject, b.level);
+  const g = growthCopy(lang);
+  const { data: notes } = await db().from("progress_notes").select("student_email,note,rating").eq("batch_id", b.id).eq("week_start", weekStart());
 
   return (
     <div>
@@ -50,9 +56,15 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
           {students.length === 0 ? <p className="mt-2 text-sm text-ink-3">{t.batch.noStudents}</p> : (
             <ul className="mt-2 divide-y divide-line text-sm">
               {students.map((s) => (
-                <li key={s.email} className="flex items-center justify-between gap-2 py-2">
-                  <span className="min-w-0 truncate">{s.name ? <><b>{s.name}</b> · </> : null}<span className="text-ink-2">{s.email}</span></span>
-                  <form action={removeStudent.bind(null, b.id, s.email)}><button className="text-redpen">{t.batch.remove}</button></form>
+                <li key={s.email} className="py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate">{s.name ? <><b>{s.name}</b> · </> : null}<span className="text-ink-2">{s.email}</span></span>
+                    <span className="flex shrink-0 gap-3">
+                      <Link href={`/chat/new?to=${encodeURIComponent(s.email)}`} className="text-ink-2 underline">{g.chat.start}</Link>
+                      <form action={removeStudent.bind(null, b.id, s.email)}><button className="text-redpen">{t.batch.remove}</button></form>
+                    </span>
+                  </div>
+                  {(() => { const n = notes?.find((x) => x.student_email === s.email); return <NoteForm action={saveNote.bind(null, b.id, s.email)} note={n?.note} rating={n?.rating} />; })()}
                 </li>
               ))}
             </ul>

@@ -5,6 +5,7 @@ import { CLASS_LEVELS, SUBJECTS } from "@mastermoshai/core";
 import { getUser } from "@/lib/auth/session";
 import { DATA_LIVE, db } from "@/lib/data";
 import { teacherBatch } from "@/lib/batches";
+import { weekStart } from "@/lib/growth/people";
 
 export type FormState = { ok?: boolean; error?: string } | null;
 
@@ -91,4 +92,20 @@ export async function setBatchActive(batchId: string, active: boolean) {
   if (!b) return;
   await db().from("batches").update({ active }).eq("id", b.id);
   revalidatePath("/teach", "layout");
+}
+
+/** Tutor's weekly line about a student; parents see it in their report. */
+export async function saveNote(batchId: string, email: string, _: FormState, f: FormData): Promise<FormState> {
+  const u = await me();
+  const b = await teacherBatch(batchId, u.id);
+  if (!b) return { error: "db" };
+  const note = str(f, "note", 1000);
+  if (!note) return { error: "bad" };
+  const { error } = await db().from("progress_notes").upsert(
+    { batch_id: b.id, student_email: email, teacher_id: u.id, week_start: weekStart(), rating: int(f, "rating", 1, 5), note },
+    { onConflict: "batch_id,student_email,week_start" },
+  );
+  if (error) return { error: "db" };
+  revalidatePath(`/teach/batches/${b.id}`);
+  return { ok: true };
 }
