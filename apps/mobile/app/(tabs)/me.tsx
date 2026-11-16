@@ -13,9 +13,18 @@ export default function Me() {
     {
       title: "আমার পড়াশোনা",
       rows: [
+        { icon: "chatbubbles-outline", label: "মেসেজ", sub: "টিচারের সাথে কথা, নম্বর গোপন থাকে", go: () => openPage("/chat", "মেসেজ") },
+        { icon: "pricetags-outline", label: "মাসিক প্যাকেজ ও bKash অটো-পে", sub: "প্রতি মাসে নিজে নিজেই পেমেন্ট", go: () => openPage("/packages", "মাসিক প্যাকেজ") },
         { icon: "wallet-outline", label: "পেমেন্ট ও রিফান্ড", sub: "কত টাকা জমা, কত ফেরত", go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },
         { icon: "flag-outline", label: "নালিশ করি", sub: "টিচার আসেননি বা দেরি করেছেন", go: () => openPage("/dashboard/student", "নালিশ") },
         { icon: "download-outline", label: "সেভ করা রেকর্ডিং", sub: "ফোনের Files / Downloads এ থাকে", go: () => openPage("/dashboard/student", "আমার ক্লাস") },
+      ],
+    },
+    {
+      title: "অভিভাবক ও বন্ধু",
+      rows: [
+        { icon: "people-outline", label: "অভিভাবকের প্যানেল", sub: "হাজিরা, পরীক্ষার নম্বর, সাপ্তাহিক রিপোর্ট", go: () => openPage("/parent", "অভিভাবক") },
+        { icon: "gift-outline", label: "বন্ধুকে রেফার করো", sub: "বন্ধু ভর্তি হলে দুজনেরই ছাড়", go: () => openPage("/refer", "রেফার করো") },
       ],
     },
     {

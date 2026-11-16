@@ -78,6 +78,14 @@ function Sheets() {
 function Exams() {
   return (
     <>
+      <Card onPress={() => openPage("/leaderboard", "মডেল টেস্ট")} style={{ flexDirection: "row", alignItems: "center", backgroundColor: colors.board, borderColor: colors.board }}>
+        <Ionicons name="trophy" size={26} color={colors.gold} />
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={[st.rowTitle, { color: colors.white }]}>এসএসসি মডেল টেস্ট</Text>
+          <Text style={[st.rowMeta, { color: "#cfe0d8" }]}>সারা দেশের সাথে র‍্যাংকিং, প্রতি সপ্তাহে নতুন সেট</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.gold} />
+      </Card>
       {exams.map((e) => (
         <Card key={e.id} onPress={() => openPage("/class/demo", e.title)}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>

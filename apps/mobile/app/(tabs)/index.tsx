@@ -24,6 +24,10 @@ const FEATURES: Feature[] = [
   { label: "পরীক্ষা", icon: "create-outline", tint: colors.boardSoft, fg: colors.board, go: () => router.push({ pathname: "/learn", params: { tab: "exams" } }) },
   { label: "ফ্রি\nভিডিও", icon: "play-circle-outline", tint: colors.redSoft, fg: colors.redpen, go: () => router.push({ pathname: "/learn", params: { tab: "videos" } }) },
   { label: "পেমেন্ট ও\nরিফান্ড", icon: "wallet-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },
+  { label: "ছবি তুলে\nপ্রশ্ন", icon: "camera-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => openPage("/ask", "ছবি তুলে প্রশ্ন"), badge: "নতুন" },
+  { label: "মডেল টেস্ট\nর‍্যাংকিং", icon: "trophy-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/leaderboard", "মডেল টেস্ট") },
+  { label: "মাসিক\nপ্যাকেজ", icon: "pricetags-outline", tint: colors.redSoft, fg: colors.redpen, go: () => openPage("/packages", "মাসিক প্যাকেজ") },
+  { label: "বন্ধুকে\nরেফার", icon: "share-social-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => openPage("/refer", "রেফার করো") },
 ];
 
 function greeting(now = new Date()) {
@@ -72,6 +76,9 @@ export default function Home() {
         <Pressable style={st.levelBtn} onPress={() => setPicker(true)}>
           <Text style={st.levelText}>{CLASS_LEVEL_LABEL_BN[level]}</Text>
           <Ionicons name="chevron-down" size={14} color={colors.ink} />
+        </Pressable>
+        <Pressable style={st.bell} hitSlop={8} onPress={() => openPage("/chat", "মেসেজ")}>
+          <Ionicons name="chatbubbles-outline" size={22} color={colors.ink} />
         </Pressable>
         <Pressable style={st.bell} hitSlop={8} onPress={() => router.push("/classes")}>
           <Ionicons name="notifications-outline" size={22} color={colors.ink} />
@@ -122,6 +129,18 @@ export default function Home() {
           ))}
         </View>
       </Section>
+
+      {/* Photo question */}
+      <Pressable style={st.ask} onPress={() => openPage("/ask", "ছবি তুলে প্রশ্ন")}>
+        <View style={st.askIcon}>
+          <Ionicons name="camera" size={22} color={colors.ink} />
+        </View>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={st.askH}>অঙ্কে আটকে গেছো?</Text>
+          <Text style={st.askP}>বইয়ের প্রশ্নের ছবি তোলো। আগে AI বুঝিয়ে দেবে, তাতেও না হলে মাস্টারমশাই।</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.faint} />
+      </Pressable>
 
       {/* Where you stopped */}
       <Section title="পড়া কোথায় থামল" action="সব দেখি" onAction={() => router.push("/learn")}>
@@ -246,7 +265,7 @@ const st = StyleSheet.create({
   tile: { width: "25%", alignItems: "center", paddingVertical: 10, borderRadius: 10 },
   tileIcon: { width: 52, height: 52, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   tileText: { fontSize: 12.5, color: colors.ink, textAlign: "center", marginTop: 7, lineHeight: 17, fontWeight: "500" },
-  badge: { position: "absolute", top: -5, right: -9, backgroundColor: colors.redpen, borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
+  badge: { position: "absolute", top: -6, right: -12, backgroundColor: colors.redpen, borderRadius: 4, paddingHorizontal: 4, paddingVertical: 1 },
   badgeText: { color: colors.white, fontSize: 9, fontWeight: "800" },
 
   progRow: { flexDirection: "row", alignItems: "center", paddingVertical: 12, gap: 10 },
@@ -268,6 +287,10 @@ const st = StyleSheet.create({
   thumbDur: { position: "absolute", bottom: 7, right: 8, color: colors.white, fontSize: 11, backgroundColor: "rgba(0,0,0,0.35)", paddingHorizontal: 5, borderRadius: 4, overflow: "hidden" },
   videoTitle: { fontSize: 13.5, color: colors.ink, marginTop: 6, lineHeight: 19, fontWeight: "500" },
 
+  ask: { flexDirection: "row", alignItems: "center", marginHorizontal: 16, marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: colors.goldSoft, borderWidth: 1, borderColor: "#f0dc8a" },
+  askIcon: { width: 44, height: 44, borderRadius: 10, backgroundColor: colors.gold, alignItems: "center", justifyContent: "center" },
+  askH: { fontSize: 15.5, fontWeight: "700", color: colors.ink },
+  askP: { fontSize: 13, color: "#5a4a10", marginTop: 2, lineHeight: 19 },
   promise: { flexDirection: "row", gap: 10, marginHorizontal: 16, marginTop: 26, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: "#ecc8c3", backgroundColor: "#fcf3f1" },
   promiseText: { flex: 1, fontSize: 13, color: "#6e2a24", lineHeight: 20 },
 
