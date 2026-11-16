@@ -112,3 +112,35 @@ export function myEarnings(now = new Date()) {
   const paidOut = Math.floor(net * 0.6);
   return { rate, paidClasses, net, pending: sum("teacherNet", rows.filter((r) => r.pending)), available: net - paidOut, paidOut, lost: sum("refund"), rows, nextTier: paidClasses < 50 ? 50 : paidClasses < 200 ? 200 : null };
 }
+
+/* ---------- Tuition requests: students post a need, matching teachers bid ---------- */
+
+export type TuitionRequest = {
+  id: string;
+  student: string;
+  level: string;
+  subjects: string[];
+  mode: "OFFLINE" | "ONLINE";
+  area: string;
+  distanceKm?: number;
+  daysPerWeek: number;
+  time: string;
+  budget: number;
+  note: string;
+  postedMinAgo: number;
+  bids: number;
+};
+
+export const tuitionRequests: TuitionRequest[] = [
+  { id: "q1", student: "তাসনিমের অভিভাবক", level: "CLASS_9_10", subjects: ["Physics", "Higher Math"], mode: "OFFLINE", area: "Farmgate", distanceKm: 1.2, daysPerWeek: 3, time: "বিকাল ৪টার পর", budget: 5000, note: "বিজ্ঞান বিভাগ, ফিজিক্সে ভয় পায়। ছেলে টিচার হলেও সমস্যা নেই।", postedMinAgo: 12, bids: 2 },
+  { id: "q2", student: "আরিয়ান", level: "SSC", subjects: ["Math", "Physics"], mode: "ONLINE", area: "Mirpur", daysPerWeek: 4, time: "রাত ৮টা থেকে ১০টা", budget: 3500, note: "টেস্ট পরীক্ষার আগে পুরো সিলেবাস রিভিশন চাই।", postedMinAgo: 45, bids: 5 },
+  { id: "q3", student: "নাফিসার মা", level: "HSC", subjects: ["Higher Math"], mode: "OFFLINE", area: "Dhanmondi", distanceKm: 3.4, daysPerWeek: 2, time: "শুক্র-শনি সকাল", budget: 8000, note: "শুধু মেয়ে টিচার। বাসায় এসে পড়াতে হবে।", postedMinAgo: 130, bids: 1 },
+];
+
+export type Bid = { id: string; teacherId: string; fee: number; days: number; trial: boolean; message: string; minAgo: number };
+
+export const demoBids: Bid[] = [
+  { id: "b1", teacherId: "t-rafi", fee: 4500, days: 3, trial: true, message: "ফিজিক্সের ভয় তাড়ানো আমার কাজ। প্রথম ক্লাস ফ্রি, ভালো লাগলে তবেই শুরু।", minAgo: 8 },
+  { id: "b2", teacherId: "t-sabbir", fee: 5000, days: 3, trial: true, message: "উচ্চতর গণিত আর ফিজিক্স দুটোই পড়াই, প্রতি সপ্তাহে বোর্ড প্রশ্নে পরীক্ষা নিই।", minAgo: 20 },
+  { id: "b3", teacherId: "t-tanvir", fee: 4000, days: 3, trial: false, message: "ফার্মগেটেই থাকি, সময়মতো পৌঁছাতে পারব।", minAgo: 34 },
+];

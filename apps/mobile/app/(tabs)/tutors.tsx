@@ -67,7 +67,16 @@ export default function Tutors() {
         keyExtractor={(t) => t.id}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        ListHeaderComponent={<Text style={st.count}>{bnDigits(list.length)} জন টিচার পাওয়া গেছে</Text>}
+        ListHeaderComponent={
+          <>
+            <Pressable style={st.post} onPress={() => router.push("/request/new")}>
+              <Ionicons name="megaphone-outline" size={20} color={colors.board} />
+              <Text style={st.postText}>খুঁজতে ইচ্ছে করছে না? চাহিদা পোস্ট করো, টিচাররাই প্রস্তাব পাঠাবেন।</Text>
+              <Ionicons name="chevron-forward" size={18} color={colors.board} />
+            </Pressable>
+            <Text style={st.count}>{bnDigits(list.length)} জন টিচার পাওয়া গেছে</Text>
+          </>
+        }
         ListEmptyComponent={
           <View style={st.empty}>
             <Text style={st.emptyH}>এই ফিল্টারে কাউকে পেলাম না</Text>
@@ -129,6 +138,8 @@ export function TutorCard({ t, tone }: { t: TeacherSummary; tone: number }) {
 const st = StyleSheet.create({
   search: { flexDirection: "row", alignItems: "center", gap: 8, marginHorizontal: 16, marginVertical: 12, paddingHorizontal: 12, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: 10, height: 46 },
   input: { flex: 1, fontSize: 15, color: colors.ink },
+  post: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 10, backgroundColor: colors.boardSoft, marginBottom: 12 },
+  postText: { flex: 1, fontSize: 13.5, color: colors.board, fontWeight: "600", lineHeight: 19 },
   count: { fontSize: 13, color: colors.muted, marginBottom: 10 },
   name: { fontSize: 16, fontWeight: "700", color: colors.ink, flexShrink: 1 },
   uni: { fontSize: 13, color: colors.muted, marginTop: 2 },

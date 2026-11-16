@@ -115,6 +115,18 @@ function StudentHome() {
         </View>
       ) : null}
 
+      {/* Post a need: teachers come to you */}
+      <Pressable style={st.post} onPress={() => router.push("/request/new")}>
+        <View style={{ flex: 1 }}>
+          <Text style={st.postH}>টিউটর খুঁজে খুঁজে ক্লান্ত?</Text>
+          <Text style={st.postP}>কী লাগবে আর বাজেট কত লিখে দাও। এলাকার টিচাররা নিজেরাই প্রস্তাব পাঠাবেন।</Text>
+        </View>
+        <View style={st.postBtn}>
+          <Ionicons name="megaphone-outline" size={18} color={colors.ink} />
+          <Text style={st.postBtnText}>পোস্ট করি</Text>
+        </View>
+      </Pressable>
+
       {/* One button per feature */}
       <Section title="কী লাগবে আজ?">
         <View style={st.grid}>
@@ -293,6 +305,11 @@ const st = StyleSheet.create({
   thumbDur: { position: "absolute", bottom: 7, right: 8, color: colors.white, fontSize: 11, backgroundColor: "rgba(0,0,0,0.35)", paddingHorizontal: 5, borderRadius: 4, overflow: "hidden" },
   videoTitle: { fontSize: 13.5, color: colors.ink, marginTop: 6, lineHeight: 19, fontWeight: "500" },
 
+  post: { flexDirection: "row", alignItems: "center", marginHorizontal: 16, marginTop: 14, padding: 14, borderRadius: 12, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, gap: 10 },
+  postH: { fontSize: 15.5, fontWeight: "700", color: colors.ink },
+  postP: { fontSize: 13, color: colors.muted, marginTop: 2, lineHeight: 19 },
+  postBtn: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: colors.gold, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 9 },
+  postBtnText: { fontSize: 13.5, fontWeight: "700", color: colors.ink },
   ask: { flexDirection: "row", alignItems: "center", marginHorizontal: 16, marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: colors.goldSoft, borderWidth: 1, borderColor: "#f0dc8a" },
   askIcon: { width: 44, height: 44, borderRadius: 10, backgroundColor: colors.gold, alignItems: "center", justifyContent: "center" },
   askH: { fontSize: 15.5, fontWeight: "700", color: colors.ink },

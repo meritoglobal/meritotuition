@@ -3,7 +3,7 @@ import { CLASS_LEVEL_LABEL_BN, bnDigits, dhakaTime, formatTakaL, openSeats, time
 import { router } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { me, myEarnings, subjectBn, teachingSchedule } from "../data";
+import { me, myEarnings, subjectBn, teachingSchedule, tuitionRequests } from "../data";
 import { openPage } from "../site";
 import { colors } from "../theme";
 import { Bar, Button, Card, Ionicons, Mark, Screen, Section, type IconName } from "../ui";
@@ -13,7 +13,7 @@ type Job = { label: string; icon: IconName; tint: string; fg: string; go: () => 
 const JOBS: Job[] = [
   { label: "নতুন\nব্যাচ", icon: "add-circle-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/teach/batches/new", "নতুন ব্যাচ") },
   { label: "পরীক্ষা\nবানাই", icon: "create-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => openPage("/class/demo/exams/new?as=teacher", "পরীক্ষা বানাই") },
-  { label: "লেকচার\nশিট", icon: "document-text-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => openPage("/teach/content", "লেকচার শিট") },
+  { label: "ক্লাসের\nপ্রস্তুতি", icon: "library-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => router.push("/prep") },
   { label: "স্টুডেন্টের\nপ্রশ্ন", icon: "help-circle-outline", tint: colors.redSoft, fg: colors.redpen, go: () => openPage("/teach/questions", "স্টুডেন্টের প্রশ্ন") },
   { label: "মাসিক\nপ্যাকেজ", icon: "pricetags-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/teach/packages", "মাসিক প্যাকেজ") },
   { label: "মেসেজ", icon: "chatbubbles-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/chat", "মেসেজ") },
@@ -69,6 +69,18 @@ export default function TeacherHome() {
           <Text style={st.note}>ফোন থেকেই PDF বোর্ডে লিখে পড়াতে পারবেন। ক্লাস শেষে রেকর্ডিং স্টুডেন্টদের ফোনে সেভ হয়।</Text>
         </View>
       ) : null}
+
+      <Pressable style={st.leads} onPress={() => router.push("/tuitions")}>
+        <View style={st.leadsIcon}>
+          <Ionicons name="location" size={20} color={colors.ink} />
+          <View style={st.leadsBadge}><Text style={st.leadsBadgeText}>{bnDigits(tuitionRequests.length)}</Text></View>
+        </View>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={st.leadsH}>আপনার এলাকায় নতুন টিউশন</Text>
+          <Text style={st.leadsP}>আপনার বিষয় আর বাজেটে মেলে এমন {bnDigits(tuitionRequests.length)}জন স্টুডেন্ট। বিড দিন বা মেসেজ করুন।</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.faint} />
+      </Pressable>
 
       <Pressable style={st.money} onPress={() => router.push("/earnings")}>
         <Stat label="তুলতে পারবেন" value={formatTakaL(money.available, "bn")} strong />
@@ -147,6 +159,12 @@ const st = StyleSheet.create({
   ghost: { borderWidth: 1, borderColor: "rgba(255,255,255,0.35)", borderRadius: 8, paddingHorizontal: 14, justifyContent: "center" },
   ghostText: { color: colors.white, fontWeight: "600", fontSize: 14 },
   note: { color: "#a9c2b7", fontSize: 12, marginTop: 12, lineHeight: 18 },
+  leads: { flexDirection: "row", alignItems: "center", marginHorizontal: 16, marginTop: 14, padding: 14, borderRadius: 12, backgroundColor: colors.goldSoft, borderWidth: 1, borderColor: "#f0dc8a" },
+  leadsIcon: { width: 44, height: 44, borderRadius: 10, backgroundColor: colors.gold, alignItems: "center", justifyContent: "center" },
+  leadsBadge: { position: "absolute", top: -6, right: -6, minWidth: 20, height: 20, borderRadius: 10, backgroundColor: colors.redpen, alignItems: "center", justifyContent: "center", paddingHorizontal: 4 },
+  leadsBadgeText: { color: colors.white, fontSize: 11, fontWeight: "800" },
+  leadsH: { fontSize: 15.5, fontWeight: "700", color: colors.ink },
+  leadsP: { fontSize: 13, color: "#5a4a10", marginTop: 2, lineHeight: 19 },
   money: { flexDirection: "row", marginHorizontal: 16, marginTop: 14, backgroundColor: colors.white, borderRadius: 12, borderWidth: 1, borderColor: colors.line, paddingVertical: 14 },
   vline: { width: 1, backgroundColor: colors.line },
   statV: { fontSize: 17, fontWeight: "700", color: colors.ink },
