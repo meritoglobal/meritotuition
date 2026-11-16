@@ -23,6 +23,7 @@ import { toolsCopy } from "@/lib/copy-tools";
 import { useLang } from "@/lib/lang-client";
 import { PollAnswer, PollComposer, PollLive, usePolls } from "./Polls";
 import Board from "./Board";
+import { RecordConsent, useDeviceRecording } from "@/components/class/DeviceRecording";
 import { isTouchDevice, portraitProcessor } from "@/lib/class/portrait";
 
 type Role = "teacher" | "student";
@@ -129,6 +130,8 @@ function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }
   const [composing, setComposing] = useState(false);
   const polls = usePolls(role);
   const [board, setBoard] = useState(false);
+  // Students: the class is recorded on their own device (asks once).
+  const devRec = useDeviceRecording(room, classId, title, role === "student" && state === ConnectionState.Connected);
   const saveBoard = useRef<(() => Promise<void>) | null>(null);
   const [note, setNote] = useState("");
   useEffect(() => { if (!note) return; const k = setTimeout(() => setNote(""), 6000); return () => clearTimeout(k); }, [note]);
@@ -166,6 +169,7 @@ function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }
         <span className="truncate font-medium">{title}</span>
         <span className="flex shrink-0 items-center gap-3">
           <NetBadge />
+          {devRec.recording && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" /><span className="hidden sm:inline">{toolsCopy(lang).rec.local}</span><span className="sm:hidden">REC</span></span>}
           {recording && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" />{toolsCopy(lang).rec.recording}</span>}
           <span className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-redpen" /> {c.live}</span>
         </span>
@@ -202,6 +206,7 @@ function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }
         {chatOpen && !focus && <ChatPanel chat={chat} />}
         {role === "teacher" && (composing ? <PollComposer polls={polls} onClose={() => setComposing(false)} /> : <PollLive polls={polls} students={participants.filter((p) => !p.isLocal && roleOf(p) === "student").length} />)}
         {role === "student" && <PollAnswer polls={polls} />}
+        {devRec.ask && <RecordConsent onAnswer={devRec.answer} />}
       </div>
 
       <Controls

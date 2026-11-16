@@ -5,6 +5,7 @@ import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
 import { uploadClassFile } from "@/lib/class/upload";
+import { DeviceRecordings } from "./DeviceRecording";
 
 type Role = "teacher" | "student";
 type Tab = "files" | "recordings" | "exams";
@@ -126,9 +127,11 @@ function Recordings({ classId, role }: { classId: string; role: Role }) {
   if (state === "off") return <Note>{t.off}</Note>;
   if (state === "error") return <Note>{t.error}</Note>;
   if (state === "loading") return <Note>{t.loading}</Note>;
-  if (!data?.recordings.length) return <Note>{t.rec.empty}</Note>;
+  const mine = role === "student" ? <DeviceRecordings classId={classId} className="mb-4" /> : null;
+  if (!data?.recordings.length) return <div>{mine}<Note>{t.rec.empty}</Note></div>;
   return (
     <div className="space-y-4">
+      {mine}
       {role === "student" && <p className="text-sm text-ink-2">{t.rec.note}</p>}
       {data.recordings.map((r) => (
         <figure key={r.name}>

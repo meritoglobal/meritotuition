@@ -5,6 +5,7 @@ import { roomState, type ClassRoomState } from "@mastermoshai/core";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
+import { DeviceRecordings } from "@/components/class/DeviceRecording";
 
 const LiveRoom = dynamic(() => import("./LiveRoom"), { ssr: false });
 
@@ -111,6 +112,7 @@ export default function ClassRoom({ classId, live, title, teacher, role }: { cla
             <a href="/dashboard/student" className="btn-ink">{c.rate}</a>
             <a href="/dashboard/student#flag" className="btn-ghost text-redpen!">{c.flag}</a>
           </div>
+          {role === "student" && <DeviceRecordings classId={classId} className="mx-auto mt-6 max-w-md text-left" />}
         </div>
       ) : (
         <>

@@ -1,3 +1,4 @@
+import { DeviceRecordings } from "@/components/class/DeviceRecording";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
@@ -34,6 +35,7 @@ export default async function StudentDashboard() {
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <h1 className="font-display text-4xl">{c.h1}</h1>
+      <DeviceRecordings className="card mt-6 p-4 sm:p-5" />
 
       {mine.length > 0 && (
         <section className="mt-6">

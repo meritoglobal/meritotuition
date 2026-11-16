@@ -66,6 +66,9 @@ export type RecordState = "started" | "already" | "off" | "failed";
  * the file by itself when the room empties.
  */
 export async function startRecording(classId: string): Promise<RecordState> {
+  // Classes are recorded on each student's own device (no server cost). Server
+  // recording stays available behind SERVER_RECORDING=on for later.
+  if (process.env.SERVER_RECORDING !== "on") return "off";
   const s3 = s3Target();
   if (!LK_LIVE || !s3) return "off";
   const eg = new EgressClient(httpUrl(URL_), KEY, SECRET);
