@@ -118,6 +118,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.119.0
         version: 2.119.0
+      aws4fetch:
+        specifier: ^1.0.20
+        version: 1.0.20
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -2314,6 +2317,9 @@ packages:
 
   avvio@9.3.1:
     resolution: {integrity: sha512-QyTKW61/qlba+cUQBm/sT9X8lri4UdomqSDwCnrnj1IvLVDRRiXRkz4CgBRWB+/cmfC7SK5WQc8T1vSdGvaUcQ==}
+
+  aws4fetch@1.0.20:
+    resolution: {integrity: sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g==}
 
   babel-jest@29.7.0:
     resolution: {integrity: sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==}
@@ -7143,6 +7149,8 @@ snapshots:
     dependencies:
       '@fastify/error': 4.2.1
       fastq: 1.20.3
+
+  aws4fetch@1.0.20: {}
 
   babel-jest@29.7.0(@babel/core@7.29.13):
     dependencies:

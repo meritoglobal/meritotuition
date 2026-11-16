@@ -23,7 +23,7 @@ import { toolsCopy } from "@/lib/copy-tools";
 import { useLang } from "@/lib/lang-client";
 import { PollAnswer, PollComposer, PollLive, usePolls } from "./Polls";
 import Board from "./Board";
-import { RecordConsent, useDeviceRecording } from "@/components/class/DeviceRecording";
+import { RecordConsent, useCloudRecording, useDeviceRecording } from "@/components/class/DeviceRecording";
 import { isTouchDevice, portraitProcessor } from "@/lib/class/portrait";
 
 type Role = "teacher" | "student";
@@ -131,7 +131,10 @@ function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }
   const polls = usePolls(role);
   const [board, setBoard] = useState(false);
   // Students: the class is recorded on their own device (asks once).
-  const devRec = useDeviceRecording(room, classId, title, role === "student" && state === ConnectionState.Connected);
+  // (Off by default now that the tutor's recording is kept on R2 for 72 hours.)
+  const devRec = useDeviceRecording(room, classId, title, process.env.NEXT_PUBLIC_STUDENT_DEVICE_REC === "on" && role === "student" && state === ConnectionState.Connected);
+  // Tutor: their device records the class and uploads it for students (72 hours).
+  const cloudRec = useCloudRecording(room, classId, title, role === "teacher" && state === ConnectionState.Connected);
   const saveBoard = useRef<(() => Promise<void>) | null>(null);
   const [note, setNote] = useState("");
   useEffect(() => { if (!note) return; const k = setTimeout(() => setNote(""), 6000); return () => clearTimeout(k); }, [note]);
@@ -170,7 +173,7 @@ function Stage({ classId, title, role, err, fs, toggleFs, landscape, recording }
         <span className="flex shrink-0 items-center gap-3">
           <NetBadge />
           {devRec.recording && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" /><span className="hidden sm:inline">{toolsCopy(lang).rec.local}</span><span className="sm:hidden">REC</span></span>}
-          {recording && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" />{toolsCopy(lang).rec.recording}</span>}
+          {(recording || cloudRec.recording) && <span className="flex items-center gap-1.5 text-xs text-white/80"><span className="h-2 w-2 rounded-full bg-redpen" />{toolsCopy(lang).rec.recording}</span>}
           <span className="flex items-center gap-2"><span className="h-2 w-2 animate-pulse rounded-full bg-redpen" /> {c.live}</span>
         </span>
       </div>

@@ -1,11 +1,13 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { roomState, type ClassRoomState } from "@mastermoshai/core";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
 import { DeviceRecordings } from "@/components/class/DeviceRecording";
+import { uploadStore } from "@/lib/class/cloud-upload";
+import { toolsCopy } from "@/lib/copy-tools";
 
 const LiveRoom = dynamic(() => import("./LiveRoom"), { ssr: false });
 
@@ -112,6 +114,7 @@ export default function ClassRoom({ classId, live, title, teacher, role }: { cla
             <a href="/dashboard/student" className="btn-ink">{c.rate}</a>
             <a href="/dashboard/student#flag" className="btn-ghost text-redpen!">{c.flag}</a>
           </div>
+          {role === "teacher" && <UploadNote />}
           {role === "student" && <DeviceRecordings classId={classId} className="mx-auto mt-6 max-w-md text-left" />}
         </div>
       ) : (
@@ -153,4 +156,15 @@ export default function ClassRoom({ classId, live, title, teacher, role }: { cla
       )}
     </div>
   );
+}
+
+/** Tutor, after class: says whether the recording upload is still finishing. */
+function UploadNote() {
+  const t = toolsCopy(useLang()).rec;
+  const pending = useSyncExternalStore(uploadStore.subscribe, uploadStore.get, () => 0);
+  const was = useRef(false);
+  if (pending > 0) was.current = true;
+  if (pending > 0) return <p className="mx-auto mt-4 max-w-md rounded-lg bg-gold/40 px-3 py-2 text-sm">{t.uploading}</p>;
+  if (was.current) return <p className="mx-auto mt-4 max-w-md rounded-lg bg-mist px-3 py-2 text-sm">{t.uploaded}</p>;
+  return null;
 }

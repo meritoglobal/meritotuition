@@ -4,7 +4,8 @@ import type { Room } from "livekit-client";
 import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { useLang } from "@/lib/lang-client";
-import { LocalRecorder, isIOS, listRecordings, recordingSupported, removeRecording, saveRecording, type RecMeta } from "@/lib/class/local-recorder";
+import { CloudUpload } from "@/lib/class/cloud-upload";
+import { LocalRecorder, pickMime, isIOS, listRecordings, recordingSupported, removeRecording, saveRecording, type RecMeta } from "@/lib/class/local-recorder";
 
 const KEY = "mm_rec_consent";
 const getConsent = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
@@ -47,6 +48,46 @@ export function useDeviceRecording(room: Room, classId: string, title: string, o
       setC(yes ? "yes" : "no");
     },
   };
+}
+
+/**
+ * Tutor side: the tutor's device records the class and uploads it to R2 as it
+ * goes; every student of the batch can watch or download it for 72 hours.
+ * If cloud storage isn't set up, the file is kept on the tutor's device instead.
+ */
+export function useCloudRecording(room: Room, classId: string, title: string, on: boolean) {
+  const [recording, setRecording] = useState(false);
+  const live = useRef<{ rec: LocalRecorder; up: CloudUpload | null } | null>(null);
+
+  useEffect(() => {
+    if (!on || live.current || !recordingSupported()) return;
+    let cancelled = false;
+    void (async () => {
+      const up = await CloudUpload.start(classId, pickMime());
+      if (cancelled) return;
+      const rec = new LocalRecorder(room, classId, title, { persist: !up, onData: (b) => up?.push(b) });
+      live.current = { rec, up };
+      try { await rec.start(); setRecording(true); } catch { live.current = null; }
+    })();
+    return () => { cancelled = true; };
+  }, [on, room, classId, title]);
+
+  useEffect(() => {
+    const bye = () => live.current?.up?.beacon();
+    window.addEventListener("pagehide", bye);
+    return () => {
+      window.removeEventListener("pagehide", bye);
+      const l = live.current;
+      live.current = null;
+      if (!l) return;
+      void l.rec.stop().then(async (m) => {
+        if (l.up) await l.up.finish();
+        else if (m && !isIOS()) await saveRecording(m).catch(() => {});
+      });
+    };
+  }, []);
+
+  return { recording };
 }
 
 export function RecordConsent({ onAnswer }: { onAnswer: (yes: boolean) => void }) {
