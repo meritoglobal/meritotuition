@@ -4,6 +4,7 @@ import { studentBatches } from "@/lib/batches";
 import { maskContacts } from "./mask";
 import { notify } from "./notify";
 import { displayName, isUuid } from "./people";
+import { requestLinked } from "./requests";
 
 /** Quote a value for a PostgREST or() filter. */
 const q = (v: string) => `"${v.replace(/["\\]/g, "")}"`;
@@ -61,7 +62,8 @@ export async function canChat(me: string, other: string): Promise<boolean> {
     const { data: d } = await s.from("doubts").select("id").eq("asker_email", x).eq("tutor_email", y).limit(1);
     return Boolean(d?.length);
   };
-  return (await pair(me, other)) || (await pair(other, me));
+  if ((await pair(me, other)) || (await pair(other, me))) return true;
+  return (await requestLinked(me, other)) || (await requestLinked(other, me));
 }
 
 /** Find or create the one thread between two people. */

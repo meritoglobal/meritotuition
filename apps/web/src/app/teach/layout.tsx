@@ -5,6 +5,7 @@ import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
 import { getLang } from "@/lib/lang";
 import { growthCopy } from "@/lib/copy-growth";
+import { marketCopy } from "@/lib/copy-market";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +14,11 @@ export default async function TeachLayout({ children }: { children: React.ReactN
   const lang = await getLang();
   const t = toolsCopy(lang).teach;
   const g = growthCopy(lang).nav;
+  const mk = marketCopy(lang).nav;
   const nav = [
     ["/teach", t.nav.home],
+    ["/teach/requests", mk.requests],
+    ["/teach/prep", mk.prep],
     ["/teach/content", t.nav.content],
     ["/teach/packages", g.packages],
     ["/teach/questions", g.questions],

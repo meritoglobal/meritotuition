@@ -1,5 +1,5 @@
 -- Mastermoshai: guardians and weekly reports, chat, monthly packages + bKash,
--- referrals and coupons, SSC model tests, photo questions.
+-- referrals and coupons, SSC model tests, photo questions, tuition requests and bids.
 -- Paste into Supabase → SQL Editor → Run, after class-tools.sql. Safe to run more than once.
 -- Like class-tools.sql, the website reaches these tables only from the server
 -- (secret key), so row level security is on with no public policies.
@@ -271,3 +271,62 @@ alter table coupons             enable row level security;
 alter table model_tests         enable row level security;
 alter table model_test_attempts enable row level security;
 alter table doubts              enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Tuition requests: a student posts what they need, matching tutors are told,
+-- tutors bid, the student picks one (or invites a tutor who is open to students)
+-- ---------------------------------------------------------------------------
+create table if not exists tuition_requests (
+  id            uuid primary key default gen_random_uuid(),
+  student_email text not null,
+  student_name  text,
+  subject       text not null,
+  level         text not null,
+  mode          text not null check (mode in ('HOME', 'ONLINE')),
+  area          text,                          -- Dhaka area, for home tuition
+  budget        int not null check (budget between 500 and 100000),  -- taka per month
+  days_per_week int not null default 3 check (days_per_week between 1 and 7),
+  note          text,
+  status        text not null default 'OPEN' check (status in ('OPEN', 'MATCHED', 'CLOSED')),
+  chosen_bid    uuid,
+  notified      int not null default 0,        -- tutors told when it was posted
+  created_at    timestamptz not null default now(),
+  expires_at    timestamptz not null default now() + interval '14 days'
+);
+create index if not exists tuition_requests_open on tuition_requests (status, created_at desc);
+create index if not exists tuition_requests_student on tuition_requests (student_email, created_at desc);
+
+create table if not exists request_bids (
+  id            uuid primary key default gen_random_uuid(),
+  request_id    uuid not null references tuition_requests (id) on delete cascade,
+  teacher_id    text not null,
+  teacher_email text not null,
+  teacher_name  text,
+  price         int not null check (price between 500 and 100000),
+  message       text,
+  status        text not null default 'PENDING' check (status in ('PENDING', 'ACCEPTED', 'DECLINED', 'WITHDRAWN')),
+  created_at    timestamptz not null default now(),
+  unique (request_id, teacher_id)
+);
+create index if not exists request_bids_teacher on request_bids (teacher_id, created_at desc);
+
+create table if not exists request_invites (     -- student asked this tutor to look at the request
+  request_id uuid not null references tuition_requests (id) on delete cascade,
+  teacher_id text not null,
+  created_at timestamptz not null default now(),
+  primary key (request_id, teacher_id)
+);
+
+create table if not exists teacher_request_prefs (  -- the tutor's own filter for new requests
+  user_id     text primary key,
+  open        boolean not null default true,       -- shown to students as "open to new students"
+  notify      boolean not null default true,
+  min_budget  int,
+  extra_areas text[] not null default '{}',        -- areas beyond the profile's home radius
+  updated_at  timestamptz not null default now()
+);
+
+alter table tuition_requests      enable row level security;
+alter table request_bids          enable row level security;
+alter table request_invites       enable row level security;
+alter table teacher_request_prefs enable row level security;
