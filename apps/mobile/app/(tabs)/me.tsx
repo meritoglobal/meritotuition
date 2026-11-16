@@ -2,6 +2,8 @@
 import Constants from "expo-constants";
 import * as Linking from "expo-linking";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { setRole, useRole } from "../../src/prefs";
 import { SITE, openPage } from "../../src/site";
 import { colors } from "../../src/theme";
 import { Button, Ionicons, Mark, Screen, TabHeader, type IconName } from "../../src/ui";
@@ -9,7 +11,29 @@ import { Button, Ionicons, Mark, Screen, TabHeader, type IconName } from "../../
 type Row = { icon: IconName; label: string; sub?: string; go: () => void };
 
 export default function Me() {
-  const groups: { title: string; rows: Row[] }[] = [
+  const role = useRole();
+  const teacher = role === "teacher";
+  const switchRow: Row = teacher
+    ? { icon: "swap-horizontal-outline", label: "স্টুডেন্ট মোডে যাই", sub: "টিউটর খোঁজা, ক্লাস করা, পরীক্ষা দেওয়া", go: () => { setRole("student"); router.replace("/"); } }
+    : { icon: "swap-horizontal-outline", label: "টিচার মোডে যাই", sub: "ব্যাচ, ক্লাস নেওয়া, আয়ের হিসাব", go: () => { setRole("teacher"); router.replace("/"); } };
+  const teacherGroups: { title: string; rows: Row[] }[] = [
+    {
+      title: "পড়ানোর কাজ",
+      rows: [
+        { icon: "person-outline", label: "আমার প্রোফাইল", sub: "ছবি, ভার্সিটি কার্ড, বিষয়, এলাকা", go: () => openPage("/teach/profile", "আমার প্রোফাইল") },
+        { icon: "people-outline", label: "ব্যাচ ও স্টুডেন্ট", sub: "নতুন ব্যাচ, সিট, ট্রায়াল", go: () => openPage("/teach", "টিচার প্যানেল") },
+        { icon: "document-text-outline", label: "লেকচার শিট ও কনটেন্ট", sub: "প্ল্যাটফর্মের শিট, MCQ, সৃজনশীল", go: () => openPage("/teach/content", "লেকচার শিট") },
+        { icon: "pricetags-outline", label: "মাসিক প্যাকেজ", go: () => openPage("/teach/packages", "মাসিক প্যাকেজ") },
+        { icon: "help-circle-outline", label: "স্টুডেন্টের প্রশ্নের উত্তর", sub: "ছবি তুলে পাঠানো প্রশ্ন, উত্তর দিলে টাকা", go: () => openPage("/teach/questions", "স্টুডেন্টের প্রশ্ন") },
+        { icon: "chatbubbles-outline", label: "মেসেজ", sub: "নম্বর গোপন থাকে", go: () => openPage("/chat", "মেসেজ") },
+      ],
+    },
+    {
+      title: "টাকা",
+      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => router.push("/earnings") }],
+    },
+  ];
+  const studentGroups: { title: string; rows: Row[] }[] = [
     {
       title: "আমার পড়াশোনা",
       rows: [
@@ -28,13 +52,6 @@ export default function Me() {
       ],
     },
     {
-      title: "টিচারদের জন্য",
-      rows: [
-        { icon: "easel-outline", label: "টিচার প্যানেল", sub: "ব্যাচ, স্টুডেন্ট, আয়", go: () => openPage("/teach", "টিচার প্যানেল") },
-        { icon: "school-outline", label: "মাস্টারমশাই হতে চাই", sub: "BUET, ঢাবি, মেডিকেলের ছাত্রছাত্রীরা", go: () => openPage("/teach/profile", "টিচার প্রোফাইল") },
-      ],
-    },
-    {
       title: "অন্যান্য",
       rows: [
         { icon: "language-outline", label: "ভাষা", sub: "বাংলা", go: () => {} },
@@ -43,6 +60,8 @@ export default function Me() {
       ],
     },
   ];
+  const common = studentGroups.at(-1)!;
+  const groups = [{ title: "মোড", rows: [switchRow] }, ...(teacher ? [...teacherGroups, common] : studentGroups)];
 
   return (
     <Screen>
@@ -50,7 +69,7 @@ export default function Me() {
       <View style={st.profile}>
         <Mark size={56} />
         <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text style={st.pName}>এখনো লগইন করোনি</Text>
+          <Text style={st.pName}>{teacher ? "টিচার মোড" : "স্টুডেন্ট মোড"} · লগইন করা হয়নি</Text>
           <Text style={st.pSub}>ইমেইলে একটা কোড যাবে, পাসওয়ার্ড লাগবে না।</Text>
         </View>
       </View>

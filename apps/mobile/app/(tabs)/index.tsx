@@ -8,7 +8,8 @@ import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { myClasses, progress, subjectBn, teachers, videos } from "../../src/data";
-import { setLevel, useLevel } from "../../src/prefs";
+import { setLevel, useLevel, useRole } from "../../src/prefs";
+import TeacherHome from "../../src/teacher/TeacherHome";
 import { openPage } from "../../src/site";
 import { colors } from "../../src/theme";
 import { Avatar, Bar, Button, Card, Ionicons, Mark, Screen, Section, type IconName } from "../../src/ui";
@@ -57,7 +58,12 @@ function countdown(d: Date, now = new Date()) {
   return `${bnDigits(Math.floor(h / 24))} দিন পরে`;
 }
 
-export default function Home() {
+export default function HomeTab() {
+  const role = useRole();
+  return role === "teacher" ? <TeacherHome /> : <StudentHome />;
+}
+
+function StudentHome() {
   const level = useLevel();
   const [picker, setPicker] = useState(false);
   const { upcoming } = useMemo(() => myClasses(), []);

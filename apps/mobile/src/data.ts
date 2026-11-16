@@ -6,8 +6,13 @@ import {
   DEMO_TEACHERS,
   DEMO_VIDEOS,
   SUBJECT_LABEL_BN,
+  commissionRate,
+  perClassShares,
+  settleClass,
   upcomingOccurrences,
+  type SessionOutcome,
   type Subject,
+  type WeeklySlot,
   type TeacherSummary,
 } from "@mastermoshai/core";
 
@@ -64,3 +69,46 @@ export const exams = [
   { id: "e2", subject: "Physics", title: "গতি: সৃজনশীল (লিখে ছবি তুলে জমা)", qs: 2, min: 40, kind: "লিখিত", by: "রাফিউল হাসান", due: "শুক্রবার" },
   { id: "e3", subject: "Chemistry", title: "মোলের ধারণা: সাপ্তাহিক টেস্ট", qs: 20, min: 20, kind: "MCQ", by: "নুসরাত জাহান", due: "শনিবার" },
 ];
+
+/* ---------- Teacher mode (demo: the tutor is Rafiul Hasan) ---------- */
+
+export const me = rafi;
+
+const STUDENT_NAMES = ["তাসনিম", "আরিয়ান", "নাফিসা", "সামিন", "রিদওয়ান", "ইশরাত", "মাহির", "তানহা"];
+
+/** Each routine slot is a batch; students are demo names. */
+export function myBatches() {
+  return rafi.routine.map((slot: WeeklySlot, i) => ({
+    id: `${slot.id}-${i}`,
+    slot,
+    students: STUDENT_NAMES.slice(i * 3, i * 3 + slot.seatsTaken),
+    nextClasses: upcomingOccurrences(slot, new Date(), 6),
+  }));
+}
+
+/** Teaching schedule across all batches, soonest first. */
+export function teachingSchedule(now = new Date()) {
+  return myBatches()
+    .flatMap((b) => b.nextClasses.map((start) => ({ start, batch: b })))
+    .filter((x) => x.start > new Date(now.getTime() - 60 * 60_000))
+    .sort((a, b) => a.start.getTime() - b.start.getTime())
+    .slice(0, 8);
+}
+
+/** Earnings with the real commission ladder and refund rules, same as the website teacher dashboard. */
+export function myEarnings(now = new Date()) {
+  const paidClasses = 63;
+  const rate = commissionRate(paidClasses);
+  const rows = Array.from({ length: 10 }, (_, i) => {
+    const s = rafi.routine[i % 2]!;
+    const share = perClassShares(s.monthlyPrice, s.days.length * 4)[0]! * s.batchSize;
+    const outcome: SessionOutcome = i === 4 ? "TEACHER_LATE_OR_SHORT" : i === 7 ? "STUDENT_NO_SHOW" : "COMPLETED";
+    const st = settleClass({ classShare: share, outcome, commissionRate: rate });
+    return { id: `r${i}`, date: new Date(now.getTime() - i * 1.3 * 86_400_000), subject: s.subjects[0]!, outcome, pending: i < 2, ...st };
+  });
+  const released = rows.filter((r) => !r.pending);
+  const sum = (k: "teacherNet" | "refund", list = released) => list.reduce((a, r) => a + r[k], 0);
+  const net = sum("teacherNet");
+  const paidOut = Math.floor(net * 0.6);
+  return { rate, paidClasses, net, pending: sum("teacherNet", rows.filter((r) => r.pending)), available: net - paidOut, paidOut, lost: sum("refund"), rows, nextTier: paidClasses < 50 ? 50 : paidClasses < 200 ? 200 : null };
+}

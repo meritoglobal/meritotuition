@@ -2,7 +2,8 @@
 import { bnDigits, dhakaTime, formatTakaL, timeLabelL } from "@mastermoshai/core";
 import { useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { myClasses, subjectBn, type MyClass } from "../../src/data";
+import { myClasses, subjectBn, teachingSchedule, type MyClass } from "../../src/data";
+import { useRole } from "../../src/prefs";
 import { openPage } from "../../src/site";
 import { colors } from "../../src/theme";
 import { Button, Card, Ionicons, Screen, Segmented, TabHeader } from "../../src/ui";
@@ -11,7 +12,48 @@ const BN_MONTH = ["জানু", "ফেব্রু", "মার্চ", "এ�
 const BN_WD = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহস্পতি", "শুক্র", "শনি"];
 const local = (d: Date) => new Date(d.getTime() + 6 * 3_600_000);
 
-export default function Classes() {
+export default function ClassesTab() {
+  const role = useRole();
+  return role === "teacher" ? <TeacherClasses /> : <Classes />;
+}
+
+function TeacherClasses() {
+  const list = useMemo(() => teachingSchedule(), []);
+  return (
+    <Screen>
+      <TabHeader title="ক্লাস রুটিন" sub="সব ব্যাচের ক্লাস এক জায়গায়" />
+      <View style={{ paddingHorizontal: 16, paddingTop: 14, gap: 10 }}>
+        {list.map((x, i) => {
+          const d = local(x.start);
+          return (
+            <Card key={`${x.batch.id}-${x.start.getTime()}`} style={i === 0 ? { borderColor: colors.board, borderWidth: 1.5 } : undefined}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={st.date}>
+                  <Text style={st.dateDay}>{bnDigits(d.getUTCDate())}</Text>
+                  <Text style={st.dateMon}>{BN_MONTH[d.getUTCMonth()]}</Text>
+                </View>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text style={st.subject}>{x.batch.slot.subjects.map(subjectBn).join(", ")}</Text>
+                  <Text style={st.meta}>
+                    {BN_WD[d.getUTCDay()]}বার · {timeLabelL(dhakaTime(x.start), "bn")} · {bnDigits(x.batch.students.length)} জন · {x.batch.slot.mode === "ONLINE" ? "অনলাইন" : "বাসায়"}
+                  </Text>
+                </View>
+              </View>
+              {i === 0 ? (
+                <View style={{ flexDirection: "row", marginTop: 12, gap: 8 }}>
+                  <Button label="ক্লাস শুরু করি" icon="videocam" style={{ flex: 1 }} onPress={() => openPage("/class/demo?as=teacher", "লাইভ ক্লাস")} />
+                  <Button label="ফাইল দিই" kind="ghost" icon="cloud-upload-outline" onPress={() => openPage("/class/demo?as=teacher", "লাইভ ক্লাস")} />
+                </View>
+              ) : null}
+            </Card>
+          );
+        })}
+      </View>
+    </Screen>
+  );
+}
+
+function Classes() {
   const [tab, setTab] = useState<"next" | "past">("next");
   const { upcoming, past, refundTk } = useMemo(() => myClasses(), []);
   const list = tab === "next" ? upcoming : past;
