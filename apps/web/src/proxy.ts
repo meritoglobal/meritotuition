@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { AFTER_LOGIN, AUTH_LIVE, DEMO_COOKIE, PROTECTED_PREFIXES, SUPABASE_KEY, SUPABASE_URL } from "@/lib/auth/config";
+import { AFTER_LOGIN, AUTH_LIVE, DEMO_COOKIE, isProtected, SUPABASE_KEY, SUPABASE_URL } from "@/lib/auth/config";
 
 /** Keeps the Supabase session fresh and sends signed-out visitors to /login. */
 export async function proxy(req: NextRequest) {
@@ -33,7 +33,7 @@ export async function proxy(req: NextRequest) {
     return r;
   };
   keepRef(res);
-  if (!signedIn && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
+  if (!signedIn && isProtected(pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname + search)}`;
