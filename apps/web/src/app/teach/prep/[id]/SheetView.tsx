@@ -11,12 +11,14 @@ export default function SheetView({ href, topics, start, labels }: { href: strin
     setCur(i);
     const doc = frame.current?.contentDocument;
     const el = doc?.querySelectorAll(".part-head")[i];
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+    el?.scrollIntoView({ behavior: ready ? "smooth" : "auto", block: "start" });
     const u = new URL(window.location.href);
     u.searchParams.set("t", String(i));
     window.history.replaceState(null, "", u);
   };
 
+  // The frame can finish loading before hydration, so check once on mount as well as onLoad.
+  useEffect(() => { if (frame.current?.contentDocument?.readyState === "complete" && frame.current.contentDocument.querySelector(".part-head")) setReady(true); }, []);
   useEffect(() => { if (ready) jump(start); }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

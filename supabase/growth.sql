@@ -330,3 +330,20 @@ alter table tuition_requests      enable row level security;
 alter table request_bids          enable row level security;
 alter table request_invites       enable row level security;
 alter table teacher_request_prefs enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Tutor Pro: a monthly fee puts a tutor first in request suggestions and offers,
+-- with a Pro badge and email alerts for new requests
+-- ---------------------------------------------------------------------------
+create table if not exists tutor_pro (
+  user_id    text primary key,
+  email      text,
+  until      timestamptz not null,
+  reminded   date,                              -- last renewal reminder (Dhaka day)
+  updated_at timestamptz not null default now()
+);
+alter table tutor_pro enable row level security;
+
+-- Payments can also be for Pro.
+alter table payments drop constraint if exists payments_purpose_check;
+alter table payments add constraint payments_purpose_check check (purpose in ('PACKAGE', 'TEST', 'DOUBT', 'PRO'));
