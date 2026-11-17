@@ -19,7 +19,6 @@ function Tutor({ t, lang }: { t: TutorCard; lang: "bn" | "en" }) {
   return (
     <div>
       <Link href={`/tutor/${encodeURIComponent(t.id)}`} className="font-semibold hover:underline">{t.name}</Link>
-      {t.pro && <span className="tag ml-2 bg-gold text-ink">{marketCopy(lang).pro.badge}</span>}
       {t.headline && <div className="text-sm text-ink-2">{t.headline}</div>}
       <div className="mt-0.5 text-xs text-ink-3">
         {[t.university && L.uni(t.university, lang), t.department, t.area && L.area(t.area, lang), t.distanceKm !== null && c.away(t.distanceKm)].filter(Boolean).join(" · ")}

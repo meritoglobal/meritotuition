@@ -4,21 +4,20 @@ import { renewalSweep } from "@/lib/growth/packages";
 import { notify, sendMail, SITE } from "@/lib/growth/notify";
 import { reportText, weeklyReport } from "@/lib/growth/parent";
 import { weekStart } from "@/lib/growth/people";
-import { proReminders } from "@/lib/growth/pro";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
  * Once a day (Netlify scheduled function, 8 AM Dhaka). Needs CRON_SECRET as
- * `authorization: Bearer …`. Every day: renewal reminders, lapsed months, Pro reminders.
+ * `authorization: Bearer …`. Every day: renewal reminders and lapsed months.
  * Saturdays (or ?weekly=1): last week's report to every linked parent.
  */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const out: Record<string, unknown> = { renewals: await renewalSweep(), proReminders: await proReminders() };
+  const out: Record<string, unknown> = { renewals: await renewalSweep() };
   const now = new Date();
   const saturday = new Date(now.getTime() + 6 * 3600_000).getUTCDay() === 6;
   if (saturday || new URL(req.url).searchParams.get("weekly") === "1") {
