@@ -4,6 +4,7 @@ import type { TeacherProfile } from "@/lib/batches";
 import { db } from "@/lib/data";
 import { maskContacts } from "./mask";
 import { notify } from "./notify";
+import { proSet } from "./pro";
 
 /**
  * Tuition requests. A student posts what they need; tutors whose own filter
@@ -24,7 +25,7 @@ export interface Prefs { user_id: string; open: boolean; notify: boolean; min_bu
 /** What a student sees about a tutor: no phone, no email. */
 export interface TutorCard {
   id: string; name: string; headline: string | null; university: string | null; department: string | null;
-  subjects: string[]; area: string | null; price: number | null; distanceKm: number | null;
+  subjects: string[]; area: string | null; price: number | null; distanceKm: number | null; pro: boolean;
 }
 
 export const MAX_OPEN = 5;
@@ -80,10 +81,10 @@ export async function matchingTutors(r: Pick<TuitionRequest, "subject" | "level"
   }).map((t) => ({ t, p: prefs.get(t.user_id)! }));
 }
 
-export function card(t: TeacherProfile, r?: Pick<TuitionRequest, "mode" | "area">): TutorCard {
+export function card(t: TeacherProfile, r?: Pick<TuitionRequest, "mode" | "area">, pro = false): TutorCard {
   return {
     id: t.user_id, name: t.name, headline: t.headline, university: t.university, department: t.department, subjects: t.subjects,
-    area: t.teaches_home ? t.home_area : null, price: r?.mode === "HOME" ? t.price_home : t.price_online,
+    pro, area: t.teaches_home ? t.home_area : null, price: r?.mode === "HOME" ? t.price_home : t.price_online,
     distanceKm: r?.mode === "HOME" ? (() => { const d = km(r.area, t.home_area); return d === null ? null : Math.round(d * 10) / 10; })() : null,
   };
 }
@@ -121,11 +122,13 @@ export async function postRequest(email: string, name: string, r: NewRequest): P
   }).select("*").single();
   if (error) throw error;
   const req = data as TuitionRequest;
-  const tutors = (await matchingTutors(req)).filter(({ t, p }) => p.notify && t.email && t.email.toLowerCase() !== email).slice(0, NOTIFY_CAP);
+  const all = (await matchingTutors(req)).filter(({ t, p }) => p.notify && t.email && t.email.toLowerCase() !== email);
+  const pros = await proSet(all.map(({ t }) => t.user_id));
+  const tutors = [...all.filter(({ t }) => pros.has(t.user_id)), ...all.filter(({ t }) => !pros.has(t.user_id))].slice(0, NOTIFY_CAP);
   const where = req.mode === "HOME" ? `${req.area} (বাসায় গিয়ে)` : "অনলাইনে";
   await Promise.all(tutors.map(({ t }) => notify({
     email: t.email!.toLowerCase(), kind: "REQUEST", title: `নতুন ছাত্র খুঁজছে: ${req.subject}, ${where}`,
-    body: `বাজেট মাসে ৳${req.budget}, সপ্তাহে ${req.days_per_week} দিন`, path: `/teach/requests/${req.id}`,
+    body: `বাজেট মাসে ৳${req.budget}, সপ্তাহে ${req.days_per_week} দিন`, path: `/teach/requests/${req.id}`, mail: pros.has(t.user_id),
   })));
   await db().from("tuition_requests").update({ notified: tutors.length }).eq("id", req.id);
   return { ...req, notified: tutors.length };
@@ -151,7 +154,9 @@ export async function bidsFor(requestId: string): Promise<(Bid & { tutor: TutorC
   const { data: ps } = await s.from("teacher_profiles").select("*").in("user_id", bids.map((b) => b.teacher_id));
   const req = await getRequest(requestId);
   const byId = new Map(((ps ?? []) as TeacherProfile[]).map((t) => [t.user_id, t]));
-  return bids.map((b) => ({ ...b, tutor: byId.has(b.teacher_id) ? card(byId.get(b.teacher_id)!, req ?? undefined) : null }));
+  const pros = await proSet(bids.map((b) => b.teacher_id));
+  return bids.map((b) => ({ ...b, tutor: byId.has(b.teacher_id) ? card(byId.get(b.teacher_id)!, req ?? undefined, pros.has(b.teacher_id)) : null }))
+    .sort((a, b) => Number(pros.has(b.teacher_id)) - Number(pros.has(a.teacher_id))); // Pro first, then oldest first
 }
 
 /** Tutors open to new students whose filter takes this request (minus those who already bid). */
@@ -165,8 +170,9 @@ export async function suggestions(r: TuitionRequest): Promise<(TutorCard & { inv
   const bid = new Set((bids ?? []).map((b) => b.teacher_id));
   const invited = new Set((inv ?? []).map((b) => b.teacher_id));
   const left = list.filter(({ t }) => !bid.has(t.user_id) && t.email?.toLowerCase() !== r.student_email);
-  return left.map(({ t }) => ({ ...card(t, r), invited: invited.has(t.user_id) }))
-    .sort((a, b) => (a.distanceKm ?? 99) - (b.distanceKm ?? 99))
+  const pros = await proSet(left.map(({ t }) => t.user_id));
+  return left.map(({ t }) => ({ ...card(t, r, pros.has(t.user_id)), invited: invited.has(t.user_id) }))
+    .sort((a, b) => Number(b.pro) - Number(a.pro) || (a.distanceKm ?? 99) - (b.distanceKm ?? 99))
     .slice(0, 30);
 }
 
@@ -245,7 +251,7 @@ export async function acceptBid(r: TuitionRequest, bidId: string): Promise<Bid |
   if (!b) return null;
   const { data: done } = await s.from("tuition_requests").update({ status: "MATCHED", chosen_bid: bidId }).eq("id", r.id).eq("status", "OPEN").select("id");
   if (!done?.length) return null;
-  await s.from("request_bids").update({ status: "ACCEPTED" }).eq("id", bidId);
+  await s.from("request_bids").update({ status: "ACCEPTED", decided_at: new Date().toISOString() }).eq("id", bidId);
   const { data: others } = await s.from("request_bids").update({ status: "DECLINED" }).eq("request_id", r.id).eq("status", "PENDING").select("teacher_email");
   await notify({ email: b.teacher_email, kind: "BID", title: "অভিনন্দন! ছাত্র আপনাকে বেছে নিয়েছে", body: `${r.subject}, মাসে ৳${b.price}। মেসেজে কথা বলে শুরু করুন।`, path: `/teach/requests/${r.id}`, mail: true });
   await Promise.all((others ?? []).map((o) => notify({ email: o.teacher_email, kind: "BID", title: "এই টিউশনটা অন্য কেউ পেয়েছেন", body: `${r.subject}। নতুন রিকোয়েস্ট এলে জানাব।`, path: "/teach/requests" })));

@@ -67,3 +67,11 @@ export async function execute(paymentID: string): Promise<Executed> {
   const ok = j.transactionStatus === "Completed" || j.agreementStatus === "Completed";
   return { ok, agreementID: j.agreementID, trxID: j.trxID, msisdn: j.customerMsisdn, amount: j.amount ? Number(j.amount) : undefined, message: j.statusMessage };
 }
+
+/** Give money back for a finished payment (full or part). */
+export async function refund(o: { paymentID: string; trxID: string; amount: number; reason: string }): Promise<{ ok: boolean; refundTrxID?: string; message?: string }> {
+  const j = await call<{ refundTrxID?: string; transactionStatus?: string }>("payment/refund", {
+    paymentID: o.paymentID, trxID: o.trxID, amount: String(o.amount), sku: "pro", reason: o.reason.slice(0, 100),
+  });
+  return { ok: j.transactionStatus === "Completed" && Boolean(j.refundTrxID), refundTrxID: j.refundTrxID, message: j.statusMessage };
+}

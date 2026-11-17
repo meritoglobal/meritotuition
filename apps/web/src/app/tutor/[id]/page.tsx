@@ -24,7 +24,7 @@ export default async function TutorPage({ params }: { params: Promise<{ id: stri
   const modes = [t.teachesOnline && c.tutor.online, t.teachesHome && (t.homeArea ? `${c.tutor.home} (${c.tutor.within(L.area(t.homeArea, lang), t.homeRadiusKm ?? 5)})` : c.tutor.home)].filter(Boolean);
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
-      <h1 className="font-display text-4xl">{t.name}</h1>
+      <h1 className="font-display text-4xl">{t.name} {t.pro && <span className="tag bg-gold align-middle text-base text-ink">{c.pro.badge}</span>}</h1>
       {t.headline && <p className="mt-1 text-lg text-ink-2">{t.headline}</p>}
       <p className="mt-1 text-sm text-ink-3">{[t.university && L.uni(t.university, lang), t.department].filter(Boolean).join(" · ")}</p>
       {t.bio && <p className="mt-4 max-w-2xl whitespace-pre-wrap">{t.bio}</p>}
