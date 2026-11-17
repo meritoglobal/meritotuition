@@ -1,5 +1,5 @@
 import "server-only";
-import { nextRelease, nextTier, tierFor, unreleased, type Tier } from "@mastermoshai/core";
+import { lateMinutes, nextRelease, nextTier, tierFor, unreleased, validSchedule, type Tier } from "@mastermoshai/core";
 import { DATA_LIVE, db } from "@/lib/data";
 import { notify } from "@/lib/growth/notify";
 import { dhakaDay } from "@/lib/growth/people";
@@ -18,9 +18,14 @@ const SETTLE_AFTER_MIN = Number(process.env.SETTLE_AFTER_MIN ?? 40);
 export async function recordSession(classId: string, teacherId: string) {
   if (!DATA_LIVE) return;
   const s = db();
-  const { data: b } = await s.from("batches").select("id,teacher_id").eq("class_id", classId).maybeSingle();
+  const { data: b } = await s.from("batches").select("id,teacher_id,schedule").eq("class_id", classId).maybeSingle();
   if (!b || b.teacher_id !== teacherId) return;
-  await s.from("class_sessions").upsert({ class_id: classId, batch_id: b.id, teacher_id: teacherId, day: dhakaDay() }, { onConflict: "class_id,day", ignoreDuplicates: true });
+  // How late the tutor opened the room. Only used if a student complains about this class.
+  const now = new Date();
+  const { data: moved } = await s.from("class_overrides").select("moved_to").eq("batch_id", b.id)
+    .gte("moved_to", new Date(now.getTime() - 3 * 3_600_000).toISOString()).lte("moved_to", new Date(now.getTime() + 30 * 60_000).toISOString());
+  const late = lateMinutes(now, validSchedule(b.schedule) ?? [], (moved ?? []).map((m) => new Date(m.moved_to as string)));
+  await s.from("class_sessions").upsert({ class_id: classId, batch_id: b.id, teacher_id: teacherId, day: dhakaDay(now), started_at: now.toISOString(), late_min: late }, { onConflict: "class_id,day", ignoreDuplicates: true });
 }
 
 /** A package payment came in: put it in escrow for that batch. */
@@ -139,6 +144,7 @@ export async function wallet(teacherId: string): Promise<WalletView> {
   const totals = { earned: 0, commission: 0, withdrawn: 0 };
   for (const e of all ?? []) {
     if (e.kind === "EARNING") { totals.earned += e.amount; totals.commission += e.commission ?? 0; }
+    if (e.kind === "LATE_REFUND") { totals.earned += e.amount; totals.commission += e.commission ?? 0; }
     if (e.kind === "WITHDRAWAL") totals.withdrawn -= e.amount;
     if (e.kind === "REVERSAL") totals.withdrawn -= e.amount;
   }

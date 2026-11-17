@@ -5,10 +5,14 @@
 import type { SessionOutcome } from "./attendance";
 import { assertTaka, splitGross } from "./money";
 
-/** Share of the class price the teacher earns (before commission) per outcome. */
+/**
+ * Share of the class price the teacher earns (before commission) per outcome.
+ * A late tutor is NOT cut automatically: only a student's complaint about that class
+ * takes half back (see LATE_COMPLAINT). A tutor who never comes is refunded on its own.
+ */
 export const OUTCOME_TEACHER_SHARE: Record<SessionOutcome, number> = {
   COMPLETED: 1,
-  TEACHER_LATE_OR_SHORT: 0.5,
+  TEACHER_LATE_OR_SHORT: 1,
   TEACHER_NO_SHOW: 0,
   STUDENT_NO_SHOW: 1,
   BOTH_ABSENT: 0,

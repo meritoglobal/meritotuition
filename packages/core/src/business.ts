@@ -223,3 +223,57 @@ export function validSchedule(raw: unknown): WeeklySlotLite[] | null {
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------
+// Late tutor: refund only when the student complains
+// ---------------------------------------------------------------------------
+
+/**
+ * Owner's rule: if the tutor comes late (15 minutes, half an hour...) and the student
+ * complains about that class, half of that class's payment goes back to the student.
+ * No complaint, no refund. A tutor who never opens the class is refunded on its own.
+ */
+export const LATE_COMPLAINT = { afterMin: 15, refundShare: 0.5, windowHours: 48 } as const;
+
+export type ComplaintReason = "TEACHER_LATE" | "ENDED_EARLY" | "POOR_TEACHING" | "BEHAVIOUR" | "OTHER";
+export const COMPLAINT_REASONS: ComplaintReason[] = ["TEACHER_LATE", "ENDED_EARLY", "POOR_TEACHING", "BEHAVIOUR", "OTHER"];
+
+/** What happens to a complaint at once: a late class backed by the room log refunds half; the rest goes to an admin. */
+export function complaintRuling(reason: ComplaintReason, lateMin: number | null): "HALF_REFUND" | "REVIEW" {
+  return reason === "TEACHER_LATE" && lateMin !== null && lateMin >= LATE_COMPLAINT.afterMin ? "HALF_REFUND" : "REVIEW";
+}
+
+/** Half of one class share, split so the tutor and the platform each give back their half. */
+export function halfBack(gross: number, commission: number): { refund: number; fromTutor: number; fromPlatform: number } {
+  const refund = Math.round(gross * LATE_COMPLAINT.refundShare);
+  const fromPlatform = Math.round(commission * LATE_COMPLAINT.refundShare);
+  return { refund, fromTutor: refund - fromPlatform, fromPlatform };
+}
+
+export function complaintOpen(classAt: Date, now = new Date()): boolean {
+  return now.getTime() - classAt.getTime() <= LATE_COMPLAINT.windowHours * 3_600_000;
+}
+
+/**
+ * Minutes the tutor was late: when they opened the room vs the class time that day
+ * (weekly routine in Dhaka time, or a rescheduled time). Opening early counts as 0.
+ * null when no class was scheduled near that time.
+ */
+export function lateMinutes(openedAt: Date, schedule: WeeklySlotLite[], moved: Date[] = []): number | null {
+  const DHAKA = 6 * 60 * 60_000;
+  const local = new Date(openedAt.getTime() + DHAKA);
+  const starts: number[] = moved.map((d) => d.getTime());
+  for (let add = -1; add <= 0; add++) {
+    for (const s of schedule) {
+      const [h, m] = s.time.split(":").map(Number);
+      const d = new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate() + add, h, m));
+      if (d.getUTCDay() === s.day) starts.push(d.getTime() - DHAKA);
+    }
+  }
+  // The class this opening belongs to: the latest start no more than 30 min after opening,
+  // and not more than 3 hours before it.
+  const t = openedAt.getTime();
+  const near = starts.filter((x) => x <= t + 30 * 60_000 && t - x <= 3 * 3_600_000).sort((a, b) => b - a)[0];
+  if (near === undefined) return null;
+  return Math.max(0, Math.round((t - near) / 60_000));
+}

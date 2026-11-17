@@ -39,7 +39,7 @@ const bn = {
     stats: [
       ["৪.৮ ★", "নম্বর এবার দিচ্ছে পড়ুয়ারা"],
       ["৳০", "প্রথম ক্লাসের খরচ"],
-      ["১৫ মিনিট", "দেরি হলেই টাকা ফেরত"],
+      ["১৫ মিনিট", "দেরি? নালিশ করলেই অর্ধেক ফেরত"],
       ["বুয়েট · ঢাবি · এনএসইউ", "আইডি মিলিয়ে যাচাই করা"],
     ],
     two: {
@@ -66,7 +66,7 @@ const bn = {
       h2: "ক্লাস হয়নি? টাকা সোজা ঘরে ফেরত।",
       h2Parts: ["ক্লাস হয়নি? ", "টাকা", " সোজা ঘরে ফেরত।"] as [string, string, string],
       rule: "লাল কালিতে লেখা নিয়ম",
-      items: ["টিচার ১৫ মিনিটেও এলেন না → পুরো টাকা ফেরত", "দেরিতে এলেন বা আগেই ছুটি দিলেন → অর্ধেক ফেরত", "পড়ানো মনে ধরেনি → ৪৮ ঘণ্টার মধ্যে জানাও, আমরা দেখছি", "মাঝপথে ছাড়তে চাও → বাকি ক্লাসের টাকা ফেরত"],
+      items: ["টিচার ক্লাসেই এলেন না → পুরো টাকা নিজে থেকেই ফেরত", "১৫ মিনিট বা তার বেশি দেরিতে এলেন → নালিশ করলে ওই ক্লাসের অর্ধেক ফেরত", "পড়ানো মনে ধরেনি → ৪৮ ঘণ্টার মধ্যে জানাও, আমরা দেখছি", "মাঝপথে ছাড়তে চাও → বাকি ক্লাসের টাকা ফেরত"],
     },
     teach: {
       h2: "তুমিও হয়ে যাও মাস্টারমশাই।",
@@ -77,12 +77,12 @@ const bn = {
     faqH2: "মনে প্রশ্ন জাগছে?",
     faq: [
       ["ফ্রি ট্রায়াল ব্যাপারটা কী?", "যে ব্যাচে ট্রায়াল সিট খালি, সেখানে একটা আসল ক্লাস করো বিনা পয়সায়। পড়ানো মনে ধরলে তবেই ভর্তি।"],
-      ["টিচার ক্লাসে না এলে?", "কে কখন ক্লাসে ঢুকল, আমাদের ক্লাসরুম সব টুকে রাখে। টিচার ১৫ মিনিটের মধ্যে না এলে ওই ক্লাসের টাকা নিজে থেকেই তোমার কাছে ফিরে আসে। ফোন করে তাগাদা দিতে হবে না।"],
+      ["টিচার ক্লাসে না এলে?", "কে কখন ক্লাসে ঢুকল, আমাদের ক্লাসরুম সব টুকে রাখে। টিচার ক্লাসেই না এলে ওই ক্লাসের টাকা নিজে থেকেই তোমার কাছে ফিরে আসে। আর টিচার যদি ১৫ মিনিট বা আধা ঘণ্টা দেরি করেন, ৪৮ ঘণ্টার মধ্যে নালিশ করলে ওই ক্লাসের অর্ধেক টাকা ফেরত। দেরিতে তোমার আপত্তি না থাকলে কিছুই করতে হবে না।"],
       ["মাসের মাঝখানে ছেড়ে দিতে পারব?", "পারবে। যে ক্লাসগুলো এখনো হয়নি, তার টাকা ফেরত। যতটুকু পড়েছ, ততটুকুরই দাম।"],
       ["অনলাইন না বাসায়, কোনটা ভালো?", "অনলাইনে খরচ কম, জ্যামও ঠেলতে হয় না। বাসার টিউটর আসেন নিজের এলাকার ভেতরে। দুটোতেই টাকার সুরক্ষা একই।"],
       ["পড়াবেন কারা?", "বুয়েট, ঢাবি, এনএসইউ, জাবিসহ সেরা ভার্সিটির ভাইয়া-আপুরা। স্টুডেন্ট আইডি আর এনআইডি মিলিয়ে দেখে তবেই দিই ‘যাচাই করা’ ব্যাজ।"],
     ],
-    phone: { time: "৪:৫৮", room: "ওয়েটিং রুম", cls: "পদার্থবিজ্ঞান · ৯ম-১০ম", batch: "১:৩ ব্যাচ · ৬০ মিনিট", tutor: "রাফিউল হাসান", uni: "বুয়েট · ইইই", starts: "শুরু হতে বাকি", left: "০২:১৪", join: "টিচার এলেই বাটন জ্বলবে", note: "টিচার ১৫ মিনিটে না এলে এই ক্লাসের ৳১৬৭ ফেরত" },
+    phone: { time: "৪:৫৮", room: "ওয়েটিং রুম", cls: "পদার্থবিজ্ঞান · ৯ম-১০ম", batch: "১:৩ ব্যাচ · ৬০ মিনিট", tutor: "রাফিউল হাসান", uni: "বুয়েট · ইইই", starts: "শুরু হতে বাকি", left: "০২:১৪", join: "টিচার এলেই বাটন জ্বলবে", note: "টিচার না এলে এই ক্লাসের ৳১৬৭ ফেরত, দেরি করলে নালিশে অর্ধেক" },
   },
   search: {
     chooseH1: "কীভাবে পড়বে, আগে সেটা ঠিক করো।",
@@ -97,7 +97,7 @@ const bn = {
     toHome: "বাসায় টিচার চাও? এদিকে →", toOnline: "অনলাইনে পড়তে চাও? এদিকে →",
     onlinePanel: {
       h: "অনলাইন ক্লাস যেভাবে চলে",
-      items: ["কোনো লিংক লাগে না, ক্লাস হয় মাস্টারমশাইয়ের ভেতরেই", "টিচার ক্লাস শুরু করলেই তোমার ফোনে খবর যায়", "কে কখন ঢুকল, হাজিরা নিজে থেকেই খাতায় ওঠে", "টিচার ১৫ মিনিটেও না এলে ওই ক্লাসের টাকা ফেরত"],
+      items: ["কোনো লিংক লাগে না, ক্লাস হয় মাস্টারমশাইয়ের ভেতরেই", "টিচার ক্লাস শুরু করলেই তোমার ফোনে খবর যায়", "কে কখন ঢুকল, হাজিরা নিজে থেকেই খাতায় ওঠে", "টিচার না এলে টাকা ফেরত, দেরি করলে নালিশে অর্ধেক"],
     },
     title: (subjects: string, mode: string, area: string) =>
       mode === "OFFLINE" ? `${area}-এর আশপাশে ${subjects || "সব"} টিউটর` : mode === "ONLINE" ? `অনলাইনে ${subjects || "সব"} টিউটর` : `ঢাকার ${subjects || "সব"} টিউটর`,
@@ -126,7 +126,7 @@ const bn = {
     trial: "ফ্রি ট্রায়াল নিই", choose: "ব্যাচ বেছে নিই",
     promises: [
       ["ক্লাস হলে তবেই টাকা।", "তোমার টাকা থাকে মাস্টারমশাইয়ের জিম্মায়, ছাড়া হয় প্রতি ক্লাসের পর।"],
-      ["না এলে ফেরত।", "টিচার ১৫ মিনিটেও না এলে ওই ক্লাসের টাকা তোমার।"],
+      ["না এলে ফেরত।", "টিচার না এলে ওই ক্লাসের টাকা তোমার। দেরি করলে নালিশ করো, অর্ধেক ফেরত।"],
       ["যখন খুশি ছাড়ো।", "না-হওয়া ক্লাসের টাকা ফেরত পাবে।"],
     ],
   },
@@ -140,7 +140,7 @@ const bn = {
     tutor: "টিউটর", subjects: "বিষয়", routine: "রুটিন", batch: "ব্যাচ", at: "·", online: "মাস্টারমশাইয়ের ভেতরেই লাইভ ক্লাস", home: "তোমার বাসায়",
     trialClass: "ট্রায়াল ক্লাস", firstClasses: "প্রথম ক্লাসগুলো", price: "খরচ", free: "এক পয়সাও না",
     month: (c: number) => `${n(c)}টি ক্লাস (১ মাস)`,
-    note: "টাকা থাকে মাস্টারমশাইয়ের জিম্মায়। প্রতিটা ক্লাসের ৪৮ ঘণ্টা পর শুধু সেই ক্লাসের টাকা টিচারের কাছে যায়। ক্লাস না হলে টাকা ফেরত।",
+    note: "টাকা থাকে মাস্টারমশাইয়ের জিম্মায়। প্রতিটা ক্লাস হলে শুধু সেই ক্লাসের টাকা টিচারের কাছে যায়। ক্লাস না হলে টাকা ফেরত, দেরির নালিশে অর্ধেক।",
     pay: ["বিকাশ", "নগদ", "কার্ড"], confirmTrial: "ফ্রি ট্রায়াল পাকা করি", payBtn: (p: string) => `${p} দিয়ে ভর্তি হই`,
   },
   room: {
@@ -150,7 +150,7 @@ const bn = {
     liveNow: "ক্লাস চলছে", waiting: "টিচারের অপেক্ষায়", startsIn: "শুরু হতে বাকি",
     msgLive: "টিচার ক্লাস শুরু করেছেন। ঢুকে পড়ো।", msgTeacher: "তৈরি হলে ক্লাস শুরু করো। সব ছাত্রের ফোনে খবর চলে যাবে।", msgStudent: "তুমি ওয়েটিং রুমে আছ। টিচার শুরু করামাত্র তোমাকে ডেকে নেব।",
     start: "ক্লাস শুরু করি", join: "ক্লাসে ঢুকি", demo: "ডেমো: ধরে নাও টিচার ক্লাস শুরু করলেন",
-    note: "তোমার হাজিরা নিজে থেকেই খাতায় উঠছে। টিচার ১৫ মিনিটের মধ্যে না এলে এই ক্লাসের টাকা ফেরত।",
+    note: "তোমার হাজিরা নিজে থেকেই খাতায় উঠছে। টিচার না এলে এই ক্লাসের টাকা ফেরত। দেরি করলে ৪৮ ঘণ্টার মধ্যে নালিশ করো, অর্ধেক ফেরত পাবে।",
     lk: {
       mic: "মাইক", micOff: "মাইক বন্ধ", cam: "ক্যামেরা", camOff: "ক্যামেরা বন্ধ", screen: "স্ক্রিন দেখাই", screenOff: "দেখানো থামাই",
       hand: "হাত তুলি", handDown: "হাত নামাই", chat: "চ্যাট", chatPh: "কিছু জিজ্ঞেস করার থাকলে লেখো...", send: "পাঠাও",
@@ -207,7 +207,7 @@ const bn = {
   student: {
     h1: "আমার ক্লাস", next: "পরের ক্লাস", with: (subjects: string, teacher: string) => `${teacher}-এর কাছে ${subjects}`, reminder: "১০ মিনিট আগে মনে করিয়ে দেব", open: "ক্লাসরুমে ঢুকি",
     paid: "এ মাসে দিয়েছ", done: "ক্লাস হয়েছে", of: (a: number, b: number) => `${n(b)}টির মধ্যে ${n(a)}টি`, refunded: "ফেরত পেয়েছ", history: "ক্লাসের খতিয়ান",
-    outcome: { COMPLETED: "হয়েছে", TEACHER_NO_SHOW: "টিচার আসেননি · টাকা ফেরত", TEACHER_LATE_OR_SHORT: "দেরি বা কম সময় · অর্ধেক ফেরত", STUDENT_NO_SHOW: "তুমি ফাঁকি দিয়েছ", BOTH_ABSENT: "ক্লাস হয়নি · টাকা ফেরত" } as Record<string, string>,
+    outcome: { COMPLETED: "হয়েছে", TEACHER_NO_SHOW: "টিচার আসেননি · টাকা ফেরত", TEACHER_LATE_OR_SHORT: "দেরি বা কম সময় · নালিশ করলে অর্ধেক ফেরত", STUDENT_NO_SHOW: "তুমি ফাঁকি দিয়েছ", BOTH_ABSENT: "ক্লাস হয়নি · টাকা ফেরত" } as Record<string, string>,
     renew: "পরের মাসেও পড়ব", stop: "এই টিউটর আর না (বাকি ক্লাসের টাকা ফেরত)",
   },
   teacher: {
@@ -252,7 +252,7 @@ const en: Copy = {
     stats: [
       ["4.8 ★", "students do the grading here"],
       ["৳0", "for your first class"],
-      ["15 min", "late? refund is automatic"],
+      ["15 min", "late? complain, get half back"],
       ["BUET · DU · NSU", "ID-checked tutors"],
     ],
     two: {
@@ -279,7 +279,7 @@ const en: Copy = {
       h2: "No class? Your money walks back home.",
       h2Parts: ["No class? Your ", "money", " walks back home."],
       rule: "The rules, in red ink",
-      items: ["Tutor 15 min absent → 100% back", "Came late or left early → 50% back", "Not happy → tell us within 48 h, we look into it", "Want to stop → untaught classes refunded"],
+      items: ["Tutor never came → 100% back on its own", "Tutor 15+ min late → complain and get half of that class back", "Not happy → tell us within 48 h, we look into it", "Want to stop → untaught classes refunded"],
     },
     teach: {
       h2: "Go on, be the Mastermoshai.",
@@ -290,12 +290,12 @@ const en: Copy = {
     faqH2: "Go on, ask.",
     faq: [
       ["What's the deal with the free trial?", "Pick a batch with a trial seat and sit in one real class for nothing. Enroll only if the teaching clicks."],
-      ["What if the tutor doesn't show up?", "Our classroom notes who joined and when. If the tutor isn't there within 15 minutes, that class is refunded on its own. No awkward phone calls."],
+      ["What if the tutor doesn't show up?", "Our classroom notes who joined and when. If the tutor never shows up, that class is refunded on its own. If they come 15 minutes or half an hour late, complain within 48 hours and half of that class comes back. Don't mind the delay? Do nothing."],
       ["Can I quit mid-month?", "Yes. Every class not yet taught comes back to you. You pay only for what you studied."],
       ["Online or at home, which is better?", "Online costs less and skips the traffic. Home tutors come to you within their area. Both carry the same payment protection."],
       ["Who are the tutors?", "Students and graduates of BUET, DU, NSU, JU and other top universities. We match student ID and NID before anyone gets the Verified badge."],
     ],
-    phone: { time: "4:58", room: "Waiting room", cls: "Physics · Class 9-10", batch: "1:3 batch · 60 min", tutor: "Rafiul Hasan", uni: "BUET · EEE", starts: "starts in", left: "02:14", join: "Lights up when the tutor arrives", note: "Tutor 15 min late? This class's ৳167 comes back" },
+    phone: { time: "4:58", room: "Waiting room", cls: "Physics · Class 9-10", batch: "1:3 batch · 60 min", tutor: "Rafiul Hasan", uni: "BUET · EEE", starts: "starts in", left: "02:14", join: "Lights up when the tutor arrives", note: "Tutor absent? This class's ৳167 comes back. Late? Complain for half" },
   },
   search: {
     chooseH1: "First things first: how do you want to learn?",
@@ -310,7 +310,7 @@ const en: Copy = {
     toHome: "Want a tutor at home? This way →", toOnline: "Rather learn online? This way →",
     onlinePanel: {
       h: "How online classes work",
-      items: ["No links. The class happens inside Mastermoshai", "Your phone pings the moment the tutor starts", "Attendance marks itself: who joined, and when", "Tutor 15 minutes absent? That class is refunded"],
+      items: ["No links. The class happens inside Mastermoshai", "Your phone pings the moment the tutor starts", "Attendance marks itself: who joined, and when", "Tutor absent? Refunded. Late? Complain for half back"],
     },
     title: (subjects, mode, area) => `${subjects || "All"} tutors ${mode === "OFFLINE" ? `near ${area}` : mode === "ONLINE" ? "online" : "in Dhaka"}`,
     how: "How", anyHow: "Online or at home", online: "Online live class", offline: "Home tutor",
@@ -338,7 +338,7 @@ const en: Copy = {
     trial: "Book free trial", choose: "Choose a batch",
     promises: [
       ["Paid class by class.", "Mastermoshai holds your money and releases it after each class."],
-      ["No show, no charge.", "Tutor 15 minutes absent? That class is yours again."],
+      ["No show, no charge.", "Tutor absent? That class is yours again. Late? Complain and get half back."],
       ["Stop any time.", "Untaught classes are refunded."],
     ],
   },
@@ -352,7 +352,7 @@ const en: Copy = {
     tutor: "Tutor", subjects: "Subjects", routine: "Routine", batch: "Batch", at: "at", online: "Live class inside Mastermoshai", home: "At your home",
     trialClass: "Trial class", firstClasses: "First classes", price: "Price", free: "Not a single taka",
     month: (c) => `${c} classes (1 month)`,
-    note: "Held safely by Mastermoshai. Released to the tutor one class at a time, 48 hours after each class. No class, money back.",
+    note: "Held safely by Mastermoshai. Released to the tutor one class at a time, as each class is held. No class, money back; a late tutor you complain about, half back.",
     pay: ["bKash", "Nagad", "Card"], confirmTrial: "Confirm free trial", payBtn: (p) => `Pay ${p} and enroll`,
   },
   room: {
@@ -362,7 +362,7 @@ const en: Copy = {
     liveNow: "Live now", waiting: "Waiting for the tutor", startsIn: "starts in",
     msgLive: "The tutor has started. Jump in.", msgTeacher: "Start the class when you are ready. Every student gets a ping.", msgStudent: "You are in the waiting room. We will call you the moment the tutor starts.",
     start: "Start class", join: "Join class", demo: "Demo: pretend the tutor has started",
-    note: "Your attendance marks itself. If the tutor does not join within 15 minutes, this class is refunded.",
+    note: "Your attendance marks itself. Tutor absent? This class is refunded. Tutor late? Complain within 48 hours for half back.",
     lk: {
       mic: "Mic", micOff: "Mic off", cam: "Camera", camOff: "Camera off", screen: "Share screen", screenOff: "Stop sharing",
       hand: "Raise hand", handDown: "Lower hand", chat: "Chat", chatPh: "Got a question? Type it here...", send: "Send",
@@ -419,7 +419,7 @@ const en: Copy = {
   student: {
     h1: "My classes", next: "Next class", with: (subjects, teacher) => `${subjects} with ${teacher}`, reminder: "reminder 10 min before", open: "Open classroom",
     paid: "Paid this month", done: "Classes done", of: (a, b) => `${a} of ${b}`, refunded: "Refunded to you", history: "Class history",
-    outcome: { COMPLETED: "Done", TEACHER_NO_SHOW: "Tutor absent · refunded", TEACHER_LATE_OR_SHORT: "Late or short · half refunded", STUDENT_NO_SHOW: "You bunked this one", BOTH_ABSENT: "Not held · refunded" },
+    outcome: { COMPLETED: "Done", TEACHER_NO_SHOW: "Tutor absent · refunded", TEACHER_LATE_OR_SHORT: "Late or short · half back if you complain", STUDENT_NO_SHOW: "You bunked this one", BOTH_ABSENT: "Not held · refunded" },
     renew: "Renew next month", stop: "Stop this tutor (untaught classes refunded)",
   },
   teacher: {

@@ -6,6 +6,7 @@
 - **Tutors must verify their student ID** (`/teach/verify`, AI reads the card; clear matches auto-approve, doubtful ones go to `/admin/tutors`). Only verified tutors see all content, only their students get it free, and only they can withdraw. Admins see everything. Lecture sheets live in `apps/web/content/sheets/` and are served only through `/api/content/{id}`.
 - **Commission tiers** by lifetime paying students: 20% new → 15% (10+) → 12% (25+) → 10% (50+) → 5% (100+ and expert badge from admin). `COMMISSION_TIERS` in core.
 - **Money flow:** student/parent pays a package upfront (monthly, or once per batch) → escrow lot → each class the tutor holds (tutor opened the room and at least one student joined, 40 min after start) releases one class share of every paying student's lot, commission kept, rest to the tutor's wallet → tutor withdraws up to 100% to bKash. Lots not used by period end + 7 days (batch: + 30) go back to the payer as bonus credit. Classes with no student join stay on hold for admin (`/admin/payouts`).
+- **Late tutor (owner rule, Nov 17):** no automatic cut for lateness. When the tutor opens the room the session stores `late_min` against the routine (or a rescheduled time). If a student complains within 48 h about a class where the tutor was 15+ min late, half of that student's class share goes back to the payer as credit at once (tutor wallet −half of their net, platform gives up half its commission). Other complaints, or late claims the log doesn't back, go to `/admin/payouts` (give half back or reject). No complaint, no refund. A tutor who never opens the class is refunded automatically (the lot's unused class returns as credit).
 - **Routine change / reschedule:** tutor proposes on the batch page; every student on the batch must approve; one "no" rejects. Routine proposals expire in 7 days, moves when the class time arrives.
 
 ## Setup
@@ -21,6 +22,7 @@
 - `POST /api/content/subscriptions/{id} {action: renew|auto|cancel, on?}`
 - `GET /api/wallet` · `POST /api/wallet {action: withdraw, amount}` / `{action: number, number, autoPayout?}` / `{action: auto, on}`
 - `GET /api/tiers`
+- `GET /api/complaints` (student's classes in the last 48 h with `lateMin`) · `POST /api/complaints {sessionId, reason, details?}` → `{status: REFUNDED, refund}` or `{status: REVIEW}`
 - `GET /api/schedule-changes` (student) · `POST /api/schedule-changes/{id} {vote: APPROVE|REJECT}` or `{action: cancel}` (tutor)
 - `GET|POST /api/batches/{id}/schedule-changes {kind: ROUTINE, schedule:[{day,time,minutes}]} | {kind: RESCHEDULE, fromAt, toAt, minutes?}`
 

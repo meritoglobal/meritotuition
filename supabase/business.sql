@@ -237,3 +237,30 @@ create table if not exists student_segments (
   set_by   text                                  -- null = first payment, else admin email
 );
 alter table student_segments enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Late tutor: half back only when the student complains (owner rule, Nov 17)
+-- ---------------------------------------------------------------------------
+alter table class_sessions add column if not exists late_min int;   -- tutor opened the room this many minutes after class time
+alter table wallet_entries drop constraint if exists wallet_entries_kind_check;
+alter table wallet_entries add constraint wallet_entries_kind_check check (kind in ('EARNING', 'WITHDRAWAL', 'REVERSAL', 'ADJUST', 'LATE_REFUND'));
+
+create table if not exists class_complaints (
+  id            uuid primary key default gen_random_uuid(),
+  session_id    uuid not null references class_sessions (id) on delete cascade,
+  batch_id      uuid,
+  teacher_id    text not null,
+  student_email text not null,
+  reason        text not null check (reason in ('TEACHER_LATE', 'ENDED_EARLY', 'POOR_TEACHING', 'BEHAVIOUR', 'OTHER')),
+  details       text,
+  late_min      int,
+  status        text not null default 'REVIEW' check (status in ('REVIEW', 'REFUNDED', 'REJECTED')),
+  refund        int,
+  note          text,
+  created_at    timestamptz not null default now(),
+  decided_at    timestamptz,
+  unique (session_id, student_email)
+);
+create index if not exists class_complaints_status on class_complaints (status, created_at);
+create index if not exists class_complaints_student on class_complaints (student_email, created_at desc);
+alter table class_complaints enable row level security;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  complaintOpen, complaintRuling, halfBack, lateMinutes,
   COMMISSION_TIERS, SEGMENT_LABEL, packClass, packGroup, changeOutcome, contentAccess, nextRelease, nextTier, normalizeMsisdn, tierFor, segmentOfContent, segmentsOfLevel,
   unreleased, validSchedule, withdrawable,
 } from "../src";
@@ -109,5 +110,36 @@ describe("routine changes", () => {
     expect(validSchedule([{ day: 0, time: "17:00", minutes: 60 }])).toEqual([{ day: 0, time: "17:00", minutes: 60 }]);
     expect(validSchedule([{ day: 7, time: "17:00" }])).toBeNull();
     expect(validSchedule([])).toBeNull();
+  });
+});
+
+describe("late tutor complaints", () => {
+  // Sunday 2026-11-15 17:00 Dhaka = 11:00 UTC
+  const sched = [{ day: 0, time: "17:00", minutes: 60 }];
+  it("minutes late from the routine", () => {
+    expect(lateMinutes(new Date("2026-11-15T11:20:00Z"), sched)).toBe(20);
+    expect(lateMinutes(new Date("2026-11-15T10:50:00Z"), sched)).toBe(0);
+    expect(lateMinutes(new Date("2026-11-15T11:40:00Z"), sched)).toBe(40);
+    expect(lateMinutes(new Date("2026-11-16T11:20:00Z"), sched)).toBeNull();
+  });
+  it("uses a rescheduled time", () => {
+    expect(lateMinutes(new Date("2026-11-16T12:16:00Z"), sched, [new Date("2026-11-16T12:00:00Z")])).toBe(16);
+  });
+  it("only a complaint about a late class refunds half", () => {
+    expect(complaintRuling("TEACHER_LATE", 20)).toBe("HALF_REFUND");
+    expect(complaintRuling("TEACHER_LATE", 15)).toBe("HALF_REFUND");
+    expect(complaintRuling("TEACHER_LATE", 5)).toBe("REVIEW");
+    expect(complaintRuling("TEACHER_LATE", null)).toBe("REVIEW");
+    expect(complaintRuling("POOR_TEACHING", 40)).toBe("REVIEW");
+  });
+  it("half back splits between tutor and platform", () => {
+    expect(halfBack(500, 100)).toEqual({ refund: 250, fromTutor: 200, fromPlatform: 50 });
+    const h = halfBack(333, 67);
+    expect(h.fromTutor + h.fromPlatform).toBe(h.refund);
+  });
+  it("48 hour window", () => {
+    const at = new Date("2026-11-15T11:00:00Z");
+    expect(complaintOpen(at, new Date("2026-11-17T10:00:00Z"))).toBe(true);
+    expect(complaintOpen(at, new Date("2026-11-17T12:00:00Z"))).toBe(false);
   });
 });

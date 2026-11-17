@@ -4,6 +4,8 @@ import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
 import { demoStudentPlan } from "@/lib/demo";
 import FlagForm from "./FlagForm";
+import ComplainForm from "./ComplainForm";
+import { recentClasses } from "@/lib/biz/complaints";
 import Link from "next/link";
 import type { ClassLevel } from "@mastermoshai/core";
 import { getUser } from "@/lib/auth/session";
@@ -43,6 +45,7 @@ export default async function StudentDashboard() {
   const unread = DATA_LIVE && user ? await unreadCount(keyOf(user)).catch(() => 0) : 0;
   const routine = DATA_LIVE && user ? await pendingFor(keyOf(user)).catch(() => 0) : 0;
   const bz = bizCopy(lang);
+  const recent = DATA_LIVE && user ? await recentClasses(keyOf(user)).catch(() => []) : null;
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <h1 className="font-display text-4xl">{c.h1}</h1>
@@ -113,7 +116,7 @@ export default async function StudentDashboard() {
       </div>
 
       <div id="flag" className="mt-8">
-        <FlagForm classes={past.filter((k) => k.outcome === "COMPLETED").map((k) => ({ id: k.id, label: fmt(k.start) }))} />
+        {recent ? <ComplainForm classes={recent} /> : <FlagForm classes={past.filter((k) => k.outcome === "COMPLETED").map((k) => ({ id: k.id, label: fmt(k.start) }))} />}
       </div>
 
       <div className="mt-8 flex gap-3 text-sm">

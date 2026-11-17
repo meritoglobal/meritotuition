@@ -5,7 +5,8 @@ import { DATA_LIVE, db } from "@/lib/data";
 import { mustMe } from "@/lib/growth/page";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
-import { forceRelease, setExpert, settle } from "./actions";
+import { openComplaints } from "@/lib/biz/complaints";
+import { decideComplaint, forceRelease, setExpert, settle } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,8 @@ export default async function AdminPayouts() {
     s.from("class_sessions").select("id,class_id,day,teacher_id,started_at").eq("status", "EMPTY").order("started_at", { ascending: false }).limit(50),
     s.from("teacher_profiles").select("name,email").eq("expert", true).limit(100),
   ]);
+  const complaints = await openComplaints();
+  const reasons = bizCopy(lang).complaint.reasons;
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
       <h1 className="font-display text-3xl">{c.h1}</h1>
@@ -34,6 +37,25 @@ export default async function AdminPayouts() {
                 <button className="btn-board px-3! py-1!">{c.paid}</button>
               </form>
               <form action={settle.bind(null, w.id, false)}><button className="text-redpen underline">{c.failed}</button></form>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h2 className="mt-10 font-semibold">{c.complaints}</h2>
+      {complaints.length === 0 ? <p className="mt-2 text-sm text-ink-3">{c.noComplaints}</p> : (
+        <ul className="mt-2 divide-y divide-line text-sm">
+          {complaints.map((k) => (
+            <li key={k.id} className="py-3">
+              <div><b>{reasons[k.reason] ?? k.reason}</b> · {k.student_email} · {c.lateMin(k.late_min)} · {L.dateTime(new Date(k.created_at), lang)}</div>
+              {k.details && <p className="mt-1 text-ink-2">{k.details}</p>}
+              <div className="mt-2 flex flex-wrap gap-2">
+                <form action={decideComplaint.bind(null, k.id, true)}><button className="btn-board px-3! py-1!">{c.halfBack}</button></form>
+                <form action={decideComplaint.bind(null, k.id, false)} className="flex gap-2">
+                  <input name="note" placeholder="note" className="w-40 rounded border border-line px-2 py-1" />
+                  <button className="text-redpen underline">{c.reject}</button>
+                </form>
+              </div>
             </li>
           ))}
         </ul>
