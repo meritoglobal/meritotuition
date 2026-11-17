@@ -3,10 +3,9 @@
  * app, under a native header. Native extras: camera/mic and keep-awake in class,
  * Android back button, offline screen, other sites opened outside, and files the
  * page saves (class recordings are blob: downloads) written to the phone.
- * Our content (lecture sheets, exams, prep) is view-only: no screenshots or screen
- * recording, no downloads, no copy, no print, and nothing kept in the page cache.
+ * Our content (lecture sheets, exams, prep) is view-only: no downloads, no copy,
+ * no print, and nothing kept in the page cache. Screenshots stay allowed (owner's call).
  */
-import * as ScreenCapture from "expo-screen-capture";
 import * as SplashScreen from "expo-splash-screen";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import * as Linking from "expo-linking";
@@ -68,12 +67,6 @@ export default function WebPage() {
     return () => { if (inClass.current) deactivateKeepAwake("class"); };
   }, [src]);
 
-  // Content pages: Android blocks screenshots and screen recording (FLAG_SECURE).
-  useEffect(() => {
-    if (!locked) return;
-    void ScreenCapture.preventScreenCaptureAsync("content").catch(() => {});
-    return () => { void ScreenCapture.allowScreenCaptureAsync("content").catch(() => {}); };
-  }, [locked]);
 
   // Android back walks back through pages first, then closes this screen.
   useEffect(() => {
