@@ -164,8 +164,8 @@ export async function suggestions(r: TuitionRequest): Promise<(TutorCard & { inv
   ]);
   const bid = new Set((bids ?? []).map((b) => b.teacher_id));
   const invited = new Set((inv ?? []).map((b) => b.teacher_id));
-  return list.filter(({ t }) => !bid.has(t.user_id) && t.email?.toLowerCase() !== r.student_email)
-    .map(({ t }) => ({ ...card(t, r), invited: invited.has(t.user_id) }))
+  const left = list.filter(({ t }) => !bid.has(t.user_id) && t.email?.toLowerCase() !== r.student_email);
+  return left.map(({ t }) => ({ ...card(t, r), invited: invited.has(t.user_id) }))
     .sort((a, b) => (a.distanceKm ?? 99) - (b.distanceKm ?? 99))
     .slice(0, 30);
 }

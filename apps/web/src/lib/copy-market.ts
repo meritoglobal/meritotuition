@@ -57,6 +57,12 @@ const bn = {
     topics: "টপিক", none: "এই ক্লাস-বিষয়ের শিট এখনো আসেনি। আমরা অধ্যায় ধরে বানাচ্ছি, এলেই এখানে চলে আসবে।",
     full: "পুরো শিট আলাদা ট্যাবে", back: "সব অধ্যায়", print: "প্রিন্ট",
   },
+  tutor: {
+    subjects: "যা পড়ান", classes: "ক্লাস", modes: "কীভাবে পড়ান", online: "অনলাইন", home: "বাসায় গিয়ে",
+    within: (a: string, k: number) => `${a} থেকে ${n(k)} কিমির মধ্যে`, price: "মাসিক ফি", packages: "মাসিক প্যাকেজ",
+    noPackages: "এই টিউটরের এখনো কোনো প্যাকেজ নেই।", ask: "এনাকে পেতে রিকোয়েস্ট পোস্ট করো", notFound: "এই টিউটরকে পাওয়া যায়নি।",
+    profile: "প্রোফাইল দেখো",
+  },
   nav: { requests: "নতুন ছাত্র", prep: "ক্লাস প্রস্তুতি" },
 };
 
@@ -112,6 +118,12 @@ const en: Copy = {
     level: "Class", subject: "Subject", go: "Show", chapter: (k: number) => `Chapter ${k}`,
     topics: "Topics", none: "No sheet for this class and subject yet. We're writing them chapter by chapter; they'll appear here.",
     full: "Full sheet in a new tab", back: "All chapters", print: "Print",
+  },
+  tutor: {
+    subjects: "Teaches", classes: "Classes", modes: "How", online: "Online", home: "At home",
+    within: (a: string, k: number) => `within ${k} km of ${a}`, price: "Monthly fee", packages: "Monthly packages",
+    noPackages: "No packages from this tutor yet.", ask: "Post a request to get this tutor", notFound: "Tutor not found.",
+    profile: "View profile",
   },
   nav: { requests: "New students", prep: "Class prep" },
 };

@@ -330,3 +330,4 @@ alter table tuition_requests      enable row level security;
 alter table request_bids          enable row level security;
 alter table request_invites       enable row level security;
 alter table teacher_request_prefs enable row level security;
+

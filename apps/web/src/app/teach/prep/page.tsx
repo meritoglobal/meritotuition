@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CLASS_LEVELS, SUBJECTS, type ClassLevel } from "@mastermoshai/core";
 import { getUser } from "@/lib/auth/session";
 import { getProfile } from "@/lib/batches";
+import { DATA_LIVE } from "@/lib/data";
 import { CONTENT } from "@/lib/content-catalog";
 import { marketCopy } from "@/lib/copy-market";
 import { getLang } from "@/lib/lang";
@@ -9,12 +10,13 @@ import { L } from "@/lib/l10n";
 
 export const dynamic = "force-dynamic";
 
+/** Works without Supabase too: sheets come from the content catalog. */
 /** Class preparation: pick class and subject, then a chapter; sheets open topic by topic. */
 export default async function Prep({ searchParams }: { searchParams: Promise<{ level?: string; subject?: string }> }) {
   const lang = await getLang();
   const c = marketCopy(lang).prep;
   const sp = await searchParams;
-  const p = await getProfile((await getUser())!.id).catch(() => null);
+  const p = DATA_LIVE ? await getProfile((await getUser())!.id).catch(() => null) : null;
   const level = CLASS_LEVELS.find((l) => l === sp.level) ?? (p?.levels[0] as ClassLevel | undefined) ?? "CLASS_9_10";
   const subject = SUBJECTS.find((s) => s === sp.subject) ?? p?.subjects[0] ?? "Physics";
   const sheets = CONTENT.filter((x) => x.kind === "sheet" && x.level === level && x.subject === subject).sort((a, b) => a.chapter - b.chapter);

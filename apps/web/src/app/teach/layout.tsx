@@ -33,7 +33,9 @@ export default async function TeachLayout({ children }: { children: React.ReactN
           <Link key={href} href={href} className="text-sm font-semibold text-ink-2 hover:text-ink">{label}</Link>
         ))}
       </div>
-      {DATA_LIVE ? <div className="pt-6">{children}</div> : <p className="mt-6 rounded-lg bg-mist p-6 text-center text-sm text-ink-2">{t.off}</p>}
+      {/* Pages that need the database render nothing while it is off; class prep works without it. */}
+      {!DATA_LIVE && <p className="mt-6 rounded-lg bg-mist p-6 text-center text-sm text-ink-2">{t.off}</p>}
+      <div className="pt-6">{children}</div>
     </div>
   );
 }
