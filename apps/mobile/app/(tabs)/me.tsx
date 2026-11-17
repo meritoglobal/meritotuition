@@ -31,7 +31,10 @@ export default function Me() {
     },
     {
       title: "টাকা",
-      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => router.push("/earnings") }],
+      rows: [
+        { icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => router.push("/earnings") },
+        { icon: "ribbon-outline", label: "টিউটর প্রো", sub: "বিডে সবার আগে আপনার নাম, প্রোফাইলে প্রো ব্যাজ", go: () => openPage("/teach/pro", "টিউটর প্রো") },
+      ],
     },
   ];
   const studentGroups: { title: string; rows: Row[] }[] = [
