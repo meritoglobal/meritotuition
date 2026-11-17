@@ -79,7 +79,7 @@ function Classes() {
         <Text style={st.howH}>ক্লাসের নিয়ম, এক নজরে</Text>
         <Rule icon="notifications-outline" text="ক্লাস শুরুর ১০ মিনিট আগে নোটিফিকেশন আসবে, ট্যাপ করলেই ক্লাসে।" />
         <Rule icon="cloud-download-outline" text="ক্লাস শেষে রেকর্ডিং ফোনে সেভ হয়। মিস করলে পরে দেখে নিও।" />
-        <Rule icon="flag-outline" text="টিচার না এলে বা দেরি করলে ৪৮ ঘণ্টার মধ্যে নালিশ করো, টাকা ফেরত।" />
+        <Rule icon="flag-outline" text="টিচার না এলে টাকা নিজে থেকেই ফেরত। ১৫ মিনিটের বেশি দেরি করলে ৪৮ ঘণ্টার মধ্যে নালিশ করো, ওই ক্লাসের অর্ধেক টাকা ফেরত।" />
       </View>
     </Screen>
   );

@@ -139,7 +139,7 @@ export default function TeacherProfile() {
 
         <View style={st.note}>
           <Ionicons name="shield-checkmark-outline" size={18} color={colors.redpen} />
-          <Text style={st.noteText}>মাসের টাকা আমাদের কাছে জমা থাকে। প্রতিটা ক্লাস হলে তবেই টিচার পান। টিচার না এলে বা দেরি করলে সেই ক্লাসের টাকা ফেরত।</Text>
+          <Text style={st.noteText}>মাসের টাকা আমাদের কাছে জমা থাকে। প্রতিটা ক্লাস হলে তবেই টিচার পান। টিচার না এলে সেই ক্লাসের টাকা নিজে থেকেই ফেরত। ১৫ মিনিটের বেশি দেরি করলে নালিশ করলে ওই ক্লাসের অর্ধেক টাকা ফেরত।</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

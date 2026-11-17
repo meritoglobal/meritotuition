@@ -46,7 +46,7 @@ export default function Me() {
         { icon: "library-outline", label: "লেকচার শিট প্যাক", sub: "ক্লাস ৬ থেকে HSC, টিচারের কাছে পড়লে ফ্রি", go: () => openLive("/learn", "লেকচার শিট", "/learn", "wallet") },
         { icon: "pricetags-outline", label: "মাসিক প্যাকেজ ও bKash অটো-পে", sub: "প্রতি মাসে নিজে নিজেই পেমেন্ট", go: () => openPage("/packages", "মাসিক প্যাকেজ") },
         { icon: "wallet-outline", label: "পেমেন্ট ও রিফান্ড", sub: "কত টাকা জমা, কত ফেরত", go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },
-        { icon: "flag-outline", label: "নালিশ করি", sub: "টিচার আসেননি বা দেরি করেছেন", go: () => openPage("/dashboard/student", "নালিশ") },
+        { icon: "flag-outline", label: "নালিশ করি", sub: "দেরি, আগে শেষ, পড়ানো বা ব্যবহার নিয়ে; ৪৮ ঘণ্টার মধ্যে", go: () => openPage("/dashboard/student", "নালিশ") },
         { icon: "download-outline", label: "সেভ করা রেকর্ডিং", sub: "ফোনের Files / Downloads এ থাকে", go: () => openPage("/dashboard/student", "আমার ক্লাস") },
       ],
     },
