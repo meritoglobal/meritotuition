@@ -1,0 +1,99 @@
+import { describe, expect, it } from "vitest";
+import {
+  COMMISSION_TIERS, changeOutcome, contentAccess, nextRelease, nextTier, normalizeMsisdn, tierFor, segmentOfContent, segmentsOfLevel,
+  unreleased, validSchedule, withdrawable,
+} from "../src";
+
+describe("segments", () => {
+  it("maps levels to segments", () => {
+    expect(segmentsOfLevel("CLASS_9_10")).toEqual(["SSC"]);
+    expect(segmentsOfLevel("CLASS_6_8")).toEqual(["CLASS_6", "CLASS_7", "CLASS_8"]);
+    expect(segmentsOfLevel("HSC")).toEqual(["HSC"]);
+    expect(segmentsOfLevel("O_LEVEL")).toEqual([]);
+    expect(segmentOfContent({ level: "CLASS_6_8", segment: "CLASS_7" })).toBe("CLASS_7");
+    expect(segmentOfContent({ level: "CLASS_6_8" })).toBeNull();
+  });
+});
+
+describe("content access", () => {
+  const sheet = { subject: "Physics", level: "CLASS_9_10" };
+  const none = { staff: false, segments: [], batches: [] };
+  it("is locked with nothing", () => expect(contentAccess(sheet, none).open).toBe(false));
+  it("opens for a student of any tutor in that subject and class", () => {
+    const a = contentAccess(sheet, { ...none, batches: [{ subject: "Physics", level: "SSC", teacherName: "Rafi" }] });
+    expect(a).toEqual({ open: true, via: "teacher", teacherName: "Rafi" });
+  });
+  it("does not open other subjects through a tutor", () => {
+    expect(contentAccess(sheet, { ...none, batches: [{ subject: "Chemistry", level: "SSC" }] }).open).toBe(false);
+    expect(contentAccess(sheet, { ...none, batches: [{ subject: "Physics", level: "HSC" }] }).open).toBe(false);
+  });
+  it("opens every subject of a subscribed segment", () => {
+    expect(contentAccess(sheet, { ...none, segments: ["SSC"] }).via).toBe("subscription");
+    expect(contentAccess(sheet, { ...none, segments: ["CLASS_8"] }).open).toBe(false);
+  });
+  it("opens everything for tutors", () => expect(contentAccess(sheet, { ...none, staff: true }).via).toBe("staff"));
+});
+
+describe("commission tiers", () => {
+  it("starts new tutors at 20%", () => {
+    expect(tierFor(0).rate).toBe(0.2);
+    expect(nextRelease({ gross: 3000, classes: 12, released: 0 })).toEqual({ classShare: 250, teacher: 200, commission: 50, rate: 0.2, lastOne: false });
+  });
+  it("drops as students grow", () => {
+    expect(tierFor(10).rate).toBe(0.15);
+    expect(tierFor(30).rate).toBe(0.12);
+    expect(tierFor(60).rate).toBe(0.1);
+    expect(nextRelease({ gross: 1000, classes: 4, released: 0 }, tierFor(60).rate)!.commission).toBe(25);
+  });
+  it("keeps 5% for experts only", () => {
+    expect(tierFor(500).rate).toBe(0.1);
+    expect(tierFor(500, true).rate).toBe(0.05);
+    expect(tierFor(20, true).rate).toBe(0.15);
+    expect(nextTier(60)).toEqual({ tier: COMMISSION_TIERS[4], need: 40, needsExpert: true });
+    expect(nextTier(3)!.need).toBe(7);
+    expect(nextTier(100, true)).toBeNull();
+  });
+});
+
+describe("per-class release", () => {
+  it("releases every taka exactly once", () => {
+    const lot = { gross: 1000, classes: 3, released: 0 };
+    let total = 0;
+    for (; lot.released < 3; lot.released++) { const r = nextRelease(lot)!; total += r.teacher + r.commission; }
+    expect(total).toBe(1000);
+    expect(nextRelease(lot)).toBeNull();
+  });
+  it("knows what is left", () => {
+    expect(unreleased({ gross: 1000, classes: 3, released: 1 })).toBe(666);
+    expect(unreleased({ gross: 1000, classes: 3, released: 3 })).toBe(0);
+  });
+});
+
+describe("withdrawals", () => {
+  it("allows up to 100% of the balance", () => {
+    expect(withdrawable(1200, 1200)).toEqual({ ok: true });
+    expect(withdrawable(1200, 1201)).toEqual({ ok: false, why: "balance" });
+    expect(withdrawable(1200, 10)).toEqual({ ok: false, why: "min" });
+    expect(withdrawable(1200, 10.5).ok).toBe(false);
+  });
+  it("normalises bKash numbers", () => {
+    expect(normalizeMsisdn("+880 1712-345678")).toBe("01712345678");
+    expect(normalizeMsisdn("০১৮১২৩৪৫৬৭৮")).toBe("01812345678");
+    expect(normalizeMsisdn("01212345678")).toBeNull();
+  });
+});
+
+describe("routine changes", () => {
+  const req = ["a@x.com", "b@x.com"];
+  it("needs every student", () => {
+    expect(changeOutcome(req, [{ email: "a@x.com", vote: "APPROVE" }])).toBe("PENDING");
+    expect(changeOutcome(req, [{ email: "a@x.com", vote: "APPROVE" }, { email: "B@x.com", vote: "APPROVE" }])).toBe("APPROVED");
+    expect(changeOutcome(req, [{ email: "b@x.com", vote: "REJECT" }])).toBe("REJECTED");
+    expect(changeOutcome([], [])).toBe("APPROVED");
+  });
+  it("checks a schedule", () => {
+    expect(validSchedule([{ day: 0, time: "17:00", minutes: 60 }])).toEqual([{ day: 0, time: "17:00", minutes: 60 }]);
+    expect(validSchedule([{ day: 7, time: "17:00" }])).toBeNull();
+    expect(validSchedule([])).toBeNull();
+  });
+});

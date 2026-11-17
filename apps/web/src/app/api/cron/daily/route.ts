@@ -1,5 +1,7 @@
 import { fail, json } from "@/lib/api";
 import { DATA_LIVE, db } from "@/lib/data";
+import { contentRenewalSweep } from "@/lib/biz/content-subs";
+import { expireLots } from "@/lib/biz/earnings";
 import { renewalSweep } from "@/lib/growth/packages";
 import { notify, sendMail, SITE } from "@/lib/growth/notify";
 import { reportText, weeklyReport } from "@/lib/growth/parent";
@@ -9,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Once a day (Netlify scheduled function, 8 AM Dhaka). Needs CRON_SECRET as
+ * Once a day (Netlify scheduled function, 8 AM Dhaka). Per-class pay and payouts run hourly (/api/cron/hourly). Needs CRON_SECRET as
  * `authorization: Bearer …`. Every day: renewal reminders and lapsed months.
  * Saturdays (or ?weekly=1): last week's report to every linked parent.
  */
@@ -18,6 +20,10 @@ export async function GET(req: Request) {
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
   const out: Record<string, unknown> = { renewals: await renewalSweep() };
+  // Money and routine jobs; each is safe to run again.
+  out.content = await contentRenewalSweep().catch((e) => String(e));
+  out.expiredLots = await expireLots().catch((e) => String(e));
+
   const now = new Date();
   const saturday = new Date(now.getTime() + 6 * 3600_000).getUTCDay() === 6;
   if (saturday || new URL(req.url).searchParams.get("weekly") === "1") {

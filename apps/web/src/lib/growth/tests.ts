@@ -1,6 +1,8 @@
 import "server-only";
 import { gradeExam, studentView, type ExamAnswers, type ExamQuestion } from "@mastermoshai/core";
 import { db } from "@/lib/data";
+import { contentAccess } from "@mastermoshai/core";
+import { accessContext } from "@/lib/biz/access";
 import { hasPaid } from "./pay";
 import { isUuid } from "./people";
 
@@ -25,8 +27,10 @@ export async function getTest(id: string): Promise<ModelTest | null> {
 export const isOpen = (t: ModelTest, now = new Date()) => t.published && new Date(t.opens_at) <= now && (!t.closes_at || new Date(t.closes_at) > now);
 export const forStudent = (t: ModelTest) => ({ ...t, questions: studentView(t.questions) });
 
+/** Free tests, paid ones, and every test of a subject+class the student studies with a tutor here or has a segment subscription for. */
 export async function canTake(t: ModelTest, email: string) {
-  return t.price <= 0 || (await hasPaid("TEST", t.id, email));
+  if (t.price <= 0 || (await hasPaid("TEST", t.id, email))) return true;
+  return contentAccess(t, await accessContext({ email })).open;
 }
 
 export async function myAttempt(testId: string, email: string): Promise<Attempt | null> {

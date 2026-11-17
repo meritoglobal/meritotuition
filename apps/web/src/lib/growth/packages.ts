@@ -7,6 +7,8 @@ import { isUuid } from "./people";
 export interface Package {
   id: string; teacher_id: string; teacher_email: string | null; teacher_name: string | null; batch_id: string | null;
   title: string; subject: string; level: string; days_per_week: number; classes_per_month: number; price: number; active: boolean; created_at: string;
+  /** MONTHLY: pay every month. BATCH: pay once for the whole batch (classes_per_month = classes in the batch). */
+  billing?: "MONTHLY" | "BATCH";
 }
 export interface Subscription {
   id: string; package_id: string; student_email: string; payer_email: string; status: "PENDING" | "ACTIVE" | "PAST_DUE" | "CANCELLED";
@@ -90,10 +92,11 @@ export async function cancel(sub: Subscription) {
 export async function renewalSweep(now = new Date()): Promise<{ reminded: number; lapsed: number }> {
   const s = db();
   const soon = new Date(now.getTime() + 3 * 86_400_000).toISOString();
-  const { data: due } = await s.from("subscriptions").select("id,payer_email,auto_renew,current_period_end,packages(title,price)").eq("status", "ACTIVE").lte("current_period_end", soon).gt("current_period_end", now.toISOString());
+  const { data: due } = await s.from("subscriptions").select("id,payer_email,auto_renew,current_period_end,packages(title,price,billing)").eq("status", "ACTIVE").lte("current_period_end", soon).gt("current_period_end", now.toISOString());
   let reminded = 0;
   for (const d of due ?? []) {
-    const p = d.packages as unknown as { title: string; price: number };
+    const p = d.packages as unknown as { title: string; price: number; billing?: string };
+    if (p.billing === "BATCH") continue; // paid once for the whole batch
     const { count } = await s.from("app_notifications").select("id", { count: "exact", head: true }).eq("email", d.payer_email).eq("kind", "RENEW").eq("path", `/packages?renew=${d.id}`).gte("created_at", new Date(now.getTime() - 5 * 86_400_000).toISOString());
     if (count) continue;
     await notify({
