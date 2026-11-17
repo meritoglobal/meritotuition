@@ -16,9 +16,9 @@ export function openPage(path: string, title: string) {
  * Some features (tuition requests, wallet, content subscriptions, routine approvals) live on the server
  * once it ships them. Until each feature's API answers on the site, the app keeps its own demo screens.
  */
-type Feature = "requests" | "wallet";
-const PROBES: Record<Feature, string> = { requests: "/api/requests/prefs", wallet: "/api/wallet" };
-const live: Record<Feature, boolean> = { requests: false, wallet: false };
+type Feature = "requests" | "wallet" | "pro";
+const PROBES: Record<Feature, string> = { requests: "/api/requests/prefs", wallet: "/api/wallet", pro: "/api/pro" };
+const live: Record<Feature, boolean> = { requests: false, wallet: false, pro: false };
 for (const f of Object.keys(PROBES) as Feature[]) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 6000);

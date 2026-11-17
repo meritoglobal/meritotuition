@@ -31,7 +31,8 @@ export default function Me() {
     },
     {
       title: "টাকা",
-      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => openLive("/teach/wallet", "আয় ও টাকা তোলা", "/earnings", "wallet") }],
+      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => openLive("/teach/wallet", "আয় ও টাকা তোলা", "/earnings", "wallet") },
+        { icon: "ribbon-outline", label: "টিউটর প্রো", sub: "বিডে সবার আগে আপনার নাম; স্টুডেন্ট না পেলে ৳৪৯৯ ফেরত", go: () => openLive("/teach/pro", "টিউটর প্রো", "/tuitions", "pro") }],
     },
   ];
   const studentGroups: { title: string; rows: Row[] }[] = [
