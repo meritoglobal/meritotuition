@@ -77,6 +77,18 @@ const bn = {
     noPackages: "এই টিউটরের এখনো কোনো প্যাকেজ নেই।", ask: "এনাকে পেতে রিকোয়েস্ট পোস্ট করো", notFound: "এই টিউটরকে পাওয়া যায়নি।",
     profile: "প্রোফাইল দেখো",
   },
+  video: {
+    h: "নিজের পরিচয়ের ভিডিও (ঐচ্ছিক)",
+    sub: "১-২ মিনিটে বলুন আপনি কে, কী পড়ান, কীভাবে পড়ান। ভিডিও থাকলে প্রোফাইলের সবার উপরে বড় করে দেখাবে, ছাত্র-অভিভাবকের ভরসা বাড়ে। না দিলে প্রোফাইল ভিডিও ছাড়াই সুন্দর দেখাবে, কোনো খালি জায়গা থাকবে না।",
+    tabYt: "ইউটিউব লিংক", tabFile: "ফোন থেকে আপলোড",
+    ytPh: "https://youtu.be/...", ytSave: "লিংক সেভ করুন",
+    pick: "ভিডিও বাছুন", max: (mb: number) => `MP4/MOV/WebM, সর্বোচ্চ ${n(mb)} MB`,
+    uploading: (p: number) => `আপলোড হচ্ছে... ${n(p)}%`, vertical: "ফোন খাড়া করে তোলা (লম্বা ভিডিও)",
+    current: "এখনকার ভিডিও", remove: "ভিডিও সরান", saved: "ভিডিও সেভ হয়েছে!", removed: "ভিডিও সরানো হয়েছে।",
+    errors: { "bad-link": "এটা ইউটিউবের লিংক মনে হচ্ছে না।", type: "শুধু MP4, MOV বা WebM ভিডিও।", size: "ভিডিওটা অনেক বড়।", "uploads-off": "আপলোড এখনো চালু হয়নি, আপাতত ইউটিউব লিংক দিন।", net: "আপলোড আটকে গেল, আবার চেষ্টা করুন।", other: "হলো না, আবার চেষ্টা করুন।" } as Record<string, string>,
+    see: "আমার পাবলিক প্রোফাইল দেখুন",
+    watch: "পরিচয়ের ভিডিও",
+  },
   nav: { requests: "নতুন ছাত্র", prep: "ক্লাস প্রস্তুতি", pro: "Pro" },
 };
 
@@ -152,6 +164,18 @@ const en: Copy = {
     within: (a: string, k: number) => `within ${k} km of ${a}`, price: "Monthly fee", packages: "Monthly packages",
     noPackages: "No packages from this tutor yet.", ask: "Post a request to get this tutor", notFound: "Tutor not found.",
     profile: "View profile",
+  },
+  video: {
+    h: "Your intro video (optional)",
+    sub: "In 1-2 minutes, say who you are, what you teach and how. With a video it leads your profile, which builds trust with students and parents. Without one, your profile simply has no video section, no empty space.",
+    tabYt: "YouTube link", tabFile: "Upload from phone",
+    ytPh: "https://youtu.be/...", ytSave: "Save link",
+    pick: "Choose video", max: (mb: number) => `MP4/MOV/WebM, up to ${mb} MB`,
+    uploading: (p: number) => `Uploading... ${p}%`, vertical: "Filmed with the phone upright (tall video)",
+    current: "Current video", remove: "Remove video", saved: "Video saved!", removed: "Video removed.",
+    errors: { "bad-link": "That doesn't look like a YouTube link.", type: "MP4, MOV or WebM only.", size: "That video is too big.", "uploads-off": "Uploads aren't on yet; use a YouTube link for now.", net: "Upload stopped, try again.", other: "Didn't work, try again." },
+    see: "See my public profile",
+    watch: "Intro video",
   },
   nav: { requests: "New students", prep: "Class prep", pro: "Pro" },
 };

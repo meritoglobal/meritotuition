@@ -366,3 +366,10 @@ alter table pro_periods enable row level security;
 -- Payments can also be for Pro.
 alter table payments drop constraint if exists payments_purpose_check;
 alter table payments add constraint payments_purpose_check check (purpose in ('PACKAGE', 'TEST', 'DOUBT', 'PRO'));
+
+-- ---------------------------------------------------------------------------
+-- Tutor intro video (optional): a YouTube link or a file in R2 under intro/
+-- ---------------------------------------------------------------------------
+alter table teacher_profiles add column if not exists intro_video_kind text check (intro_video_kind in ('YOUTUBE', 'FILE'));
+alter table teacher_profiles add column if not exists intro_video_ref  text;   -- YouTube id, or the R2 key
+alter table teacher_profiles add column if not exists intro_video_vertical boolean not null default false;  -- filmed on a phone, standing
