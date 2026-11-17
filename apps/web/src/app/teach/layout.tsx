@@ -6,6 +6,7 @@ import { DATA_LIVE } from "@/lib/data";
 import { getLang } from "@/lib/lang";
 import { growthCopy } from "@/lib/copy-growth";
 import { marketCopy } from "@/lib/copy-market";
+import { bizCopy } from "@/lib/copy-biz";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function TeachLayout({ children }: { children: React.ReactN
   const t = toolsCopy(lang).teach;
   const g = growthCopy(lang).nav;
   const mk = marketCopy(lang).nav;
+  const b = bizCopy(lang).nav;
   const nav = [
     ["/teach", t.nav.home],
     ["/teach/requests", mk.requests],
@@ -23,7 +25,7 @@ export default async function TeachLayout({ children }: { children: React.ReactN
     ["/teach/packages", g.packages],
     ["/teach/questions", g.questions],
     ["/teach/profile", t.nav.profile],
-    ["/dashboard/teacher", t.nav.earnings],
+    ["/teach/wallet", b.wallet],
   ] as const;
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

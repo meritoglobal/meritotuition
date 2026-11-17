@@ -6,6 +6,7 @@ import { getUser } from "@/lib/auth/session";
 import { DATA_LIVE, db } from "@/lib/data";
 import { teacherBatch } from "@/lib/batches";
 import { weekStart } from "@/lib/growth/people";
+import { cancelChange, getChange, propose } from "@/lib/biz/schedule";
 
 export type FormState = { ok?: boolean; error?: string } | null;
 
@@ -108,4 +109,31 @@ export async function saveNote(batchId: string, email: string, _: FormState, f: 
   if (error) return { error: "db" };
   revalidatePath(`/teach/batches/${b.id}`);
   return { ok: true };
+}
+
+export type ChangeState = { ok?: boolean; error?: "bad" | "past" | "db" } | null;
+
+/** Tutor proposes a new weekly routine or moves one class; students must approve. */
+export async function proposeChange(batchId: string, _: ChangeState, f: FormData): Promise<ChangeState> {
+  const u = await me();
+  const b = await teacherBatch(batchId, u.id);
+  if (!b) return { error: "db" };
+  const kind = f.get("kind") === "RESCHEDULE" ? "RESCHEDULE" : "ROUTINE";
+  const days = f.getAll("day"), times = f.getAll("time"), mins = f.getAll("minutes");
+  const schedule = days.map((d, i) => ({ day: Number(d), time: String(times[i] ?? ""), minutes: Number(mins[i] ?? 60) }));
+  // datetime-local has no zone: the tutor means Dhaka time.
+  const dhaka = (v: FormDataEntryValue | null) => (v ? `${String(v)}${String(v).length === 16 ? ":00" : ""}+06:00` : "");
+  const r = await propose(b, {
+    kind, schedule, fromAt: String(f.get("fromAt") ?? ""), toAt: dhaka(f.get("toAt")),
+    minutes: Number(f.get("moveMinutes") ?? 60), note: String(f.get("note") ?? ""),
+  });
+  revalidatePath(`/teach/batches/${batchId}`);
+  return "error" in r ? { error: r.error } : { ok: true };
+}
+
+export async function withdrawChange(batchId: string, id: string) {
+  const u = await me();
+  const ch = await getChange(id);
+  if (ch && ch.teacher_id === u.id) await cancelChange(ch);
+  revalidatePath(`/teach/batches/${batchId}`);
 }

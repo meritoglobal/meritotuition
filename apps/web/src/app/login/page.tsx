@@ -1,4 +1,7 @@
+import Link from "next/link";
 import { copy } from "@/lib/copy";
+import { bizCopy } from "@/lib/copy-biz";
+import { L } from "@/lib/l10n";
 import { AUTH_LIVE, DEMO_CODE, OTP_CHANNEL, safeNext } from "@/lib/auth/config";
 import { getLang } from "@/lib/lang";
 import LoginForm from "./LoginForm";
@@ -6,7 +9,11 @@ import LoginForm from "./LoginForm";
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { next } = await searchParams;
   const lang = await getLang();
-  const c = copy(lang).login;
+  const base = copy(lang).login;
+  const j = bizCopy(lang).join;
+  // Coming from the tutor panel or "teach with us": speak to tutors.
+  const tutor = Boolean(next?.startsWith("/teach"));
+  const c = tutor ? { ...base, badge: j.loginPitch, h1: j.h1, sub: j.zero, perks: j.loginPerks } : base;
   return (
     <section className="bg-board text-white">
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[1.1fr_1fr] lg:items-center">
@@ -22,6 +29,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               </li>
             ))}
           </ul>
+          {tutor
+            ? <Link href="/for-tutors" className="mt-6 inline-block text-sm font-semibold text-gold underline underline-offset-4">{L.num(j.points.length, lang)}+ {lang === "en" ? "reasons to teach here →" : "কারণ, কেন এখানে পড়াবেন →"}</Link>
+            : <Link href="/for-tutors" className="mt-6 inline-block text-sm text-white/70 underline underline-offset-4">{j.tutorLink}</Link>}
         </div>
         <div className="rounded-xl bg-paper p-6 text-ink sm:p-8">
           <LoginForm channel={OTP_CHANNEL} next={safeNext(next)} demoNote={AUTH_LIVE ? undefined : c.demo(DEMO_CODE)} />

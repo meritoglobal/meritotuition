@@ -9,7 +9,12 @@ import { contentFor } from "@/lib/content-catalog";
 import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
-import { addStudent, removeStudent, saveNote, setBatchActive } from "../../actions";
+import { addStudent, proposeChange, removeStudent, saveNote, setBatchActive, withdrawChange } from "../../actions";
+import { upcomingOccurrences, type Weekday } from "@mastermoshai/core";
+import { ScheduleChangeCard } from "@/components/ScheduleChangeCard";
+import { batchChanges } from "@/lib/biz/schedule";
+import { bizCopy } from "@/lib/copy-biz";
+import ScheduleForm from "./ScheduleForm";
 import AddStudent from "./AddStudent";
 import NoteForm from "./NoteForm";
 import { db } from "@/lib/data";
@@ -27,6 +32,12 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
   const students = await batchStudents(b.id);
   const content = contentFor(b.subject, b.level);
   const g = growthCopy(lang);
+  const changes = await batchChanges(b.id);
+  const rc = bizCopy(lang).routine;
+  const upcoming = b.schedule
+    .flatMap((x) => upcomingOccurrences({ days: [x.day as Weekday], startTime: x.time }, new Date(), 3).map((d) => ({ d, minutes: x.minutes || 60 })))
+    .sort((a, z) => a.d.getTime() - z.d.getTime()).slice(0, 8)
+    .map(({ d, minutes }) => ({ iso: d.toISOString(), label: L.dateTime(d, lang), minutes }));
   const { data: notes } = await db().from("progress_notes").select("student_email,note,rating").eq("batch_id", b.id).eq("week_start", weekStart());
 
   return (
@@ -83,7 +94,20 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
             </ul>
           )}
         </section>
-        <div className="-mt-6"><ClassTools classId={b.class_id} role="teacher" /></div>
+        <div className="-mt-6">
+          <ClassTools classId={b.class_id} role="teacher" />
+          <ScheduleForm action={proposeChange.bind(null, b.id)} schedule={b.schedule} upcoming={upcoming} />
+          {changes.length > 0 && (
+            <div className="mt-4 grid gap-2">
+              <h3 className="text-sm font-semibold">{rc.list}</h3>
+              {changes.map((ch) => (
+                <ScheduleChangeCard key={ch.id} ch={ch} lang={lang}>
+                  {ch.status === "PENDING" && <form action={withdrawChange.bind(null, b.id, ch.id)} className="mt-2"><button className="text-sm text-redpen underline">{rc.withdraw}</button></form>}
+                </ScheduleChangeCard>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

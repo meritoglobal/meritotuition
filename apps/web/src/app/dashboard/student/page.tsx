@@ -11,6 +11,9 @@ import { nextClass, studentBatches } from "@/lib/batches";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
 import { MoreTiles } from "@/components/growth/MoreTiles";
+import { CONTENT_PRICE } from "@/lib/biz/content-subs";
+import { pendingFor } from "@/lib/biz/schedule";
+import { bizCopy } from "@/lib/copy-biz";
 import { unreadCount } from "@/lib/growth/chat";
 import { claimReferral } from "@/lib/growth/page";
 import { keyOf } from "@/lib/growth/people";
@@ -38,11 +41,23 @@ export default async function StudentDashboard() {
   const mine = DATA_LIVE && user?.email ? await studentBatches(user.email) : [];
   if (DATA_LIVE && user) await claimReferral(keyOf(user));
   const unread = DATA_LIVE && user ? await unreadCount(keyOf(user)).catch(() => 0) : 0;
+  const routine = DATA_LIVE && user ? await pendingFor(keyOf(user)).catch(() => 0) : 0;
+  const bz = bizCopy(lang);
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
       <h1 className="font-display text-4xl">{c.h1}</h1>
       <DeviceRecordings className="card mt-6 p-4 sm:p-5" />
-      <MoreTiles lang={lang} unread={unread} />
+      {routine > 0 && (
+        <Link href="/routine" className="mt-6 flex items-center gap-3 rounded-xl bg-gold/20 p-4 text-sm font-semibold">
+          🗓️ {bz.routine.banner(routine)} <span className="ml-auto underline">{bz.routine.see}</span>
+        </Link>
+      )}
+      <Link href="/learn" className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-board p-4 text-white">
+        <span className="text-2xl" aria-hidden>📘</span>
+        <span><b className="text-gold">{bz.learn.freeH}</b><span className="block text-sm text-white/80">{bz.learn.subH(CONTENT_PRICE)}</span></span>
+        <span className="ml-auto text-sm font-semibold underline">{bz.nav.learn} →</span>
+      </Link>
+      <MoreTiles lang={lang} unread={unread} routine={routine} />
 
       {mine.length > 0 && (
         <section className="mt-6">

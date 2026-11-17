@@ -7,7 +7,7 @@
 -- Payments now also cover content subscriptions; packages can be paid per batch.
 -- ---------------------------------------------------------------------------
 alter table payments drop constraint if exists payments_purpose_check;
-alter table payments add constraint payments_purpose_check check (purpose in ('PACKAGE', 'TEST', 'DOUBT', 'CONTENT'));
+alter table payments add constraint payments_purpose_check check (purpose in ('PACKAGE', 'TEST', 'DOUBT', 'CONTENT', 'PRO'));
 
 alter table packages add column if not exists billing text not null default 'MONTHLY';
 alter table packages drop constraint if exists packages_billing_check;

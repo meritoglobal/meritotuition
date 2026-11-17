@@ -8,7 +8,8 @@ import { isAdmin } from "@/lib/growth/people";
 /** Everything that decides what this person can open. Tutors are found by login id or profile email. */
 export async function accessContext(m: { email: string; user?: { id: string }; admin?: boolean }): Promise<AccessContext> {
   if (m.admin || isAdmin(m.email)) return { staff: true, segments: [], batches: [] };
-  if (!DATA_LIVE) return { staff: false, segments: [], batches: [] };
+  // Without a database (demo site) there is nothing to check against: show everything.
+  if (!DATA_LIVE) return { staff: true, segments: [], batches: [] };
   const s = db();
   const prof = s.from("teacher_profiles").select("user_id").limit(1);
   const [{ data: profs }, { data: subs }, batches] = await Promise.all([
