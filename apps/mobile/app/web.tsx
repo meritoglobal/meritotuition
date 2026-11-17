@@ -3,7 +3,10 @@
  * app, under a native header. Native extras: camera/mic and keep-awake in class,
  * Android back button, offline screen, other sites opened outside, and files the
  * page saves (class recordings are blob: downloads) written to the phone.
+ * Our content (lecture sheets, exams, prep) is view-only: no screenshots or screen
+ * recording, no downloads, no copy, no print, and nothing kept in the page cache.
  */
+import * as ScreenCapture from "expo-screen-capture";
 import * as SplashScreen from "expo-splash-screen";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import * as Linking from "expo-linking";
@@ -26,6 +29,20 @@ const isPayment = (url: string) => {
   try { return /(^|\.)(bka\.sh|bkash\.com)$/.test(new URL(url).host); } catch { return false; }
 };
 const isClass = (url: string) => /\/class\/[^/?#]+/.test(url);
+// Paid/owned content: sheets, exams, model tests, class prep.
+const isContent = (url: string) =>
+  /\/(content|learn|sheets?|exams?|model-test|leaderboard|teach\/prep|teach\/exams?|api\/content)(\/|\?|#|$)/.test(url);
+
+// Runs on content pages: no text selection, copy, right-click/long-press menu, drag or print.
+const LOCK_CONTENT = `(function(){
+  if (window.__mmLocked) return; window.__mmLocked = true;
+  var css = document.createElement('style');
+  css.textContent = '*{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}@media print{body{display:none!important}}';
+  (document.head||document.documentElement).appendChild(css);
+  ['copy','cut','contextmenu','dragstart','selectstart'].forEach(function(t){document.addEventListener(t,function(e){e.preventDefault();},true);});
+  window.print = function(){};
+  true;
+})();`;
 
 async function askCameraMic() {
   if (Platform.OS !== "android") return; // iOS asks on first use (Info.plist strings in app.json)
@@ -41,13 +58,22 @@ export default function WebPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const inClass = useRef(false);
   const downloads = useRef(createDownloads(setSaving));
+  const [locked, setLocked] = useState(false);
   const src = `${SITE}${path.startsWith("/") ? path : `/${path}`}${path.includes("?") ? "&" : "?"}source=app`;
 
   useEffect(() => {
     void SplashScreen.hideAsync().catch(() => {});
     if (isClass(src)) { inClass.current = true; void askCameraMic(); void activateKeepAwakeAsync("class"); }
+    setLocked(isContent(src));
     return () => { if (inClass.current) deactivateKeepAwake("class"); };
   }, [src]);
+
+  // Content pages: Android blocks screenshots and screen recording (FLAG_SECURE).
+  useEffect(() => {
+    if (!locked) return;
+    void ScreenCapture.preventScreenCaptureAsync("content").catch(() => {});
+    return () => { void ScreenCapture.allowScreenCaptureAsync("content").catch(() => {}); };
+  }, [locked]);
 
   // Android back walks back through pages first, then closes this screen.
   useEffect(() => {
@@ -64,19 +90,31 @@ export default function WebPage() {
     if (now && !inClass.current) { void askCameraMic(); void activateKeepAwakeAsync("class"); }
     if (!now && inClass.current) deactivateKeepAwake("class");
     inClass.current = now;
+    const lock = isContent(nav.url);
+    setLocked(lock);
+    if (lock) web.current?.injectJavaScript(LOCK_CONTENT);
   }, []);
 
   // Our pages stay inside; other sites, bKash, phone links and files open outside.
   const onRequest = useCallback((req: { url: string; isTopFrame?: boolean }) => {
     const { url } = req;
-    if (url.startsWith("about:") || url.startsWith("blob:") || url.startsWith("data:")) return true;
+    if (url.startsWith("about:")) return true;
+    // Nothing leaves a content page as a file.
+    if (isContent(url) && FILE_RE.test(url)) return false;
+    if (url.startsWith("blob:") || url.startsWith("data:")) return true;
     if ((isOurs(url) || isPayment(url)) && !FILE_RE.test(url)) return true;
     if (req.isTopFrame === false) return true; // embedded frames (e.g. video players)
     void Linking.openURL(url);
     return false;
   }, []);
 
-  const onMessage = useCallback((e: WebViewMessageEvent) => downloads.current.handle(e.nativeEvent.data), []);
+  const lockedRef = useRef(false);
+  lockedRef.current = locked;
+  // Class recordings may be saved; nothing from a content page may.
+  const onMessage = useCallback((e: WebViewMessageEvent) => {
+    if (lockedRef.current) return;
+    downloads.current.handle(e.nativeEvent.data);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.white }} edges={["top", "bottom"]}>
@@ -120,7 +158,9 @@ export default function WebPage() {
           pullToRefreshEnabled
           onNavigationStateChange={onNav}
           onShouldStartLoadWithRequest={onRequest}
-          onLoadEnd={() => setLoading(false)}
+          cacheEnabled={!locked}
+          cacheMode={locked ? "LOAD_NO_CACHE" : "LOAD_DEFAULT"}
+          onLoadEnd={() => { setLoading(false); if (lockedRef.current) web.current?.injectJavaScript(LOCK_CONTENT); }}
           onError={() => setOffline(true)}
           onContentProcessDidTerminate={() => web.current?.reload()}
           onRenderProcessGone={() => web.current?.reload()}
