@@ -24,6 +24,7 @@ export default async function TeachLayout({ children }: { children: React.ReactN
     ["/teach/content", t.nav.content],
     ["/teach/packages", g.packages],
     ["/teach/questions", g.questions],
+    ["/teach/pro", mk.pro],
     ["/teach/profile", t.nav.profile],
     ["/teach/wallet", b.wallet],
   ] as const;

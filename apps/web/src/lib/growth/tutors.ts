@@ -1,12 +1,13 @@
 import "server-only";
 import type { TeacherProfile } from "@/lib/batches";
 import { db } from "@/lib/data";
+import { isPro } from "./pro";
 
 /** A real tutor's public profile: no phone, no email. */
 export interface PublicTutor {
   id: string; name: string; headline: string | null; bio: string | null; university: string | null; department: string | null;
   subjects: string[]; levels: string[]; teachesOnline: boolean; teachesHome: boolean; homeArea: string | null; homeRadiusKm: number | null;
-  priceOnline: number | null; priceHome: number | null;
+  priceOnline: number | null; priceHome: number | null; pro: boolean;
 }
 
 export async function publicTutor(id: string): Promise<PublicTutor | null> {
@@ -17,6 +18,6 @@ export async function publicTutor(id: string): Promise<PublicTutor | null> {
   return {
     id: t.user_id, name: t.name, headline: t.headline, bio: t.bio, university: t.university, department: t.department,
     subjects: t.subjects, levels: t.levels, teachesOnline: t.teaches_online, teachesHome: t.teaches_home,
-    homeArea: t.home_area, homeRadiusKm: t.home_radius_km, priceOnline: t.price_online, priceHome: t.price_home,
+    homeArea: t.home_area, homeRadiusKm: t.home_radius_km, priceOnline: t.price_online, priceHome: t.price_home, pro: await isPro(t.user_id),
   };
 }

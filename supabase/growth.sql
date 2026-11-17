@@ -331,3 +331,38 @@ alter table request_bids          enable row level security;
 alter table request_invites       enable row level security;
 alter table teacher_request_prefs enable row level security;
 
+-- ---------------------------------------------------------------------------
+-- Tutor Pro: a monthly fee puts a tutor first in request suggestions and offers,
+-- with a Pro badge and email alerts for new requests
+-- ---------------------------------------------------------------------------
+create table if not exists tutor_pro (
+  user_id    text primary key,
+  email      text,
+  until      timestamptz not null,
+  reminded   date,                              -- last renewal reminder (Dhaka day)
+  updated_at timestamptz not null default now()
+);
+-- One row per paid Pro month. Money-back guarantee: no tuition in that month → full refund.
+create table if not exists pro_periods (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     text not null,
+  email       text not null,
+  payment_id  uuid references payments (id),
+  starts_at   timestamptz not null,
+  ends_at     timestamptz not null,
+  status      text not null default 'ACTIVE' check (status in ('ACTIVE', 'KEPT', 'REFUNDED', 'REFUND_FAILED')),
+  refund_trx  text,
+  settled_at  timestamptz
+);
+create index if not exists pro_periods_due on pro_periods (status, ends_at);
+create index if not exists pro_periods_user on pro_periods (user_id, starts_at desc);
+
+alter table request_bids add column if not exists decided_at timestamptz;  -- when the student chose this tutor
+alter table payments add column if not exists refunded_at timestamptz;
+
+alter table tutor_pro enable row level security;
+alter table pro_periods enable row level security;
+
+-- Payments can also be for Pro.
+alter table payments drop constraint if exists payments_purpose_check;
+alter table payments add constraint payments_purpose_check check (purpose in ('PACKAGE', 'TEST', 'DOUBT', 'PRO'));

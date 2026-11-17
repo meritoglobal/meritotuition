@@ -6,20 +6,21 @@ import { renewalSweep } from "@/lib/growth/packages";
 import { notify, sendMail, SITE } from "@/lib/growth/notify";
 import { reportText, weeklyReport } from "@/lib/growth/parent";
 import { weekStart } from "@/lib/growth/people";
+import { proReminders, settlePro } from "@/lib/growth/pro";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
  * Once a day (Netlify scheduled function, 8 AM Dhaka). Per-class pay and payouts run hourly (/api/cron/hourly). Needs CRON_SECRET as
- * `authorization: Bearer …`. Every day: renewal reminders and lapsed months.
+ * `authorization: Bearer …`. Every day: renewal reminders, lapsed months, Pro reminders, Pro money-back.
  * Saturdays (or ?weekly=1): last week's report to every linked parent.
  */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return fail("forbidden", 403);
   if (!DATA_LIVE) return fail("data-off", 503);
-  const out: Record<string, unknown> = { renewals: await renewalSweep() };
+  const out: Record<string, unknown> = { renewals: await renewalSweep(), proReminders: await proReminders(), proGuarantee: await settlePro() };
   // Money and routine jobs; each is safe to run again.
   out.content = await contentRenewalSweep().catch((e) => String(e));
   out.expiredLots = await expireLots().catch((e) => String(e));

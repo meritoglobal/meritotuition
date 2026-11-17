@@ -1,4 +1,5 @@
 import "server-only";
+import { extendPro } from "./pro";
 import { DATA_LIVE, db } from "@/lib/data";
 import { BKASH_LIVE, createPayment, execute, type BkashMode } from "./bkash";
 import { notify, SITE } from "./notify";
@@ -6,7 +7,7 @@ import { createLot } from "@/lib/biz/earnings";
 import { fulfilContent } from "@/lib/biz/content-subs";
 import { couponDiscount, creditBalance, findCoupon, rewardReferral } from "./referral";
 
-export type Purpose = "PACKAGE" | "TEST" | "DOUBT" | "CONTENT";
+export type Purpose = "PACKAGE" | "TEST" | "DOUBT" | "CONTENT" | "PRO";
 
 /** Without bKash keys, payments are simulated so the flow can be tried. PAYMENTS_DEMO=off turns that off. */
 export const PAY_DEMO = !BKASH_LIVE && process.env.PAYMENTS_DEMO !== "off";
@@ -59,6 +60,7 @@ export function resultPath(purpose: Purpose, refId: string, status: "success" | 
   if (purpose === "PACKAGE") return `/packages?${q}`;
   if (purpose === "CONTENT") return `/learn?${q}`;
   if (purpose === "TEST") return `/leaderboard/${refId}?${q}`;
+  if (purpose === "PRO") return `/teach/pro?${q}`;
   return `/ask/${refId}?${q}`;
 }
 
@@ -109,6 +111,7 @@ export async function markPaid(pid: string, o: { trx?: string }) {
   if (p.purpose === "PACKAGE") await fulfilPackage(p.ref_id, pid);
   if (p.purpose === "CONTENT") await fulfilContent(p.ref_id);
   if (p.purpose === "DOUBT") await fulfilDoubt(p.ref_id);
+  if (p.purpose === "PRO") await extendPro(p.ref_id, p.payer_email, p.id);
 }
 
 const MONTH_MS = 30 * 86_400_000;

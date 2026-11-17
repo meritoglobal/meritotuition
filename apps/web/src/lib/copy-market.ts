@@ -57,13 +57,27 @@ const bn = {
     topics: "টপিক", none: "এই ক্লাস-বিষয়ের শিট এখনো আসেনি। আমরা অধ্যায় ধরে বানাচ্ছি, এলেই এখানে চলে আসবে।",
     full: "পুরো শিট আলাদা ট্যাবে", back: "সব অধ্যায়", print: "প্রিন্ট",
   },
+  pro: {
+    h1: "Pro টিউটর",
+    sub: (p: number) => `মাসে ${tk(p)} দিয়ে Pro হোন। নতুন ছাত্রের রিকোয়েস্টে আপনার আবেদন আর নাম সবার উপরে দেখাবে, নামের পাশে Pro ব্যাজ থাকবে, আর নতুন রিকোয়েস্ট এলে ইমেইলেও খবর পাবেন।`,
+    perks: ["রিকোয়েস্টে আপনার আবেদন সবার উপরে", "\"আগ্রহী টিউটর\" তালিকায় প্রথমে", "নামের পাশে Pro ব্যাজ", "নতুন রিকোয়েস্টের ইমেইল অ্যালার্ট"],
+    active: (d: string) => `আপনি Pro আছেন ${d} পর্যন্ত।`, inactive: "আপনি এখনো Pro নন।",
+    buy: (p: number) => `${tk(p)} দিয়ে Pro নিন`, extend: (p: number) => `${tk(p)} দিয়ে আরেক মাস বাড়ান`,
+    paid: "পেমেন্ট হয়েছে, আপনি এখন Pro!", failed: "পেমেন্ট হয়নি। আবার চেষ্টা করুন।", off: "পেমেন্ট এখনো চালু হয়নি।",
+    badge: "Pro",
+    guarantee: (rule: string): string => rule === "NO_REQUEST"
+      ? "টাকা ফেরতের গ্যারান্টি: Pro নেওয়ার পর এক মাসে আপনার ফিল্টারে মেলে এমন একটা রিকোয়েস্টও না এলে পুরো টাকা বিকাশে ফেরত।"
+      : "টাকা ফেরতের গ্যারান্টি: Pro নেওয়ার পর এক মাসে কোনো ছাত্র আপনাকে না বাছলে (টিউশন না পেলে) পুরো টাকা বিকাশে ফেরত। কিছু করতে হবে না, মাস শেষে নিজে থেকেই ফেরত যাবে।",
+    periodsH: "আমার Pro মাসগুলো",
+    period: { ACTIVE: "চলছে", KEPT: "টিউশন পেয়েছেন", REFUNDED: "টাকা ফেরত গেছে", REFUND_FAILED: "ফেরত আটকে আছে, আমরা দেখছি" } as Record<string, string>,
+  },
   tutor: {
     subjects: "যা পড়ান", classes: "ক্লাস", modes: "কীভাবে পড়ান", online: "অনলাইন", home: "বাসায় গিয়ে",
     within: (a: string, k: number) => `${a} থেকে ${n(k)} কিমির মধ্যে`, price: "মাসিক ফি", packages: "মাসিক প্যাকেজ",
     noPackages: "এই টিউটরের এখনো কোনো প্যাকেজ নেই।", ask: "এনাকে পেতে রিকোয়েস্ট পোস্ট করো", notFound: "এই টিউটরকে পাওয়া যায়নি।",
     profile: "প্রোফাইল দেখো",
   },
-  nav: { requests: "নতুন ছাত্র", prep: "ক্লাস প্রস্তুতি" },
+  nav: { requests: "নতুন ছাত্র", prep: "ক্লাস প্রস্তুতি", pro: "Pro" },
 };
 
 type Copy = typeof bn;
@@ -119,13 +133,27 @@ const en: Copy = {
     topics: "Topics", none: "No sheet for this class and subject yet. We're writing them chapter by chapter; they'll appear here.",
     full: "Full sheet in a new tab", back: "All chapters", print: "Print",
   },
+  pro: {
+    h1: "Pro tutor",
+    sub: (p: number) => `Go Pro for ${tkE(p)} a month. Your offers and name show first on new student requests, you get a Pro badge, and new requests reach you by email too.`,
+    perks: ["Your offers at the top of every request", "First in the \"interested tutors\" list", "Pro badge next to your name", "Email alerts for new requests"],
+    active: (d: string) => `You're Pro until ${d}.`, inactive: "You're not Pro yet.",
+    buy: (p: number) => `Go Pro for ${tkE(p)}`, extend: (p: number) => `Add a month for ${tkE(p)}`,
+    paid: "Paid. You're Pro now!", failed: "Payment didn't go through. Try again.", off: "Payments aren't on yet.",
+    badge: "Pro",
+    guarantee: (rule: string): string => rule === "NO_REQUEST"
+      ? "Money-back guarantee: if not a single matching request reaches you in your Pro month, you get the full fee back on bKash."
+      : "Money-back guarantee: if no student picks you (no tuition) in your Pro month, you get the full fee back on bKash. Nothing to claim; it goes back on its own at month end.",
+    periodsH: "My Pro months",
+    period: { ACTIVE: "Running", KEPT: "Got a tuition", REFUNDED: "Refunded", REFUND_FAILED: "Refund stuck, we're on it" },
+  },
   tutor: {
     subjects: "Teaches", classes: "Classes", modes: "How", online: "Online", home: "At home",
     within: (a: string, k: number) => `within ${k} km of ${a}`, price: "Monthly fee", packages: "Monthly packages",
     noPackages: "No packages from this tutor yet.", ask: "Post a request to get this tutor", notFound: "Tutor not found.",
     profile: "View profile",
   },
-  nav: { requests: "New students", prep: "Class prep" },
+  nav: { requests: "New students", prep: "Class prep", pro: "Pro" },
 };
 
 export const marketCopy = (lang: Lang): Copy => (lang === "en" ? en : bn);
