@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SEGMENT_LABEL, isSegment } from "@mastermoshai/core";
 import BuyForm from "@/app/packages/[id]/BuyForm";
 import { accessContext } from "@/lib/biz/access";
-import { CONTENT_PRICE } from "@/lib/biz/content-subs";
+import { CONTENT_PRICE, lockedSegment } from "@/lib/biz/content-subs";
 import { bizCopy } from "@/lib/copy-biz";
 import { growthCopy } from "@/lib/copy-growth";
 import { DATA_LIVE } from "@/lib/data";
@@ -26,6 +26,7 @@ export default async function BuySegment({ params }: { params: Promise<{ segment
   const g = growthCopy(lang).pkg;
   const ctx = await accessContext(m);
   const q = await quote(m.email, CONTENT_PRICE);
+  const locked = await lockedSegment(m.email);
   const label = SEGMENT_LABEL[segment][lang];
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -40,7 +41,9 @@ export default async function BuySegment({ params }: { params: Promise<{ segment
           <p className="mt-4 rounded-lg bg-mist p-3 text-xs text-ink-2">{c.teacherNote}</p>
         </section>
         <section className="card p-5">
-          {ctx.segments.includes(segment) ? <p className="font-semibold text-leaf">{c.already}</p> : (
+          {ctx.segments.includes(segment) ? <p className="font-semibold text-leaf">{c.already}</p> : locked && locked !== segment && !ctx.staff ? (
+            <p className="text-sm text-redpen">{c.lockedTo(SEGMENT_LABEL[locked][lang])}</p>
+          ) : (
             <>
               <dl className="space-y-1 text-sm">
                 <div className="flex justify-between"><dt>{g.listPrice}</dt><dd>{L.taka(q.listPrice, lang)}</dd></div>

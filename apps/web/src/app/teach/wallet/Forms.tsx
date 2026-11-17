@@ -27,7 +27,8 @@ export function WithdrawForm({ action, balance, min, hasNumber }: { action: Act;
   const c = bizCopy(useLang()).wallet;
   const [state, run, pending] = useActionState<WalletState, FormData>(action, null);
   const [amount, setAmount] = useState("");
-  const err = state?.error === "number" ? c.needNumber : state?.error === "min" ? c.min(min) : state?.error === "balance" ? c.tooMuch : state?.error ? c.failedSend : "";
+  const v = bizCopy(useLang()).verify;
+  const err = state?.error === "unverified" ? v.need : state?.error === "number" ? c.needNumber : state?.error === "min" ? c.min(min) : state?.error === "balance" ? c.tooMuch : state?.error ? c.failedSend : "";
   const ok = state?.ok === "PAID" ? c.sentOk : state?.ok === "QUEUED" ? c.queued : state?.ok === "FAILED" ? c.failedSend : "";
   return (
     <form action={run} className="card space-y-3 p-5">

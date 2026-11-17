@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  COMMISSION_TIERS, changeOutcome, contentAccess, nextRelease, nextTier, normalizeMsisdn, tierFor, segmentOfContent, segmentsOfLevel,
+  COMMISSION_TIERS, SEGMENT_LABEL, packClass, packGroup, changeOutcome, contentAccess, nextRelease, nextTier, normalizeMsisdn, tierFor, segmentOfContent, segmentsOfLevel,
   unreleased, validSchedule, withdrawable,
 } from "../src";
 
@@ -28,8 +28,22 @@ describe("content access", () => {
     expect(contentAccess(sheet, { ...none, batches: [{ subject: "Physics", level: "HSC" }] }).open).toBe(false);
   });
   it("opens every subject of a subscribed segment", () => {
-    expect(contentAccess(sheet, { ...none, segments: ["SSC"] }).via).toBe("subscription");
+    expect(contentAccess(sheet, { ...none, segments: ["SSC_SCIENCE"] }).via).toBe("subscription");
     expect(contentAccess(sheet, { ...none, segments: ["CLASS_8"] }).open).toBe(false);
+  });
+  it("keeps groups apart: a science pack opens nothing of business", () => {
+    const acc = { subject: "Accounting", level: "CLASS_9_10" }, eng = { subject: "English", level: "CLASS_9_10" };
+    expect(contentAccess(sheet, { ...none, segments: ["SSC_BUSINESS"] }).open).toBe(false);
+    expect(contentAccess(acc, { ...none, segments: ["SSC_SCIENCE"] }).open).toBe(false);
+    expect(contentAccess(acc, { ...none, segments: ["SSC_BUSINESS"] }).open).toBe(true);
+    expect(contentAccess(eng, { ...none, segments: ["SSC_HUMANITIES"] }).open).toBe(true); // common subject
+    expect(contentAccess(sheet, { ...none, segments: ["HSC_SCIENCE"] }).open).toBe(false); // other class
+  });
+  it("names packs", () => {
+    expect(packClass("SSC_SCIENCE")).toBe("SSC");
+    expect(packClass("CLASS_7")).toBe("CLASS_7");
+    expect(packGroup("CLASS_7")).toBeNull();
+    expect(SEGMENT_LABEL.HSC_BUSINESS.en).toBe("HSC (Class 11-12) · Business Studies");
   });
   it("opens everything for tutors", () => expect(contentAccess(sheet, { ...none, staff: true }).via).toBe("staff"));
 });

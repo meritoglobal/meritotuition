@@ -88,7 +88,7 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
               {content.map((c) => (
                 <li key={c.id} className="flex items-center justify-between gap-2">
                   <span><span className="tag mr-1.5">{t.content.kinds[c.kind]}</span>{c.title[lang]}</span>
-                  <a href={c.href} target="_blank" rel="noreferrer" className="shrink-0 text-ink-2 underline">{t.batch.download}</a>
+                  <a href={`/teach/prep/${c.id}`} className="shrink-0 text-ink-2 underline">{lang === "en" ? "Open" : "খুলি"}</a>
                 </li>
               ))}
             </ul>

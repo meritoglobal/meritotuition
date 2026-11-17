@@ -3,7 +3,7 @@
 ## Rules
 - **Free content with a tutor:** a student on any active batch gets every lecture sheet and exam of that batch's subject for that class (`contentAccess` in `packages/core/src/business.ts`). A Class 6-8 batch opens classes 6, 7 and 8.
 - **Segment pack:** one student × one segment (Class 6, 7, 8, SSC = 9-10, HSC = 11-12), ৳999/month (`CONTENT_PRICE` env to change). Opens every subject of the segment. Paid with bKash like packages (purpose `CONTENT`).
-- **Tutors** (anyone with a tutor profile) and admins see all content. Lecture sheets live in `apps/web/content/sheets/` and are served only through `/api/content/{id}`.
+- **Tutors must verify their student ID** (`/teach/verify`, AI reads the card; clear matches auto-approve, doubtful ones go to `/admin/tutors`). Only verified tutors see all content, only their students get it free, and only they can withdraw. Admins see everything. Lecture sheets live in `apps/web/content/sheets/` and are served only through `/api/content/{id}`.
 - **Commission tiers** by lifetime paying students: 20% new → 15% (10+) → 12% (25+) → 10% (50+) → 5% (100+ and expert badge from admin). `COMMISSION_TIERS` in core.
 - **Money flow:** student/parent pays a package upfront (monthly, or once per batch) → escrow lot → each class the tutor holds (tutor opened the room and at least one student joined, 40 min after start) releases one class share of every paying student's lot, commission kept, rest to the tutor's wallet → tutor withdraws up to 100% to bKash. Lots not used by period end + 7 days (batch: + 30) go back to the payer as bonus credit. Classes with no student join stay on hold for admin (`/admin/payouts`).
 - **Routine change / reschedule:** tutor proposes on the batch page; every student on the batch must approve; one "no" rejects. Routine proposals expire in 7 days, moves when the class time arrives.
@@ -23,3 +23,8 @@
 - `GET /api/tiers`
 - `GET /api/schedule-changes` (student) · `POST /api/schedule-changes/{id} {vote: APPROVE|REJECT}` or `{action: cancel}` (tutor)
 - `GET|POST /api/batches/{id}/schedule-changes {kind: ROUTINE, schedule:[{day,time,minutes}]} | {kind: RESCHEDULE, fromAt, toAt, minutes?}`
+
+## Content protection
+Sheets are served only through `/api/content/{id}` to people allowed to see them, never as public files. Opening the URL directly in a tab redirects to the viewer (the app passes `?embed=app`). The served page blocks selection, copy, right-click, save/print keys and printing (prints blank), and carries a faint watermark with the viewer's email and time so a leaked photo can be traced. No download or print buttons anywhere. The Android app adds FLAG_SECURE (no screenshots) on these pages. A browser cannot stop a phone camera; the watermark is the deterrent.
+
+Tutor ID check uses `ANTHROPIC_API_KEY` (already set for photo questions); `VERIFY_MODEL` overrides the model. ID photos are in the private `class-files` bucket under `tutor-ids/`.

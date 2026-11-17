@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { CONTENT_SEGMENTS, SEGMENT_LABEL, isSegment, segmentsOfLevel, type ClassLevel, type ContentSegment } from "@mastermoshai/core";
+import { CLASS_SEGMENTS, CLASS_SEGMENT_LABEL, GROUP_LABEL, SEGMENT_LABEL, isSegment, packClass, packGroup, packsOfClass, segmentsOfLevel, type ClassLevel, type ContentSegment } from "@mastermoshai/core";
 import { Flash } from "@/components/growth/Off";
 import { accessContext, catalog } from "@/lib/biz/access";
-import { CONTENT_PRICE, myContentSubs } from "@/lib/biz/content-subs";
+import { CONTENT_PRICE, lockedSegment, myContentSubs } from "@/lib/biz/content-subs";
 import { bizCopy } from "@/lib/copy-biz";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
@@ -13,7 +13,7 @@ import { autoSegment, renewSegment, stopSegment } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function Learn({ searchParams }: { searchParams: Promise<{ segment?: string; paid?: string; why?: string; renew?: string }> }) {
+export default async function Learn({ searchParams }: { searchParams: Promise<{ pack?: string; paid?: string; why?: string; renew?: string }> }) {
   const m = await mustMe("/learn");
   const lang = await getLang();
   const c = bizCopy(lang).learn;
@@ -22,12 +22,16 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
   if (DATA_LIVE) await claimReferral(m.email);
   const ctx = await accessContext(m);
   const mine = DATA_LIVE ? await myContentSubs(m.email) : [];
-  // Default tab: the class they study in with a tutor, else their pack, else SSC.
-  const guess = ctx.batches.flatMap((b) => segmentsOfLevel(b.level))[0] ?? ctx.segments[0] ?? "SSC";
-  const seg: ContentSegment = isSegment(sp.segment) ? sp.segment : guess;
-  const items = catalog(ctx, { segment: seg });
-  const segOpen = ctx.staff || ctx.segments.includes(seg);
-  const freeSubjects = [...new Set(ctx.batches.filter((b) => segmentsOfLevel(b.level).includes(seg)).map((b) => b.subject))];
+  const locked = DATA_LIVE ? await lockedSegment(m.email) : null;
+  // Default tab: their fixed pack, else the class they study with a tutor, else SSC science.
+  const tutorClass = ctx.batches.flatMap((b) => segmentsOfLevel(b.level))[0];
+  const guess: ContentSegment = locked ?? ctx.segments[0] ?? (tutorClass ? packsOfClass(tutorClass)[0]! : "SSC_SCIENCE");
+  const pack: ContentSegment = isSegment(sp.pack) ? sp.pack : guess;
+  const cls = packClass(pack), grp = packGroup(pack);
+  const items = catalog(ctx, { segment: cls, group: grp ?? undefined });
+  const segOpen = ctx.staff || ctx.segments.includes(pack);
+  const otherLocked = Boolean(locked && locked !== pack);
+  const freeSubjects = [...new Set(ctx.batches.filter((b) => segmentsOfLevel(b.level).includes(cls)).map((b) => b.subject))];
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-10">
@@ -48,7 +52,8 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
           <p className="font-semibold">{c.subH(CONTENT_PRICE)}</p>
           <p className="mt-2 text-sm text-ink-2">{c.subBody}</p>
           {segOpen ? <p className="mt-3 text-sm font-semibold text-leaf">{ctx.staff ? c.via.staff : c.already}</p>
-            : <Link href={`/learn/buy/${seg}`} className="btn mt-4 inline-flex border-[#e2136e] bg-[#e2136e] px-4! py-2! text-white">{c.buy(CONTENT_PRICE)} · {SEGMENT_LABEL[seg][lang]}</Link>}
+            : otherLocked ? <p className="mt-3 rounded-lg bg-mist p-3 text-sm">{c.lockedTo(SEGMENT_LABEL[locked!][lang])} <Link href={`/learn?pack=${locked}`} className="font-semibold underline">{SEGMENT_LABEL[locked!][lang]}</Link></p>
+            : <Link href={`/learn/buy/${pack}`} className="btn mt-4 inline-flex border-[#e2136e] bg-[#e2136e] px-4! py-2! text-white">{c.buy(CONTENT_PRICE)} · {SEGMENT_LABEL[pack][lang]}</Link>}
         </section>
       </div>
 
@@ -80,10 +85,18 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
       )}
 
       <nav className="mt-10 flex flex-wrap gap-2" aria-label={c.pick}>
-        {CONTENT_SEGMENTS.map((s) => (
-          <Link key={s} href={`/learn?segment=${s}`} className={`tag px-3! py-1.5! text-sm ${s === seg ? "bg-board! text-white!" : ""}`}>{SEGMENT_LABEL[s][lang]}</Link>
-        ))}
+        {CLASS_SEGMENTS.map((k) => {
+          const first = locked && packClass(locked) === k ? locked : packsOfClass(k)[0]!;
+          return <Link key={k} href={`/learn?pack=${first}`} className={`tag px-3! py-1.5! text-sm ${k === cls ? "bg-board! text-white!" : ""}`}>{CLASS_SEGMENT_LABEL[k][lang]}</Link>;
+        })}
       </nav>
+      {grp && (
+        <nav className="mt-2 flex flex-wrap gap-2 text-sm" aria-label={c.groupPick}>
+          {packsOfClass(cls).map((p) => (
+            <Link key={p} href={`/learn?pack=${p}`} className={`rounded-full border px-3 py-1 ${p === pack ? "border-board font-semibold" : "border-line text-ink-2"}`}>{GROUP_LABEL[packGroup(p)!][lang]}</Link>
+          ))}
+        </nav>
+      )}
 
       {items.length === 0 ? <p className="mt-4 rounded-lg bg-mist p-6 text-center text-sm text-ink-2">{c.none}</p> : (
         <ul className="mt-4 grid gap-3 md:grid-cols-2">

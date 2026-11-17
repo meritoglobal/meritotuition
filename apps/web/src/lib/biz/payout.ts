@@ -18,11 +18,14 @@ export async function setAutoPayout(teacherId: string, on: boolean) {
   await db().from("teacher_wallets").update({ auto_payout: on, updated_at: new Date().toISOString() }).eq("teacher_id", teacherId);
 }
 
-export type WithdrawError = "number" | "min" | "balance" | "bad" | "db";
+export type WithdrawError = "number" | "min" | "balance" | "bad" | "db" | "unverified";
 
 /** Take up to 100% of the balance out to the saved bKash number. Sends at once when payout is live. */
 export async function withdraw(teacherId: string, email: string, amount: number): Promise<{ id: string; status: string } | { error: WithdrawError }> {
   const s = db();
+  // Money only leaves to ID-verified tutors.
+  const { data: prof } = await s.from("teacher_profiles").select("verified").eq("user_id", teacherId).maybeSingle();
+  if (!prof?.verified) return { error: "unverified" };
   const { data: tw } = await s.from("teacher_wallets").select("bkash_number").eq("teacher_id", teacherId).maybeSingle();
   if (!tw?.bkash_number) return { error: "number" };
   const { data: bal } = await s.rpc("wallet_balance", { t: teacherId });

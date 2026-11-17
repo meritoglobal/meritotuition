@@ -31,7 +31,7 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
             <li key={c.id} className="card p-4">
               <div className="text-xs text-ink-3">{L.subject(c.subject, lang)} · {L.level(c.level as ClassLevel, lang)} · {t.content.kinds[c.kind]}</div>
               <div className="mt-1 font-medium">{c.title[lang]}</div>
-              <a href={c.href} target="_blank" rel="noreferrer" className="btn-ghost mt-3 inline-block px-3! py-1! text-sm">{t.batch.download}</a>
+              <a href={`/teach/prep/${c.id}`} className="btn-ghost mt-3 inline-block px-3! py-1! text-sm">{lang === "en" ? "Open" : "খুলি"}</a>
             </li>
           ))}
         </ul>

@@ -7,6 +7,7 @@ import { cancelContent, CONTENT_PRICE, getContentSub, renewContent, setContentAu
 import { isEmail, me } from "@/lib/growth/people";
 import { quote } from "@/lib/growth/pay";
 import type { BuyState } from "@/app/packages/actions";
+import { SegmentLocked } from "@/lib/biz/content-subs";
 
 export async function buySegment(segment: string, _: BuyState, f: FormData): Promise<BuyState> {
   const m = await me();
@@ -21,6 +22,7 @@ export async function buySegment(segment: string, _: BuyState, f: FormData): Pro
   try {
     url = (await subscribeSegment({ segment, payer: m.email, student, autoRenew: f.get("auto") === "on", coupon })).url;
   } catch (e) {
+    if (e instanceof SegmentLocked) return { error: "locked" as never };
     console.error("[buySegment]", e);
     return { error: "pay" };
   }

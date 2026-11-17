@@ -7,53 +7,91 @@ import type { ClassLevel } from "./types";
 import { perClassShares, splitGross } from "./money";
 
 // ---------------------------------------------------------------------------
-// Content segments: one subscription = one student × one segment
+// Content segments: one ৳999 pack = one student × one class (× one group from Class 9)
 // ---------------------------------------------------------------------------
 
-export const CONTENT_SEGMENTS = ["CLASS_6", "CLASS_7", "CLASS_8", "SSC", "HSC"] as const;
+/** The class a piece of content belongs to. */
+export const CLASS_SEGMENTS = ["CLASS_6", "CLASS_7", "CLASS_8", "SSC", "HSC"] as const;
+export type ClassSegment = (typeof CLASS_SEGMENTS)[number];
+
+export const GROUPS = ["SCIENCE", "BUSINESS", "HUMANITIES"] as const;
+export type Group = (typeof GROUPS)[number];
+
+/** What a student buys: Class 6, 7, 8 as they are; SSC and HSC split by group (বিভাগ). */
+export const CONTENT_SEGMENTS = [
+  "CLASS_6", "CLASS_7", "CLASS_8",
+  "SSC_SCIENCE", "SSC_BUSINESS", "SSC_HUMANITIES",
+  "HSC_SCIENCE", "HSC_BUSINESS", "HSC_HUMANITIES",
+] as const;
 export type ContentSegment = (typeof CONTENT_SEGMENTS)[number];
 
-export const SEGMENT_LABEL: Record<ContentSegment, { bn: string; en: string }> = {
-  CLASS_6: { bn: "৬ষ্ঠ শ্রেণি", en: "Class 6" },
-  CLASS_7: { bn: "৭ম শ্রেণি", en: "Class 7" },
-  CLASS_8: { bn: "৮ম শ্রেণি", en: "Class 8" },
-  SSC: { bn: "এসএসসি (৯ম-১০ম)", en: "SSC (Class 9-10)" },
-  HSC: { bn: "এইচএসসি (একাদশ-দ্বাদশ)", en: "HSC (Class 11-12)" },
+const GROUP_LABEL: Record<Group, { bn: string; en: string }> = {
+  SCIENCE: { bn: "বিজ্ঞান", en: "Science" }, BUSINESS: { bn: "ব্যবসায় শিক্ষা", en: "Business Studies" }, HUMANITIES: { bn: "মানবিক", en: "Humanities" },
+};
+const CLASS_LABEL: Record<ClassSegment, { bn: string; en: string }> = {
+  CLASS_6: { bn: "৬ষ্ঠ শ্রেণি", en: "Class 6" }, CLASS_7: { bn: "৭ম শ্রেণি", en: "Class 7" }, CLASS_8: { bn: "৮ম শ্রেণি", en: "Class 8" },
+  SSC: { bn: "এসএসসি (৯ম-১০ম)", en: "SSC (Class 9-10)" }, HSC: { bn: "এইচএসসি (একাদশ-দ্বাদশ)", en: "HSC (Class 11-12)" },
 };
 
-/** Default monthly price of a segment subscription, in taka. */
+export const packClass = (p: ContentSegment): ClassSegment => p.split("_").slice(0, p.startsWith("CLASS") ? 2 : 1).join("_") as ClassSegment;
+export const packGroup = (p: ContentSegment): Group | null => (p.startsWith("CLASS") ? null : (p.split("_")[1] as Group));
+
+export const SEGMENT_LABEL = Object.fromEntries(CONTENT_SEGMENTS.map((p) => {
+  const c = CLASS_LABEL[packClass(p)], g = packGroup(p);
+  return [p, g ? { bn: `${c.bn} · ${GROUP_LABEL[g].bn}`, en: `${c.en} · ${GROUP_LABEL[g].en}` } : c];
+})) as Record<ContentSegment, { bn: string; en: string }>;
+export { CLASS_LABEL as CLASS_SEGMENT_LABEL, GROUP_LABEL };
+
+/** Group-only subjects; everything else (Bangla, English, Math, ICT, religion...) is common to all groups. */
+export const SUBJECT_GROUP: Record<string, Group> = {
+  Physics: "SCIENCE", Chemistry: "SCIENCE", Biology: "SCIENCE", "Higher Math": "SCIENCE",
+  Accounting: "BUSINESS", Finance: "BUSINESS", "Business Entrepreneurship": "BUSINESS",
+  Economics: "HUMANITIES", History: "HUMANITIES", Geography: "HUMANITIES", Civics: "HUMANITIES",
+};
+
+/** Default monthly price of a pack, in taka. */
 export const SEGMENT_PRICE = 999;
 
 export const isSegment = (s: unknown): s is ContentSegment => CONTENT_SEGMENTS.includes(s as ContentSegment);
 
 /**
- * Segments a class level covers. A Class 6-8 batch covers all three classes
- * (the batch level does not say which one); 9-10 and SSC are the SSC segment.
+ * Classes a class level covers. A Class 6-8 batch covers all three classes
+ * (the batch level does not say which one); 9-10 and SSC are SSC.
  */
-export function segmentsOfLevel(level: string): ContentSegment[] {
+export function segmentsOfLevel(level: string): ClassSegment[] {
   switch (level as ClassLevel) {
     case "CLASS_6_8": return ["CLASS_6", "CLASS_7", "CLASS_8"];
     case "CLASS_9_10": case "SSC": return ["SSC"];
     case "CLASS_11_12": case "HSC": return ["HSC"];
-    default: return isSegment(level) ? [level] : [];
+    default: return (CLASS_SEGMENTS as readonly string[]).includes(level) ? [level as ClassSegment] : [];
   }
 }
 
-/** The one segment a piece of content belongs to (explicit segment wins over its level). */
-export function segmentOfContent(item: { level: string; segment?: string }): ContentSegment | null {
-  if (item.segment && isSegment(item.segment)) return item.segment;
+/** The one class a piece of content belongs to (explicit segment wins over its level). */
+export function segmentOfContent(item: { level: string; segment?: string }): ClassSegment | null {
+  if (item.segment && (CLASS_SEGMENTS as readonly string[]).includes(item.segment)) return item.segment as ClassSegment;
   const s = segmentsOfLevel(item.level);
   return s.length === 1 ? s[0]! : null;
 }
 
+/** Does this pack open this item? Same class, and a group subject only for its own group. */
+export function packOpens(pack: ContentSegment, item: { subject: string; level: string; segment?: string }): boolean {
+  if (segmentOfContent(item) !== packClass(pack)) return false;
+  const g = packGroup(pack), sg = SUBJECT_GROUP[item.subject];
+  return !g || !sg || g === sg;
+}
+
+/** Packs a student may see for a class (the group ones from Class 9). */
+export const packsOfClass = (c: ClassSegment): ContentSegment[] => CONTENT_SEGMENTS.filter((p) => packClass(p) === c);
+
 export type AccessVia = "staff" | "teacher" | "subscription";
 
 export interface AccessContext {
-  /** Tutors (anyone with a tutor profile) and admins see everything. */
+  /** Verified tutors and admins see everything. */
   staff: boolean;
-  /** Segments with an active paid content subscription. */
+  /** Packs with an active paid content subscription. */
   segments: ContentSegment[];
-  /** What the student studies on the platform: one row per active batch. */
+  /** What the student studies on the platform with a verified tutor: one row per active batch. */
   batches: { subject: string; level: string; teacherName?: string | null }[];
 }
 
@@ -62,14 +100,14 @@ export interface Access { open: boolean; via: AccessVia | null; teacherName?: st
 /**
  * Can this person open this lecture sheet / exam?
  * Studying a subject with any tutor here unlocks that subject's content for that class.
- * A segment subscription unlocks every subject of that segment.
+ * A pack unlocks its class's common subjects plus its own group's subjects.
  */
 export function contentAccess(item: { subject: string; level: string; segment?: string }, ctx: AccessContext): Access {
   if (ctx.staff) return { open: true, via: "staff" };
   const seg = segmentOfContent(item);
   const b = ctx.batches.find((x) => x.subject === item.subject && seg !== null && segmentsOfLevel(x.level).includes(seg));
   if (b) return { open: true, via: "teacher", teacherName: b.teacherName ?? null };
-  if (seg && ctx.segments.includes(seg)) return { open: true, via: "subscription" };
+  if (ctx.segments.some((p) => packOpens(p, item))) return { open: true, via: "subscription" };
   return { open: false, via: null };
 }
 

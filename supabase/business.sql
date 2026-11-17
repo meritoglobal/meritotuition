@@ -17,11 +17,11 @@ alter table packages drop constraint if exists packages_classes_per_month_check;
 alter table packages add constraint packages_classes_per_month_check check (classes_per_month between 1 and 120);
 
 -- ---------------------------------------------------------------------------
--- Content subscription: one student, one segment (CLASS_6, CLASS_7, CLASS_8, SSC, HSC)
+-- Content subscription: one student, one class; from Class 9 also one group (SSC_SCIENCE, SSC_BUSINESS, ...)
 -- ---------------------------------------------------------------------------
 create table if not exists content_subscriptions (
   id                 uuid primary key default gen_random_uuid(),
-  segment            text not null check (segment in ('CLASS_6', 'CLASS_7', 'CLASS_8', 'SSC', 'HSC')),
+  segment            text not null check (segment in ('CLASS_6', 'CLASS_7', 'CLASS_8', 'SSC_SCIENCE', 'SSC_BUSINESS', 'SSC_HUMANITIES', 'HSC_SCIENCE', 'HSC_BUSINESS', 'HSC_HUMANITIES')),
   student_email      text not null,
   payer_email        text not null,
   price              int not null,
@@ -204,3 +204,36 @@ alter table class_overrides       enable row level security;
 
 -- Expert badge (set by admin): the only way to the 5% commission tier.
 alter table teacher_profiles add column if not exists expert boolean not null default false;
+
+-- ---------------------------------------------------------------------------
+-- Tutor verification: student ID card checked by AI, doubtful ones by admin.
+-- Only verified tutors get platform content, and only their students get it free.
+-- ---------------------------------------------------------------------------
+alter table teacher_profiles add column if not exists verified boolean not null default false;
+
+create table if not exists tutor_verifications (
+  user_id      text primary key,
+  email        text,
+  profile_name text,
+  front_path   text not null,                  -- class-files bucket, tutor-ids/<user>/front.*
+  back_path    text,
+  status       text not null default 'PENDING' check (status in ('PENDING', 'REVIEW', 'APPROVED', 'REJECTED')),
+  ai           jsonb,                          -- what the AI read from the card
+  note         text,                           -- admin's reason, shown to the tutor
+  submitted_at timestamptz not null default now(),
+  decided_at   timestamptz
+);
+create index if not exists tutor_verifications_status on tutor_verifications (status, submitted_at);
+alter table tutor_verifications enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- A student's class is fixed by their first ৳999 pack: the pack only ever opens
+-- that class. Moving up a class (e.g. after the yearly exam) is done by an admin.
+-- ---------------------------------------------------------------------------
+create table if not exists student_segments (
+  email    text primary key,
+  segment  text not null check (segment in ('CLASS_6', 'CLASS_7', 'CLASS_8', 'SSC_SCIENCE', 'SSC_BUSINESS', 'SSC_HUMANITIES', 'HSC_SCIENCE', 'HSC_BUSINESS', 'HSC_HUMANITIES')),
+  set_at   timestamptz not null default now(),
+  set_by   text                                  -- null = first payment, else admin email
+);
+alter table student_segments enable row level security;

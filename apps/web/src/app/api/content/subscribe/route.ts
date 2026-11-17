@@ -1,13 +1,13 @@
 import { isSegment } from "@mastermoshai/core";
 import { fail, json } from "@/lib/api";
 import { DATA_LIVE } from "@/lib/data";
-import { CONTENT_PRICE, subscribeSegment } from "@/lib/biz/content-subs";
+import { CONTENT_PRICE, SegmentLocked, subscribeSegment } from "@/lib/biz/content-subs";
 import { isEmail, me } from "@/lib/growth/people";
 import { PAY_ON, quote } from "@/lib/growth/pay";
 
 export const dynamic = "force-dynamic";
 
-/** POST { segment, childEmail?, autoRenew?, coupon?, preview? } → { quote } with preview, else { url } to open for bKash. */
+/** POST { segment, childEmail?, autoRenew?, coupon?, preview? } → { quote } with preview, else { url } to open for bKash. 409 { error: "segment-locked", segment } when the student is fixed to another class. */
 export async function POST(req: Request) {
   const m = await me();
   if (!m) return fail("login", 401);
@@ -20,5 +20,10 @@ export async function POST(req: Request) {
   if (!q.couponOk) return fail("bad-coupon", 400);
   const student = b.childEmail ? String(b.childEmail).trim().toLowerCase() : m.email;
   if (!isEmail(student) && student !== m.email) return fail("bad-email", 400);
-  return json(await subscribeSegment({ segment: b.segment, payer: m.email, student, autoRenew: b.autoRenew !== false, coupon }));
+  try {
+    return json(await subscribeSegment({ segment: b.segment, payer: m.email, student, autoRenew: b.autoRenew !== false, coupon }));
+  } catch (e) {
+    if (e instanceof SegmentLocked) return json({ error: "segment-locked", segment: e.segment }, 409);
+    throw e;
+  }
 }

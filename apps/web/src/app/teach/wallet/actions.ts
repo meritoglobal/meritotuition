@@ -5,7 +5,7 @@ import { DATA_LIVE } from "@/lib/data";
 import { saveWalletNumber, setAutoPayout, withdraw } from "@/lib/biz/payout";
 import { me } from "@/lib/growth/people";
 
-export type WalletState = { ok?: "saved" | "PAID" | "QUEUED" | "FAILED"; error?: "number" | "badNumber" | "min" | "balance" | "bad" | "db" } | null;
+export type WalletState = { ok?: "saved" | "PAID" | "QUEUED" | "FAILED"; error?: "number" | "badNumber" | "min" | "balance" | "bad" | "db" | "unverified" } | null;
 
 async function tutor() {
   const m = await me();

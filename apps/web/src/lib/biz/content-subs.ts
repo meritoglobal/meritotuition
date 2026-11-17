@@ -31,9 +31,26 @@ export async function getContentSub(id: string, email: string): Promise<ContentS
   return s && (s.payer_email === email || s.student_email === email) ? s : null;
 }
 
-/** Start or restart a segment subscription for one student (the payer may be a parent). */
+/** The class a student is locked to (set by their first paid pack, changed only by an admin). */
+export async function lockedSegment(email: string): Promise<ContentSegment | null> {
+  const { data } = await db().from("student_segments").select("segment").eq("email", email).maybeSingle();
+  return (data?.segment as ContentSegment) ?? null;
+}
+
+/** Admin: move a student to another class (e.g. promoted after the yearly exam). Old packs of other classes stop counting. */
+export async function setStudentSegment(email: string, segment: ContentSegment, admin: string) {
+  await db().from("student_segments").upsert({ email, segment, set_at: new Date().toISOString(), set_by: admin }, { onConflict: "email" });
+  // Running packs move with the student (promoted from Class 8 to SSC science, etc.).
+  await db().from("content_subscriptions").update({ segment }).eq("student_email", email).in("status", ["ACTIVE", "PAST_DUE", "PENDING"]);
+}
+
+export class SegmentLocked extends Error { constructor(public segment: ContentSegment) { super("segment-locked"); } }
+
+/** Start or restart a segment subscription for one student (the payer may be a parent). Only the student's own class. */
 export async function subscribeSegment(o: { segment: ContentSegment; payer: string; student: string; autoRenew: boolean; coupon?: string }) {
   const s = db();
+  const locked = await lockedSegment(o.student);
+  if (locked && locked !== o.segment) throw new SegmentLocked(locked);
   const { data: existing } = await s.from("content_subscriptions").select("id,agreement_id").eq("segment", o.segment).eq("student_email", o.student).neq("status", "CANCELLED").maybeSingle();
   let id = existing?.id as string | undefined;
   if (!id) {
@@ -72,7 +89,9 @@ export async function fulfilContent(subId: string) {
   if (!sub) return;
   const from = sub.current_period_end && new Date(sub.current_period_end) > new Date() ? new Date(sub.current_period_end) : new Date();
   await s.from("content_subscriptions").update({ status: "ACTIVE", current_period_end: new Date(from.getTime() + MONTH_MS).toISOString() }).eq("id", subId);
-  await notify({ email: sub.student_email, kind: "CONTENT_PAID", title: `${SEGMENT_LABEL[sub.segment as ContentSegment].bn}: সব লেকচার শিট আর পরীক্ষা খুলে গেছে`, body: "পড়া শুরু করো!", path: `/learn?segment=${sub.segment}` });
+  // The first paid pack fixes the student's class for good.
+  await s.from("student_segments").upsert({ email: sub.student_email, segment: sub.segment }, { onConflict: "email", ignoreDuplicates: true });
+  await notify({ email: sub.student_email, kind: "CONTENT_PAID", title: `${SEGMENT_LABEL[sub.segment as ContentSegment].bn}: সব লেকচার শিট আর পরীক্ষা খুলে গেছে`, body: "পড়া শুরু করো!", path: `/learn?pack=${sub.segment}` });
 }
 
 /** Daily: remind 3 days before the month ends; mark unpaid months as PAST_DUE. */
