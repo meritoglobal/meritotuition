@@ -31,7 +31,7 @@ export default function Me() {
     },
     {
       title: "টাকা",
-      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => router.push("/earnings") }],
+      rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => openLive("/teach/wallet", "আয় ও টাকা তোলা", "/earnings", "wallet") }],
     },
   ];
   const studentGroups: { title: string; rows: Row[] }[] = [
@@ -40,6 +40,8 @@ export default function Me() {
       rows: [
         { icon: "megaphone-outline", label: "টিউটর চাই (পোস্ট ও প্রস্তাব)", sub: "টিচারদের পাঠানো বিড দেখো", go: () => openLive("/requests", "টিউটর চাই", "/request/q1") },
         { icon: "chatbubbles-outline", label: "মেসেজ", sub: "টিচারের সাথে কথা, নম্বর গোপন থাকে", go: () => openPage("/chat", "মেসেজ") },
+        { icon: "calendar-outline", label: "রুটিন বদলের অনুমোদন", sub: "টিচার সময় বদলাতে চাইলে এখানে হ্যাঁ/না", go: () => openLive("/routine", "রুটিন বদল", "/classes", "wallet") },
+        { icon: "library-outline", label: "লেকচার শিট প্যাক", sub: "ক্লাস ৬ থেকে HSC, টিচারের কাছে পড়লে ফ্রি", go: () => openLive("/learn", "লেকচার শিট", "/learn", "wallet") },
         { icon: "pricetags-outline", label: "মাসিক প্যাকেজ ও bKash অটো-পে", sub: "প্রতি মাসে নিজে নিজেই পেমেন্ট", go: () => openPage("/packages", "মাসিক প্যাকেজ") },
         { icon: "wallet-outline", label: "পেমেন্ট ও রিফান্ড", sub: "কত টাকা জমা, কত ফেরত", go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },
         { icon: "flag-outline", label: "নালিশ করি", sub: "টিচার আসেননি বা দেরি করেছেন", go: () => openPage("/dashboard/student", "নালিশ") },

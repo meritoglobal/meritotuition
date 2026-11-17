@@ -13,21 +13,25 @@ export function openPage(path: string, title: string) {
 }
 
 /**
- * Tuition requests and bids live on the server once it ships them.
- * Until /api/requests answers on the site, the app keeps its own demo screens.
+ * Some features (tuition requests, wallet, content subscriptions, routine approvals) live on the server
+ * once it ships them. Until each feature's API answers on the site, the app keeps its own demo screens.
  */
-let live = false;
-const ctl = new AbortController();
-const timer = setTimeout(() => ctl.abort(), 6000);
-fetch(`${SITE}/api/requests/prefs`, { signal: ctl.signal })
-  .then((r) => {
-    live = r.status !== 404 && !(r.headers.get("content-type") ?? "").includes("text/html");
-  })
-  .catch(() => {})
-  .finally(() => clearTimeout(timer));
+type Feature = "requests" | "wallet";
+const PROBES: Record<Feature, string> = { requests: "/api/requests/prefs", wallet: "/api/wallet" };
+const live: Record<Feature, boolean> = { requests: false, wallet: false };
+for (const f of Object.keys(PROBES) as Feature[]) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 6000);
+  fetch(`${SITE}${PROBES[f]}`, { signal: ctl.signal })
+    .then((r) => {
+      live[f] = r.status !== 404 && !(r.headers.get("content-type") ?? "").includes("text/html");
+    })
+    .catch(() => {})
+    .finally(() => clearTimeout(timer));
+}
 
 /** Open the server page when the feature is live there, otherwise the in-app demo screen. */
-export function openLive(path: string, title: string, demo: string) {
-  if (live) openPage(path, title);
+export function openLive(path: string, title: string, demo: string, feature: Feature = "requests") {
+  if (live[feature]) openPage(path, title);
   else router.push(demo as never);
 }

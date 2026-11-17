@@ -18,7 +18,7 @@ const JOBS: Job[] = [
   { label: "মাসিক\nপ্যাকেজ", icon: "pricetags-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/teach/packages", "মাসিক প্যাকেজ") },
   { label: "মেসেজ", icon: "chatbubbles-outline", tint: colors.boardSoft, fg: colors.board, go: () => openPage("/chat", "মেসেজ") },
   { label: "আমার\nপ্রোফাইল", icon: "person-outline", tint: colors.goldSoft, fg: "#7a5d00", go: () => openPage("/teach/profile", "আমার প্রোফাইল") },
-  { label: "টাকা\nতুলি", icon: "cash-outline", tint: colors.redSoft, fg: colors.redpen, go: () => router.push("/earnings") },
+  { label: "টাকা\nতুলি", icon: "cash-outline", tint: colors.redSoft, fg: colors.redpen, go: () => openLive("/teach/wallet", "আয় ও টাকা তোলা", "/earnings", "wallet") },
 ];
 
 const local = (d: Date) => new Date(d.getTime() + 6 * 3_600_000);
