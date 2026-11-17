@@ -25,6 +25,6 @@
 - `GET|POST /api/batches/{id}/schedule-changes {kind: ROUTINE, schedule:[{day,time,minutes}]} | {kind: RESCHEDULE, fromAt, toAt, minutes?}`
 
 ## Content protection
-Sheets are served only through `/api/content/{id}` to people allowed to see them, never as public files. Opening the URL directly in a tab redirects to the viewer (the app passes `?embed=app`). The served page blocks selection, copy, right-click, save/print keys and printing (prints blank), and carries a faint watermark with the viewer's email and time so a leaked photo can be traced. No download or print buttons anywhere. The Android app adds FLAG_SECURE (no screenshots) on these pages. A browser cannot stop a phone camera; the watermark is the deterrent.
+Sheets are served only through `/api/content/{id}` to people allowed to see them, never as public files. Opening the URL directly in a tab redirects to the viewer (the app passes `?embed=app`). The served page blocks selection, copy, right-click, save/print keys and printing (prints blank), and carries a faint watermark with the viewer's email and time so a leaked photo can be traced. No download or print buttons anywhere. Screenshots are allowed in the app (owner decision); the watermark makes any shared image traceable.
 
 Tutor ID check uses `ANTHROPIC_API_KEY` (already set for photo questions); `VERIFY_MODEL` overrides the model. ID photos are in the private `class-files` bucket under `tutor-ids/`.
