@@ -21,6 +21,7 @@ export default function Me() {
       title: "পড়ানোর কাজ",
       rows: [
         { icon: "location-outline", label: "এলাকার নতুন টিউশন", sub: "চাহিদা দেখে বিড দিন", go: () => openLive("/teach/requests", "এলাকার নতুন টিউশন", "/tuitions") },
+        { icon: "shield-checkmark-outline", label: "পরিচয় যাচাই", sub: "ভার্সিটি/কলেজ আইডি বা NID-এর দুই পাশের ছবি দিন", go: () => openLive("/teach/verify", "পরিচয় যাচাই", "/web?path=/teach/profile&title=আমার প্রোফাইল", "verify") },
         { icon: "person-outline", label: "আমার প্রোফাইল", sub: "ছবি, ভার্সিটি কার্ড, বিষয়, এলাকা", go: () => openPage("/teach/profile", "আমার প্রোফাইল") },
         { icon: "people-outline", label: "ব্যাচ ও স্টুডেন্ট", sub: "নতুন ব্যাচ, সিট, ট্রায়াল", go: () => openPage("/teach", "টিচার প্যানেল") },
         { icon: "document-text-outline", label: "ক্লাসের প্রস্তুতি", sub: "অধ্যায় আর টপিক ধরে শিট, MCQ, সৃজনশীল", go: () => router.push("/prep") },
