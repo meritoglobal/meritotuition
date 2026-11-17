@@ -10,7 +10,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-nati
 import { myClasses, progress, subjectBn, teachers, videos } from "../../src/data";
 import { setLevel, useLevel, useRole } from "../../src/prefs";
 import TeacherHome from "../../src/teacher/TeacherHome";
-import { openPage } from "../../src/site";
+import { openPage, openLive } from "../../src/site";
 import { colors } from "../../src/theme";
 import { Avatar, Bar, Button, Card, Ionicons, Mark, Screen, Section, type IconName } from "../../src/ui";
 
@@ -116,7 +116,7 @@ function StudentHome() {
       ) : null}
 
       {/* Post a need: teachers come to you */}
-      <Pressable style={st.post} onPress={() => router.push("/request/new")}>
+      <Pressable style={st.post} onPress={() => openLive("/requests", "টিউটর চাই", "/request/new")}>
         <View style={{ flex: 1 }}>
           <Text style={st.postH}>টিউটর খুঁজে খুঁজে ক্লান্ত?</Text>
           <Text style={st.postP}>কী লাগবে আর বাজেট কত লিখে দাও। এলাকার টিচাররা নিজেরাই প্রস্তাব পাঠাবেন।</Text>

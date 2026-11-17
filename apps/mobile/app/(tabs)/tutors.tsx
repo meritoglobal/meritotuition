@@ -1,4 +1,5 @@
 /** Find a tutor: online / at home switch, subject chips, tutor cards (Preply-style list). */
+import { openLive } from "../../src/site";
 import { AREA_LABEL_BN, bnDigits, formatTakaL, hasTrialSeat, SUBJECTS, type Subject, type TeacherSummary } from "@mastermoshai/core";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -69,7 +70,7 @@ export default function Tutors() {
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         ListHeaderComponent={
           <>
-            <Pressable style={st.post} onPress={() => router.push("/request/new")}>
+            <Pressable style={st.post} onPress={() => openLive("/requests", "টিউটর চাই", "/request/new")}>
               <Ionicons name="megaphone-outline" size={20} color={colors.board} />
               <Text style={st.postText}>খুঁজতে ইচ্ছে করছে না? চাহিদা পোস্ট করো, টিচাররাই প্রস্তাব পাঠাবেন।</Text>
               <Ionicons name="chevron-forward" size={18} color={colors.board} />

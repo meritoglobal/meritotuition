@@ -4,7 +4,7 @@ import * as Linking from "expo-linking";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { setRole, useRole } from "../../src/prefs";
-import { SITE, openPage } from "../../src/site";
+import { SITE, openLive, openPage } from "../../src/site";
 import { colors } from "../../src/theme";
 import { Button, Ionicons, Mark, Screen, TabHeader, type IconName } from "../../src/ui";
 
@@ -20,7 +20,7 @@ export default function Me() {
     {
       title: "পড়ানোর কাজ",
       rows: [
-        { icon: "location-outline", label: "এলাকার নতুন টিউশন", sub: "চাহিদা দেখে বিড দিন", go: () => router.push("/tuitions") },
+        { icon: "location-outline", label: "এলাকার নতুন টিউশন", sub: "চাহিদা দেখে বিড দিন", go: () => openLive("/teach/requests", "এলাকার নতুন টিউশন", "/tuitions") },
         { icon: "person-outline", label: "আমার প্রোফাইল", sub: "ছবি, ভার্সিটি কার্ড, বিষয়, এলাকা", go: () => openPage("/teach/profile", "আমার প্রোফাইল") },
         { icon: "people-outline", label: "ব্যাচ ও স্টুডেন্ট", sub: "নতুন ব্যাচ, সিট, ট্রায়াল", go: () => openPage("/teach", "টিচার প্যানেল") },
         { icon: "document-text-outline", label: "ক্লাসের প্রস্তুতি", sub: "অধ্যায় আর টপিক ধরে শিট, MCQ, সৃজনশীল", go: () => router.push("/prep") },
@@ -38,7 +38,7 @@ export default function Me() {
     {
       title: "আমার পড়াশোনা",
       rows: [
-        { icon: "megaphone-outline", label: "টিউটর চাই (পোস্ট ও প্রস্তাব)", sub: "টিচারদের পাঠানো বিড দেখো", go: () => router.push("/request/q1") },
+        { icon: "megaphone-outline", label: "টিউটর চাই (পোস্ট ও প্রস্তাব)", sub: "টিচারদের পাঠানো বিড দেখো", go: () => openLive("/requests", "টিউটর চাই", "/request/q1") },
         { icon: "chatbubbles-outline", label: "মেসেজ", sub: "টিচারের সাথে কথা, নম্বর গোপন থাকে", go: () => openPage("/chat", "মেসেজ") },
         { icon: "pricetags-outline", label: "মাসিক প্যাকেজ ও bKash অটো-পে", sub: "প্রতি মাসে নিজে নিজেই পেমেন্ট", go: () => openPage("/packages", "মাসিক প্যাকেজ") },
         { icon: "wallet-outline", label: "পেমেন্ট ও রিফান্ড", sub: "কত টাকা জমা, কত ফেরত", go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },

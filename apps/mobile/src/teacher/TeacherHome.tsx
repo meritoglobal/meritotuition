@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { me, myEarnings, subjectBn, teachingSchedule, tuitionRequests } from "../data";
-import { openPage } from "../site";
+import { openPage, openLive } from "../site";
 import { colors } from "../theme";
 import { Bar, Button, Card, Ionicons, Mark, Screen, Section, type IconName } from "../ui";
 
@@ -70,7 +70,7 @@ export default function TeacherHome() {
         </View>
       ) : null}
 
-      <Pressable style={st.leads} onPress={() => router.push("/tuitions")}>
+      <Pressable style={st.leads} onPress={() => openLive("/teach/requests", "এলাকার নতুন টিউশন", "/tuitions")}>
         <View style={st.leadsIcon}>
           <Ionicons name="location" size={20} color={colors.ink} />
           <View style={st.leadsBadge}><Text style={st.leadsBadgeText}>{bnDigits(tuitionRequests.length)}</Text></View>
