@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { SEGMENT_LABEL, isSegment } from "@mastermoshai/core";
 import BuyForm from "@/app/packages/[id]/BuyForm";
 import { accessContext } from "@/lib/biz/access";
-import { CONTENT_PRICE, lockedSegment } from "@/lib/biz/content-subs";
+import { contentPrice, lockedSegment } from "@/lib/biz/content-subs";
 import { bizCopy } from "@/lib/copy-biz";
 import { growthCopy } from "@/lib/copy-growth";
 import { DATA_LIVE } from "@/lib/data";
@@ -25,7 +25,7 @@ export default async function BuySegment({ params }: { params: Promise<{ segment
   const c = bizCopy(lang).learn;
   const g = growthCopy(lang).pkg;
   const ctx = await accessContext(m);
-  const q = await quote(m.email, CONTENT_PRICE);
+  const q = await quote(m.email, (await contentPrice()));
   const locked = await lockedSegment(m.email);
   const label = SEGMENT_LABEL[segment][lang];
   return (
@@ -34,7 +34,7 @@ export default async function BuySegment({ params }: { params: Promise<{ segment
       <div className="mt-4 grid gap-6 md:grid-cols-[1fr_1.1fr]">
         <section className="card p-5">
           <h1 className="font-display text-2xl">{c.buyH(label)}</h1>
-          <p className="mt-1 text-lg font-bold">{L.taka(CONTENT_PRICE, lang)}<span className="text-sm font-normal text-ink-2">{g.perMonth}</span></p>
+          <p className="mt-1 text-lg font-bold">{L.taka((await contentPrice()), lang)}<span className="text-sm font-normal text-ink-2">{g.perMonth}</span></p>
           <ul className="mt-3 space-y-2 text-sm">
             {c.buyList.map((x) => <li key={x} className="flex gap-2"><span className="mt-[0.6em] h-px w-3 shrink-0 bg-board" />{x}</li>)}
           </ul>

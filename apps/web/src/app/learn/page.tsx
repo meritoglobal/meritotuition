@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CLASS_SEGMENTS, CLASS_SEGMENT_LABEL, GROUP_LABEL, SEGMENT_LABEL, isSegment, packClass, packGroup, packsOfClass, segmentsOfLevel, type ClassLevel, type ContentSegment } from "@mastermoshai/core";
 import { Flash } from "@/components/growth/Off";
 import { accessContext, catalog } from "@/lib/biz/access";
-import { CONTENT_PRICE, lockedSegment, myContentSubs } from "@/lib/biz/content-subs";
+import { contentPrice, lockedSegment, myContentSubs } from "@/lib/biz/content-subs";
 import { bizCopy } from "@/lib/copy-biz";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
@@ -49,11 +49,11 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
             : <Link href="/teachers" className="btn-gold mt-4 inline-flex px-4! py-2!">{c.freeHow}</Link>}
         </section>
         <section className="card p-5">
-          <p className="font-semibold">{c.subH(CONTENT_PRICE)}</p>
+          <p className="font-semibold">{c.subH((await contentPrice()))}</p>
           <p className="mt-2 text-sm text-ink-2">{c.subBody}</p>
           {segOpen ? <p className="mt-3 text-sm font-semibold text-leaf">{ctx.staff ? c.via.staff : c.already}</p>
             : otherLocked ? <p className="mt-3 rounded-lg bg-mist p-3 text-sm">{c.lockedTo(SEGMENT_LABEL[locked!][lang])} <Link href={`/learn?pack=${locked}`} className="font-semibold underline">{SEGMENT_LABEL[locked!][lang]}</Link></p>
-            : <Link href={`/learn/buy/${pack}`} className="btn mt-4 inline-flex border-[#e2136e] bg-[#e2136e] px-4! py-2! text-white">{c.buy(CONTENT_PRICE)} · {SEGMENT_LABEL[pack][lang]}</Link>}
+            : <Link href={`/learn/buy/${pack}`} className="btn mt-4 inline-flex border-[#e2136e] bg-[#e2136e] px-4! py-2! text-white">{c.buy((await contentPrice()))} · {SEGMENT_LABEL[pack][lang]}</Link>}
         </section>
       </div>
 

@@ -1,6 +1,7 @@
 import "server-only";
 import { getUser, type SessionUser } from "@/lib/auth/session";
 import { DATA_LIVE, db } from "@/lib/data";
+import { panelAdmins } from "@/lib/admin/roles";
 
 export interface Me { user: SessionUser; email: string; name: string; admin: boolean }
 
@@ -16,7 +17,7 @@ export async function me(): Promise<Me | null> {
   const user = await getUser();
   if (!user) return null;
   const email = keyOf(user);
-  return { user, email, name: shortName(email), admin: isAdmin(email) };
+  return { user, email, name: shortName(email), admin: isAdmin(email) || (await panelAdmins()).has(email) };
 }
 
 /** A nicer name for someone: tutor profile name, batch list name, or the email's first part. */

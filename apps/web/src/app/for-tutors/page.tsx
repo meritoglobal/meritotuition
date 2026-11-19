@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { TierLadder } from "@/components/TierLadder";
+import { getSettings } from "@/lib/admin/settings";
 import { getUser } from "@/lib/auth/session";
 import { bizCopy } from "@/lib/copy-biz";
 import { getLang } from "@/lib/lang";
@@ -44,7 +45,7 @@ export default async function ForTutors() {
         <div className="mx-auto max-w-6xl px-5 py-12">
           <h2 className="font-display text-4xl">{c.tiers.h}</h2>
           <p className="mt-2 max-w-2xl text-white/80">{c.tiers.sub}</p>
-          <div className="mt-6"><TierLadder lang={lang} dark /></div>
+          <div className="mt-6"><TierLadder lang={lang} dark tiers={(await getSettings()).tiers} /></div>
           <ol className="mt-8 grid gap-3 text-sm text-white/80 sm:grid-cols-4">
             {c.wallet.howSteps.map((s, i) => <li key={s} className="border-t border-white/20 pt-2"><b className="text-gold">{lang === "en" ? i + 1 : "১২৩৪"[i]}.</b> {s}</li>)}
           </ol>

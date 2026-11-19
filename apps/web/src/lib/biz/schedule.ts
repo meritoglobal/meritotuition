@@ -78,6 +78,9 @@ export async function cancelChange(ch: ScheduleChange) {
   if (ch.status === "PENDING") await db().from("schedule_changes").update({ status: "CANCELLED", decided_at: new Date().toISOString() }).eq("id", ch.id).eq("status", "PENDING");
 }
 
+/** Admin override: settle a pending proposal without waiting for every vote. */
+export const forceDecide = (ch: ScheduleChange, out: "APPROVED" | "REJECTED") => decide(ch, out);
+
 async function decide(ch: ScheduleChange, out: "APPROVED" | "REJECTED") {
   const s = db();
   const { data: won } = await s.from("schedule_changes").update({ status: out, decided_at: new Date().toISOString() }).eq("id", ch.id).eq("status", "PENDING").select("id").maybeSingle();

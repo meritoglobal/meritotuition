@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { AUTH_LIVE, DEMO_COOKIE } from "./config";
 import { supabaseServer } from "./supabase";
+import { isBlocked } from "@/lib/admin/roles";
 
 export interface SessionUser {
   id: string;
@@ -17,5 +18,6 @@ export async function getUser(): Promise<SessionUser | null> {
   }
   const { data } = await (await supabaseServer()).auth.getUser();
   const u = data.user;
+  if (u && (await isBlocked(u.id, u.email ?? undefined))) return null; // suspended from the admin panel
   return u ? { id: u.id, email: u.email ?? undefined, phone: u.phone ?? undefined, demo: false } : null;
 }

@@ -7,6 +7,8 @@ import { getUser } from "@/lib/auth/session";
 import { getLang } from "@/lib/lang";
 import { LangProvider, LangToggle } from "@/lib/lang-client";
 import InstallApp from "@/components/InstallApp";
+import { getSettings } from "@/lib/admin/settings";
+import { isAdminEmail } from "@/lib/admin/core";
 
 export const viewport: Viewport = { themeColor: "#163129", width: "device-width", initialScale: 1 };
 
@@ -34,7 +36,9 @@ function Logo({ bn }: { bn: boolean }) {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [lang, user] = await Promise.all([getLang(), getUser()]);
+  const [lang, user, settings] = await Promise.all([getLang(), getUser(), getSettings()]);
+  const notice = settings.notice;
+  const isAdmin = Boolean(user?.email && (await isAdminEmail(user.email)));
   const c = copy(lang);
   return (
     <html lang={lang}>
@@ -51,6 +55,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {process.env.NEXT_PUBLIC_PREVIEW !== "off" && (
           <div className="bg-gold px-4 py-2 text-center text-[13px] font-medium text-ink">{c.preview}</div>
         )}
+        {notice && (notice[lang] || notice.bn) && (
+          <div className={`px-4 py-2 text-center text-[13px] font-medium ${notice.tone === "warn" ? "bg-redpen text-white" : "bg-board text-white"}`}>{notice[lang] || notice.bn}</div>
+        )}
         <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
           <nav className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:gap-8 sm:px-5">
             <Logo bn={lang === "bn"} />
@@ -65,6 +72,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <LangToggle />
               {user ? (
                 <>
+                  {isAdmin && <Link href="/admin" className="tag bg-board px-2! py-1! text-white">{lang === "en" ? "Admin" : "অ্যাডমিন"}</Link>}
                   <Link href="/dashboard/student" className="hidden text-[15px] font-semibold sm:block">{c.nav.mine}</Link>
                   <Link href="/chat" className="hidden text-[15px] font-medium text-ink-2 hover:text-ink lg:block">{lang === "en" ? "Messages" : "মেসেজ"}</Link>
                   <form action={signOut} className="hidden sm:block">
