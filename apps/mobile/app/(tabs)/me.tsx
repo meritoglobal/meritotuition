@@ -64,6 +64,7 @@ export default function Me() {
         { icon: "language-outline", label: "ভাষা", sub: "বাংলা", go: () => {} },
         { icon: "shield-outline", label: "প্রাইভেসি পলিসি", go: () => openPage("/privacy", "প্রাইভেসি") },
         { icon: "globe-outline", label: "ওয়েবসাইট খুলি", go: () => void Linking.openURL(SITE) },
+        { icon: "trash-outline", label: "অ্যাকাউন্ট মুছে ফেলি", sub: "সব তথ্যসহ অ্যাকাউন্ট মুছে যাবে", go: () => openPage("/account/delete", "অ্যাকাউন্ট মুছে ফেলি") },
       ],
     },
   ];
