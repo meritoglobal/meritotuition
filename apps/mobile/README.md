@@ -15,14 +15,9 @@ back button, offline screen, files (PDF/PPT/video) open in the phone's own apps.
 expo.dev → Builds → New build → Android, profile **preview**. In ~15 min you get an
 APK link; open it on an Android phone and install.
 
-## Play Store
-1. Google Play Console account ($25 one time): https://play.google.com/console
-2. Create app "মাস্টারমশাই", default language Bangla.
-3. expo.dev → New build → Android, profile **production** → download the `.aab`.
-4. Upload the `.aab` to Internal testing first, then Production.
-5. Privacy policy URL: https://mastermoshai.net/privacy
-6. Data safety: collects name, email, phone (account), audio/video (live class, not shared),
-   files uploaded by teachers. Data encrypted in transit; users can ask for deletion.
+## Play Store and App Store
+See [STORE-RELEASE.md](STORE-RELEASE.md) (Bangla): accounts, costs, store rules, listing text, and the
+"Store build" GitHub workflow that builds the .aab/.ipa on EAS.
 
 ## Change the site URL
 `app.json` → `expo.extra.siteUrl` (e.g. https://mastermoshai.net once the domain is bought).

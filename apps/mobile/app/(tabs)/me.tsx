@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { setRole, useRole } from "../../src/prefs";
 import { SITE, openLive, openPage } from "../../src/site";
+import { HIDE_DIGITAL_SALES as STORE } from "../../src/store";
 import { colors } from "../../src/theme";
 import { Button, Ionicons, Mark, Screen, TabHeader, type IconName } from "../../src/ui";
 
@@ -33,7 +34,7 @@ export default function Me() {
     {
       title: "টাকা",
       rows: [{ icon: "wallet-outline", label: "আয় ও টাকা তোলা", sub: "bKash-এ টাকা তুলুন", go: () => openLive("/teach/wallet", "আয় ও টাকা তোলা", "/earnings", "wallet") },
-        { icon: "ribbon-outline", label: "টিউটর প্রো", sub: "বিডে সবার আগে আপনার নাম; স্টুডেন্ট না পেলে ৳৪৯৯ ফেরত", go: () => openLive("/teach/pro", "টিউটর প্রো", "/tuitions", "pro") }],
+        ...(STORE ? [] : [{ icon: "ribbon-outline" as IconName, label: "টিউটর প্রো", sub: "বিডে সবার আগে আপনার নাম; স্টুডেন্ট না পেলে ৳৪৯৯ ফেরত", go: () => openLive("/teach/pro", "টিউটর প্রো", "/tuitions", "pro") }])],
     },
   ];
   const studentGroups: { title: string; rows: Row[] }[] = [
@@ -43,7 +44,7 @@ export default function Me() {
         { icon: "megaphone-outline", label: "টিউটর চাই (পোস্ট ও প্রস্তাব)", sub: "টিচারদের পাঠানো বিড দেখো", go: () => openLive("/requests", "টিউটর চাই", "/request/q1") },
         { icon: "chatbubbles-outline", label: "মেসেজ", sub: "টিচারের সাথে কথা, নম্বর গোপন থাকে", go: () => openPage("/chat", "মেসেজ") },
         { icon: "calendar-outline", label: "রুটিন বদলের অনুমোদন", sub: "টিচার সময় বদলাতে চাইলে এখানে হ্যাঁ/না", go: () => openLive("/routine", "রুটিন বদল", "/classes", "wallet") },
-        { icon: "library-outline", label: "লেকচার শিট প্যাক", sub: "ক্লাস ৬ থেকে HSC, টিচারের কাছে পড়লে ফ্রি", go: () => openLive("/learn", "লেকচার শিট", "/learn", "wallet") },
+        { icon: "library-outline", label: STORE ? "আমার লেকচার শিট" : "লেকচার শিট প্যাক", sub: STORE ? "যে প্যাক আছে, সেগুলো এখানে পড়ো" : "ক্লাস ৬ থেকে HSC, টিচারের কাছে পড়লে ফ্রি", go: () => openLive("/learn", "লেকচার শিট", "/learn", "wallet") },
         { icon: "pricetags-outline", label: "মাসিক প্যাকেজ ও bKash অটো-পে", sub: "প্রতি মাসে নিজে নিজেই পেমেন্ট", go: () => openPage("/packages", "মাসিক প্যাকেজ") },
         { icon: "wallet-outline", label: "পেমেন্ট ও রিফান্ড", sub: "কত টাকা জমা, কত ফেরত", go: () => openPage("/dashboard/student", "পেমেন্ট ও রিফান্ড") },
         { icon: "flag-outline", label: "নালিশ করি", sub: "দেরি, আগে শেষ, পড়ানো বা ব্যবহার নিয়ে; ৪৮ ঘণ্টার মধ্যে", go: () => openPage("/dashboard/student", "নালিশ") },
@@ -63,6 +64,7 @@ export default function Me() {
         { icon: "language-outline", label: "ভাষা", sub: "বাংলা", go: () => {} },
         { icon: "shield-outline", label: "প্রাইভেসি পলিসি", go: () => openPage("/privacy", "প্রাইভেসি") },
         { icon: "globe-outline", label: "ওয়েবসাইট খুলি", go: () => void Linking.openURL(SITE) },
+        { icon: "trash-outline", label: "অ্যাকাউন্ট মুছে ফেলি", sub: "সব তথ্যসহ অ্যাকাউন্ট মুছে যাবে", go: () => openPage("/account/delete", "অ্যাকাউন্ট মুছে ফেলি") },
       ],
     },
   ];
