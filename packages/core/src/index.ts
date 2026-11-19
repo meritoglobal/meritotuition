@@ -9,3 +9,4 @@ export * from "./fixtures";
 export * from "./i18n";
 export * from "./contact";
 export * from "./class-exam";
+export * from "./business";

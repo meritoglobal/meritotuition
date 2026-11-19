@@ -35,13 +35,9 @@ export default function SheetView({ href, topics, start, labels }: { href: strin
               </li>
             ))}
           </ol>
-          <div className="mt-3 flex gap-2 text-sm">
-            <a href={href} target="_blank" rel="noreferrer" className="btn-ghost px-3! py-1.5!">{labels.full}</a>
-            <button type="button" className="btn-ghost px-3! py-1.5!" onClick={() => frame.current?.contentWindow?.print()}>{labels.print}</button>
-          </div>
         </nav>
       )}
-      <iframe ref={frame} src={href} title="sheet" onLoad={() => setReady(true)} className="h-[78vh] w-full rounded-lg border border-line bg-white" />
+      <iframe ref={frame} src={href} title="sheet" onContextMenu={(e) => e.preventDefault()} onLoad={() => setReady(true)} className="h-[78vh] w-full rounded-lg border border-line bg-white" />
     </div>
   );
 }

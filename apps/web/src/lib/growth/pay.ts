@@ -3,9 +3,11 @@ import { extendPro } from "./pro";
 import { DATA_LIVE, db } from "@/lib/data";
 import { BKASH_LIVE, createPayment, execute, type BkashMode } from "./bkash";
 import { notify, SITE } from "./notify";
+import { createLot } from "@/lib/biz/earnings";
+import { fulfilContent } from "@/lib/biz/content-subs";
 import { couponDiscount, creditBalance, findCoupon, rewardReferral } from "./referral";
 
-export type Purpose = "PACKAGE" | "TEST" | "DOUBT" | "PRO";
+export type Purpose = "PACKAGE" | "TEST" | "DOUBT" | "CONTENT" | "PRO";
 
 /** Without bKash keys, payments are simulated so the flow can be tried. PAYMENTS_DEMO=off turns that off. */
 export const PAY_DEMO = !BKASH_LIVE && process.env.PAYMENTS_DEMO !== "off";
@@ -56,6 +58,7 @@ export async function startPayment(o: {
 export function resultPath(purpose: Purpose, refId: string, status: "success" | "failure" | "cancel"): string {
   const q = status === "success" ? "paid=1" : `paid=0&why=${status}`;
   if (purpose === "PACKAGE") return `/packages?${q}`;
+  if (purpose === "CONTENT") return `/learn?${q}`;
   if (purpose === "TEST") return `/leaderboard/${refId}?${q}`;
   if (purpose === "PRO") return `/teach/pro?${q}`;
   return `/ask/${refId}?${q}`;
@@ -82,6 +85,9 @@ export async function handleCallback(pid: string, paymentID: string, status: str
   }
   if (p.mode === "0000") {
     // Wallet saved. Remember it, then take this month's money with it (PIN only).
+    if (p.purpose === "CONTENT" && ex.agreementID) {
+      await s.from("content_subscriptions").update({ agreement_id: ex.agreementID, payer_msisdn: ex.msisdn ?? null }).eq("id", p.ref_id);
+    }
     if (p.purpose === "PACKAGE" && ex.agreementID) {
       await s.from("subscriptions").update({ agreement_id: ex.agreementID, payer_msisdn: ex.msisdn ?? null }).eq("id", p.ref_id);
     }
@@ -102,20 +108,25 @@ export async function markPaid(pid: string, o: { trx?: string }) {
   if (!p) return; // already handled
   if (p.credit_used > 0) await s.from("credits").insert({ email: p.payer_email, amount: -p.credit_used, reason: "SPENT", ref: pid });
   if (p.coupon_code) await s.rpc("use_coupon", { c: p.coupon_code });
-  if (p.purpose === "PACKAGE") await fulfilPackage(p.ref_id);
+  if (p.purpose === "PACKAGE") await fulfilPackage(p.ref_id, pid);
+  if (p.purpose === "CONTENT") await fulfilContent(p.ref_id);
   if (p.purpose === "DOUBT") await fulfilDoubt(p.ref_id);
   if (p.purpose === "PRO") await extendPro(p.ref_id, p.payer_email, p.id);
 }
 
 const MONTH_MS = 30 * 86_400_000;
 
-async function fulfilPackage(subId: string) {
+async function fulfilPackage(subId: string, paymentId: string) {
   const s = db();
   const { data: sub } = await s.from("subscriptions").select("*, packages(*)").eq("id", subId).maybeSingle();
   if (!sub) return;
-  const pkg = sub.packages as { batch_id: string | null; title: string; teacher_email: string | null; teacher_name: string | null };
+  const pkg = sub.packages as { batch_id: string | null; title: string; teacher_email: string | null; teacher_name: string | null; billing?: string };
   const from = sub.current_period_end && new Date(sub.current_period_end) > new Date() ? new Date(sub.current_period_end) : new Date();
-  await s.from("subscriptions").update({ status: "ACTIVE", current_period_end: new Date(from.getTime() + MONTH_MS).toISOString() }).eq("id", subId);
+  // A batch-wise package covers the whole batch (up to 6 months); a monthly one, 30 days.
+  const to = new Date(from.getTime() + (pkg.billing === "BATCH" ? 6 * MONTH_MS : MONTH_MS));
+  await s.from("subscriptions").update({ status: "ACTIVE", current_period_end: to.toISOString() }).eq("id", subId);
+  // The money waits in escrow and reaches the tutor class by class.
+  await createLot({ paymentId, subscriptionId: subId, periodFrom: new Date(), periodTo: to });
   if (pkg.batch_id) await s.from("batch_students").upsert({ batch_id: pkg.batch_id, email: sub.student_email }, { onConflict: "batch_id,email", ignoreDuplicates: true });
   await rewardReferral(sub.payer_email);
   if (sub.payer_email !== sub.student_email) await rewardReferral(sub.student_email);
