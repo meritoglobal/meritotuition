@@ -1,7 +1,8 @@
-import { COMMISSION_TIERS } from "@mastermoshai/core";
 import { json } from "@/lib/api";
+import { getSettings } from "@/lib/admin/settings";
 
 /** GET → { tiers: [{ code, minStudents, rate, expertOnly, label }] } (public; for the "teach with us" screens). */
-export function GET() {
-  return json({ tiers: COMMISSION_TIERS.map((t) => ({ ...t, expertOnly: Boolean(t.expertOnly) })) });
+export async function GET() {
+  const { tiers } = await getSettings();
+  return json({ tiers: tiers.map((t) => ({ ...t, expertOnly: Boolean(t.expertOnly) })) });
 }

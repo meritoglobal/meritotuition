@@ -1,4 +1,5 @@
 import { TierLadder } from "@/components/TierLadder";
+import { getSettings } from "@/lib/admin/settings";
 import { getUser } from "@/lib/auth/session";
 import { getProfile } from "@/lib/batches";
 import { releaseDue, wallet } from "@/lib/biz/earnings";
@@ -55,7 +56,7 @@ export default async function Wallet() {
           {w0.tier(w.tier.tier.label[lang], w.tier.tier.rate)} · {w0.students(w.tier.students)}.{" "}
           {!nt ? w0.top : nt.needsExpert ? w0.nextExpert(nt.need, nt.tier.rate) : w0.next(nt.need, nt.tier.label[lang], nt.tier.rate)}
         </p>
-        <div className="mt-3"><TierLadder lang={lang} current={w.tier.tier.code} /></div>
+        <div className="mt-3"><TierLadder lang={lang} current={w.tier.tier.code} tiers={(await getSettings()).tiers} /></div>
         <p className="mt-2 text-xs text-ink-3">{w0.zeroCost}</p>
       </section>
 

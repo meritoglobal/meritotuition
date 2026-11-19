@@ -14,7 +14,7 @@ import { nextClass, studentBatches } from "@/lib/batches";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
 import { MoreTiles } from "@/components/growth/MoreTiles";
-import { CONTENT_PRICE } from "@/lib/biz/content-subs";
+import { contentPrice } from "@/lib/biz/content-subs";
 import { pendingFor } from "@/lib/biz/schedule";
 import { bizCopy } from "@/lib/copy-biz";
 import { unreadCount } from "@/lib/growth/chat";
@@ -59,7 +59,7 @@ export default async function StudentDashboard() {
       )}
       <Link href="/learn" className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-board p-4 text-white">
         <span className="text-2xl" aria-hidden>📘</span>
-        <span><b className="text-gold">{bz.learn.freeH}</b>{!store && <span className="block text-sm text-white/80">{bz.learn.subH(CONTENT_PRICE)}</span>}</span>
+        <span><b className="text-gold">{bz.learn.freeH}</b>{!store && <span className="block text-sm text-white/80">{bz.learn.subH((await contentPrice()))}</span>}</span>
         <span className="ml-auto text-sm font-semibold underline">{bz.nav.learn} →</span>
       </Link>
       <MoreTiles lang={lang} unread={unread} routine={routine} />

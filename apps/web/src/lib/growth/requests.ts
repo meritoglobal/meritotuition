@@ -73,7 +73,7 @@ async function prefsMap(ids: string[]): Promise<Map<string, Prefs>> {
 /** Tutors who teach this subject and whose filter takes this request. */
 export async function matchingTutors(r: Pick<TuitionRequest, "subject" | "level" | "mode" | "area" | "budget">, opts: { openOnly?: boolean } = {}) {
   const { data } = await db().from("teacher_profiles").select("*").contains("subjects", [r.subject]).limit(1000);
-  const profiles = (data ?? []) as TeacherProfile[];
+  const profiles = ((data ?? []) as (TeacherProfile & { hidden?: boolean })[]).filter((t) => !t.hidden);
   const prefs = await prefsMap(profiles.map((t) => t.user_id));
   return profiles.filter((t) => {
     const p = prefs.get(t.user_id)!;

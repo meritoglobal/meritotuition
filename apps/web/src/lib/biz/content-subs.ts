@@ -1,15 +1,13 @@
 import "server-only";
-import { SEGMENT_LABEL, SEGMENT_PRICE, type ContentSegment } from "@mastermoshai/core";
+import { SEGMENT_LABEL, type ContentSegment } from "@mastermoshai/core";
+import { getSettings } from "@/lib/admin/settings";
 import { db } from "@/lib/data";
 import { notify } from "@/lib/growth/notify";
 import { isUuid } from "@/lib/growth/people";
 import { startPayment } from "@/lib/growth/pay";
 
-/** ৳999 by default; CONTENT_PRICE overrides it. */
-export const CONTENT_PRICE = (() => {
-  const v = Number(process.env.CONTENT_PRICE);
-  return Number.isInteger(v) && v >= 100 ? v : SEGMENT_PRICE;
-})();
+/** ৳999 by default; the CONTENT_PRICE env var or /admin/settings overrides it. */
+export const contentPrice = async () => (await getSettings()).contentPrice;
 
 export interface ContentSub {
   id: string; segment: ContentSegment; student_email: string; payer_email: string; price: number;
@@ -49,19 +47,20 @@ export class SegmentLocked extends Error { constructor(public segment: ContentSe
 /** Start or restart a segment subscription for one student (the payer may be a parent). Only the student's own class. */
 export async function subscribeSegment(o: { segment: ContentSegment; payer: string; student: string; autoRenew: boolean; coupon?: string }) {
   const s = db();
+  const price = await contentPrice();
   const locked = await lockedSegment(o.student);
   if (locked && locked !== o.segment) throw new SegmentLocked(locked);
   const { data: existing } = await s.from("content_subscriptions").select("id,agreement_id").eq("segment", o.segment).eq("student_email", o.student).neq("status", "CANCELLED").maybeSingle();
   let id = existing?.id as string | undefined;
   if (!id) {
-    const { data, error } = await s.from("content_subscriptions").insert({ segment: o.segment, student_email: o.student, payer_email: o.payer, price: CONTENT_PRICE, auto_renew: o.autoRenew }).select("id").single();
+    const { data, error } = await s.from("content_subscriptions").insert({ segment: o.segment, student_email: o.student, payer_email: o.payer, price, auto_renew: o.autoRenew }).select("id").single();
     if (error) throw new Error("db");
     id = data.id as string;
   } else {
-    await s.from("content_subscriptions").update({ auto_renew: o.autoRenew, payer_email: o.payer, price: CONTENT_PRICE }).eq("id", id);
+    await s.from("content_subscriptions").update({ auto_renew: o.autoRenew, payer_email: o.payer, price }).eq("id", id);
   }
   return startPayment({
-    purpose: "CONTENT", refId: id, payer: o.payer, listPrice: CONTENT_PRICE, coupon: o.coupon,
+    purpose: "CONTENT", refId: id, payer: o.payer, listPrice: price, coupon: o.coupon,
     saveWallet: o.autoRenew && !existing?.agreement_id, agreementId: o.autoRenew ? existing?.agreement_id : null,
   });
 }
