@@ -110,8 +110,12 @@ describe("settlement", () => {
     const s = settleClass({ classShare: 500, outcome: "TEACHER_NO_SHOW", commissionRate: 0.2 });
     expect(s).toMatchObject({ teacherNet: 0, platform: 0, refund: 500 });
   });
-  it("late: half to teacher, half back", () => {
+  it("late with no complaint: tutor keeps it all", () => {
     const s = settleClass({ classShare: 500, outcome: "TEACHER_LATE_OR_SHORT", commissionRate: 0.2 });
+    expect(s).toMatchObject({ teacherNet: 400, platform: 100, refund: 0 });
+  });
+  it("late and the student complained: half back", () => {
+    const s = settleClass({ classShare: 500, outcome: "TEACHER_LATE_OR_SHORT", commissionRate: 0.2, flagRuling: 0.5 });
     expect(s).toMatchObject({ teacherGross: 250, teacherNet: 200, platform: 50, refund: 250 });
   });
   it("admin ruling overrides attendance", () => {

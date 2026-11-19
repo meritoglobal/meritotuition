@@ -9,8 +9,17 @@ import { contentFor } from "@/lib/content-catalog";
 import { toolsCopy } from "@/lib/copy-tools";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
-import { addStudent, removeStudent, setBatchActive } from "../../actions";
+import { addStudent, proposeChange, removeStudent, saveNote, setBatchActive, withdrawChange } from "../../actions";
+import { upcomingOccurrences, type Weekday } from "@mastermoshai/core";
+import { ScheduleChangeCard } from "@/components/ScheduleChangeCard";
+import { batchChanges } from "@/lib/biz/schedule";
+import { bizCopy } from "@/lib/copy-biz";
+import ScheduleForm from "./ScheduleForm";
 import AddStudent from "./AddStudent";
+import NoteForm from "./NoteForm";
+import { db } from "@/lib/data";
+import { growthCopy } from "@/lib/copy-growth";
+import { weekStart } from "@/lib/growth/people";
 
 export default async function BatchPage({ params }: { params: Promise<{ id: string }> }) {
   if (!DATA_LIVE) return null; // the layout shows the setup note
@@ -22,6 +31,14 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
   if (!b) notFound();
   const students = await batchStudents(b.id);
   const content = contentFor(b.subject, b.level);
+  const g = growthCopy(lang);
+  const changes = await batchChanges(b.id);
+  const rc = bizCopy(lang).routine;
+  const upcoming = b.schedule
+    .flatMap((x) => upcomingOccurrences({ days: [x.day as Weekday], startTime: x.time }, new Date(), 3).map((d) => ({ d, minutes: x.minutes || 60 })))
+    .sort((a, z) => a.d.getTime() - z.d.getTime()).slice(0, 8)
+    .map(({ d, minutes }) => ({ iso: d.toISOString(), label: L.dateTime(d, lang), minutes }));
+  const { data: notes } = await db().from("progress_notes").select("student_email,note,rating").eq("batch_id", b.id).eq("week_start", weekStart());
 
   return (
     <div>
@@ -50,9 +67,15 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
           {students.length === 0 ? <p className="mt-2 text-sm text-ink-3">{t.batch.noStudents}</p> : (
             <ul className="mt-2 divide-y divide-line text-sm">
               {students.map((s) => (
-                <li key={s.email} className="flex items-center justify-between gap-2 py-2">
-                  <span className="min-w-0 truncate">{s.name ? <><b>{s.name}</b> · </> : null}<span className="text-ink-2">{s.email}</span></span>
-                  <form action={removeStudent.bind(null, b.id, s.email)}><button className="text-redpen">{t.batch.remove}</button></form>
+                <li key={s.email} className="py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="min-w-0 truncate">{s.name ? <><b>{s.name}</b> · </> : null}<span className="text-ink-2">{s.email}</span></span>
+                    <span className="flex shrink-0 gap-3">
+                      <Link href={`/chat/new?to=${encodeURIComponent(s.email)}`} className="text-ink-2 underline">{g.chat.start}</Link>
+                      <form action={removeStudent.bind(null, b.id, s.email)}><button className="text-redpen">{t.batch.remove}</button></form>
+                    </span>
+                  </div>
+                  {(() => { const n = notes?.find((x) => x.student_email === s.email); return <NoteForm action={saveNote.bind(null, b.id, s.email)} note={n?.note} rating={n?.rating} />; })()}
                 </li>
               ))}
             </ul>
@@ -65,13 +88,26 @@ export default async function BatchPage({ params }: { params: Promise<{ id: stri
               {content.map((c) => (
                 <li key={c.id} className="flex items-center justify-between gap-2">
                   <span><span className="tag mr-1.5">{t.content.kinds[c.kind]}</span>{c.title[lang]}</span>
-                  <a href={c.href} target="_blank" rel="noreferrer" className="shrink-0 text-ink-2 underline">{t.batch.download}</a>
+                  <a href={`/teach/prep/${c.id}`} className="shrink-0 text-ink-2 underline">{lang === "en" ? "Open" : "খুলি"}</a>
                 </li>
               ))}
             </ul>
           )}
         </section>
-        <div className="-mt-6"><ClassTools classId={b.class_id} role="teacher" /></div>
+        <div className="-mt-6">
+          <ClassTools classId={b.class_id} role="teacher" />
+          <ScheduleForm action={proposeChange.bind(null, b.id)} schedule={b.schedule} upcoming={upcoming} />
+          {changes.length > 0 && (
+            <div className="mt-4 grid gap-2">
+              <h3 className="text-sm font-semibold">{rc.list}</h3>
+              {changes.map((ch) => (
+                <ScheduleChangeCard key={ch.id} ch={ch} lang={lang}>
+                  {ch.status === "PENDING" && <form action={withdrawChange.bind(null, b.id, ch.id)} className="mt-2"><button className="text-sm text-redpen underline">{rc.withdraw}</button></form>}
+                </ScheduleChangeCard>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

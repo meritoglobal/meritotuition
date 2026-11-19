@@ -11,7 +11,7 @@ type Role = "teacher" | "student";
 type Tab = "files" | "recordings" | "exams";
 
 interface Material { id: string; title: string; size: number | null; mime: string | null; at: string; url: string | null }
-interface Recording { name: string; at: string; size: number | null; url: string | null }
+interface Recording { name: string; at: string; size: number | null; url: string | null; download?: string | null; expiresAt?: string | null }
 export interface ExamSummary {
   id: string; title: string; durationMin: number | null; maxMarks: number; published: boolean; at: string; count: number; kinds: string[];
   submitted?: number; toCheck?: number; mine?: { checked: boolean; total: number } | null;
@@ -133,10 +133,17 @@ function Recordings({ classId, role }: { classId: string; role: Role }) {
     <div className="space-y-4">
       {mine}
       {role === "student" && <p className="text-sm text-ink-2">{t.rec.note}</p>}
+      {data.recordings.some((r) => r.expiresAt) && <p className="text-sm text-ink-2">{t.rec.window72}</p>}
       {data.recordings.map((r) => (
         <figure key={r.name}>
-          {r.url && <video src={r.url} controls preload="metadata" className="aspect-video w-full rounded-lg bg-black" />}
-          <figcaption className="mt-1 text-xs text-ink-3">{L.dateTime(new Date(r.at), lang)} · {fmtSize(r.size, lang)}</figcaption>
+          {r.url && <video src={r.url} controls preload="metadata" playsInline className="aspect-video w-full rounded-lg bg-black" />}
+          <figcaption className="mt-1 flex flex-wrap items-center justify-between gap-2 text-xs text-ink-3">
+            <span>
+              {L.dateTime(new Date(r.at), lang)} · {fmtSize(r.size, lang)}
+              {r.expiresAt && <> · <span className="text-redpen">{t.rec.left(Math.floor((Date.parse(r.expiresAt) - Date.now()) / 3600e3))}</span></>}
+            </span>
+            {r.download && <a href={r.download} className="btn-ghost px-3! py-1! text-sm">{t.rec.download}</a>}
+          </figcaption>
         </figure>
       ))}
     </div>

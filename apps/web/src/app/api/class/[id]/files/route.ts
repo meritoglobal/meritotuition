@@ -1,6 +1,7 @@
 import { classAccess, denied } from "@/lib/class-access";
 import { fail, json } from "@/lib/api";
 import { BUCKET, DATA_LIVE, db, safeClassId } from "@/lib/data";
+import { R2_LIVE, listRecordings } from "@/lib/r2";
 
 export const dynamic = "force-dynamic";
 const HOUR = 3600;
@@ -10,7 +11,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   const id = safeClassId((await ctx.params).id);
   const v = await classAccess(req, id);
   if (denied(v)) return fail(v.error, v.error === "login" ? 401 : 403);
-  if (!DATA_LIVE) return fail("data-off", 503);
+  if (!DATA_LIVE && !R2_LIVE) return fail("data-off", 503);
+  // Recordings: kept on R2 for 72 hours (tutor's device uploads them).
+  const r2 = R2_LIVE ? await listRecordings(id).catch(() => []) : [];
+  const fromR2 = r2.map((r) => ({ name: r.key.split("/").pop()!, at: r.at, size: r.size, url: r.url, download: r.download, expiresAt: r.expiresAt }));
+  if (!DATA_LIVE) return json({ materials: [], recordings: fromR2 });
   const s = db();
   const { data: rows, error } = await s.from("class_materials").select("id,title,path,size_bytes,mime,created_at").eq("class_id", id).order("created_at", { ascending: false });
   if (error) return fail("db", 500);
@@ -21,7 +26,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   const url = (p: string) => signed?.find((x) => x.path === p)?.signedUrl ?? null;
   return json({
     materials: (rows ?? []).map((r) => ({ id: r.id, title: r.title, size: r.size_bytes, mime: r.mime, at: r.created_at, url: url(r.path) })),
-    recordings: recordings.map((f) => ({ name: f.name, at: f.created_at, size: (f.metadata as { size?: number } | null)?.size ?? null, url: url(`recordings/${id}/${f.name}`) })),
+    recordings: [
+      ...fromR2,
+      ...recordings.map((f) => ({ name: f.name, at: f.created_at, size: (f.metadata as { size?: number } | null)?.size ?? null, url: url(`recordings/${id}/${f.name}`), download: null, expiresAt: null })),
+    ],
   });
 }
 

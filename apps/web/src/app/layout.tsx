@@ -58,13 +58,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/teachers/online" className="hover:underline underline-offset-4">{c.nav.online}</Link>
               <Link href="/teachers/home" className="hover:underline underline-offset-4">{c.nav.home}</Link>
               <Link href="/videos" className="hover:underline underline-offset-4">{c.nav.free}</Link>
-              <Link href="/teach" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
+              <Link href="/leaderboard" className="hover:underline underline-offset-4">{lang === "en" ? "Model tests" : "মডেল টেস্ট"}</Link>
+              <Link href="/for-tutors" className="hover:underline underline-offset-4">{c.nav.teach}</Link>
             </div>
             <div className="ml-auto flex items-center gap-3 whitespace-nowrap sm:gap-4">
               <LangToggle />
               {user ? (
                 <>
                   <Link href="/dashboard/student" className="hidden text-[15px] font-semibold sm:block">{c.nav.mine}</Link>
+                  <Link href="/chat" className="hidden text-[15px] font-medium text-ink-2 hover:text-ink lg:block">{lang === "en" ? "Messages" : "মেসেজ"}</Link>
                   <form action={signOut} className="hidden sm:block">
                     <button className="text-[15px] font-medium text-ink-2 hover:text-ink" title={user.email ?? user.phone}>{c.nav.logout}</button>
                   </form>

@@ -1,5 +1,7 @@
 "use client";
-import { RoomEvent, Track, type RemoteTrack, type Room } from "livekit-client";
+import { RoomEvent, Track, type Participant, type Room } from "livekit-client";
+
+type AnyTrack = { mediaStreamTrack?: MediaStreamTrack } | undefined;
 
 /**
  * Records the class on the viewer's own device: no server, no storage bill.
@@ -16,6 +18,9 @@ const DB = "mm-rec";
 const W = 960, H = 540, FPS = 15;
 const MIME = ["video/mp4;codecs=avc1,mp4a.40.2", "video/mp4", "video/webm;codecs=vp8,opus", "video/webm"];
 const KEEP_DAYS = 7;
+
+/** The best format this browser can record: MP4 where possible (plays everywhere), else WebM. */
+export const pickMime = () => (typeof MediaRecorder === "undefined" ? "" : MIME.find((t) => MediaRecorder.isTypeSupported(t)) ?? "");
 
 export interface RecMeta { id: string; classId: string; title: string; mime: string; startedAt: number; endedAt?: number; size: number; saved?: boolean }
 
@@ -111,7 +116,13 @@ export class LocalRecorder {
   private writes: Promise<unknown> = Promise.resolve();
   private onSub = () => this.syncAudio();
 
-  constructor(private room: Room, classId: string, title: string) {
+  private persist: boolean;
+  private onData?: (b: Blob) => void;
+
+  /** persist: keep pieces on this device (IndexedDB). onData: each ~5 s piece, e.g. to upload it. */
+  constructor(private room: Room, classId: string, title: string, opts: { persist?: boolean; onData?: (b: Blob) => void } = {}) {
+    this.persist = opts.persist ?? true;
+    this.onData = opts.onData;
     this.canvas.width = W;
     this.canvas.height = H;
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -120,7 +131,7 @@ export class LocalRecorder {
     // A silent node keeps the audio track alive before anyone speaks.
     const g = this.audio.createGain(); g.gain.value = 0;
     const o = this.audio.createOscillator(); o.connect(g); g.connect(this.dest); o.start();
-    const mime = MIME.find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
+    const mime = pickMime();
     this.meta = { id: `${classId}-${Date.now().toString(36)}`, classId, title, mime: mime || "video/webm", startedAt: Date.now(), size: 0 };
   }
 
@@ -130,7 +141,8 @@ export class LocalRecorder {
     const wake = () => { void this.audio.resume().catch(() => {}); };
     document.addEventListener("pointerdown", wake, { once: true });
 
-    this.room.on(RoomEvent.TrackSubscribed, this.onSub).on(RoomEvent.TrackUnsubscribed, this.onSub).on(RoomEvent.ParticipantDisconnected, this.onSub);
+    this.room.on(RoomEvent.TrackSubscribed, this.onSub).on(RoomEvent.TrackUnsubscribed, this.onSub).on(RoomEvent.ParticipantDisconnected, this.onSub)
+      .on(RoomEvent.LocalTrackPublished, this.onSub).on(RoomEvent.LocalTrackUnpublished, this.onSub);
     this.syncAudio();
     this.timer = setInterval(() => this.draw(), 1000 / FPS);
     this.draw();
@@ -144,13 +156,15 @@ export class LocalRecorder {
       if (!e.data.size) return;
       const seq = this.seq++;
       this.meta.size += e.data.size;
+      this.onData?.(e.data);
+      if (!this.persist) return;
       const meta = { ...this.meta };
       this.writes = this.writes.then(() => tx(["recs", "chunks"], "readwrite", async (t) => {
         t.objectStore("chunks").put({ id: meta.id, seq, blob: e.data });
         t.objectStore("recs").put(meta);
       })).catch(() => {});
     };
-    await putMeta(this.meta);
+    if (this.persist) await putMeta(this.meta);
     this.rec.start(5000);
   }
 
@@ -162,43 +176,49 @@ export class LocalRecorder {
       await new Promise<void>((res) => { r.onstop = () => res(); r.stop(); });
     }
     if (this.timer) clearInterval(this.timer);
-    this.room.off(RoomEvent.TrackSubscribed, this.onSub).off(RoomEvent.TrackUnsubscribed, this.onSub).off(RoomEvent.ParticipantDisconnected, this.onSub);
+    this.room.off(RoomEvent.TrackSubscribed, this.onSub).off(RoomEvent.TrackUnsubscribed, this.onSub).off(RoomEvent.ParticipantDisconnected, this.onSub)
+      .off(RoomEvent.LocalTrackPublished, this.onSub).off(RoomEvent.LocalTrackUnpublished, this.onSub);
     for (const v of this.videos.values()) v.srcObject = null;
     this.videos.clear();
     void this.audio.close().catch(() => {});
     await this.writes;
     this.meta.endedAt = Date.now();
-    await putMeta(this.meta).catch(() => {});
+    if (this.persist) await putMeta(this.meta).catch(() => {});
     return this.meta.size > 0 ? this.meta : null;
   }
 
   // Everyone's microphone (and screen-share sound) mixed into one track.
   private syncAudio() {
     const live = new Set<string>();
-    for (const p of this.room.remoteParticipants.values()) {
+    const people: Participant[] = [...this.room.remoteParticipants.values()];
+    if (this.localIsTeacher()) people.push(this.room.localParticipant); // the tutor's own voice
+    for (const p of people) {
       for (const pub of p.audioTrackPublications.values()) {
-        const t = pub.track as RemoteTrack | undefined;
-        if (!t?.mediaStreamTrack || !pub.trackSid) continue;
-        live.add(pub.trackSid);
-        if (this.sources.has(pub.trackSid)) continue;
-        const s = this.audio.createMediaStreamSource(new MediaStream([t.mediaStreamTrack]));
+        const mst = (pub.track as AnyTrack)?.mediaStreamTrack;
+        if (!mst) continue;
+        live.add(mst.id);
+        if (this.sources.has(mst.id)) continue;
+        const s = this.audio.createMediaStreamSource(new MediaStream([mst]));
         s.connect(this.dest);
-        this.sources.set(pub.trackSid, s);
+        this.sources.set(mst.id, s);
       }
     }
-    for (const [sid, s] of this.sources) if (!live.has(sid)) { s.disconnect(); this.sources.delete(sid); }
+    for (const [k, s] of this.sources) if (!live.has(k)) { s.disconnect(); this.sources.delete(k); }
   }
 
-  private video(t: RemoteTrack | undefined) {
-    if (!t?.mediaStreamTrack || !t.sid) return null;
-    let v = this.videos.get(t.sid);
+  private localIsTeacher() { return this.room.localParticipant?.attributes?.role === "teacher"; }
+
+  private video(t: AnyTrack) {
+    const mst = t?.mediaStreamTrack;
+    if (!mst || mst.readyState === "ended") return null;
+    let v = this.videos.get(mst.id);
     if (!v) {
       v = document.createElement("video");
       v.muted = true;
       v.playsInline = true;
-      v.srcObject = new MediaStream([t.mediaStreamTrack]);
+      v.srcObject = new MediaStream([mst]);
       void v.play().catch(() => {});
-      this.videos.set(t.sid, v);
+      this.videos.set(mst.id, v);
     }
     return v.videoWidth ? v : null;
   }
@@ -207,10 +227,13 @@ export class LocalRecorder {
     const ctx = this.canvas.getContext("2d")!;
     ctx.fillStyle = "#0f231d";
     ctx.fillRect(0, 0, W, H);
-    const teacher = [...this.room.remoteParticipants.values()].find((p) => p.attributes?.role === "teacher");
+    const teacher: Participant | undefined = this.localIsTeacher()
+      ? this.room.localParticipant
+      : [...this.room.remoteParticipants.values()].find((p) => p.attributes?.role === "teacher");
     if (!teacher) return;
-    const screen = this.video(teacher.getTrackPublication(Track.Source.ScreenShare)?.track as RemoteTrack | undefined);
-    const cam = this.video(teacher.getTrackPublication(Track.Source.Camera)?.track as RemoteTrack | undefined);
+    const screen = this.video(teacher.getTrackPublication(Track.Source.ScreenShare)?.track as AnyTrack);
+    const camPub = teacher.getTrackPublication(Track.Source.Camera);
+    const cam = camPub?.isMuted ? null : this.video(camPub?.track as AnyTrack);
     const contain = (v: HTMLVideoElement, x: number, y: number, w: number, h: number) => {
       const k = Math.min(w / v.videoWidth, h / v.videoHeight);
       const dw = v.videoWidth * k, dh = v.videoHeight * k;

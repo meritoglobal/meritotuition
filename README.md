@@ -38,6 +38,16 @@ Set these in Netlify (Site configuration, Environment variables), then redeploy:
 
 Without them `/class/[id]` runs the simulated demo. Attendance webhook: `/api/livekit/webhook`.
 
+## Class recordings (Cloudflare R2, 72 hours)
+
+The tutor's browser records the class (board + camera + everyone's audio) and uploads it to R2
+in parts while the class runs; students watch or download it from the class's Recordings tab for
+72 hours, then an R2 lifecycle rule deletes it. No server-side recording (LiveKit egress) unless
+`SERVER_RECORDING=on`. Setup steps: `docs/r2-recordings.md`.
+
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`
+- Optional `NEXT_PUBLIC_STUDENT_DEVICE_REC=on`: students also record on their own device.
+
 ## Money rules (packages/core)
 
 - Student pays the month up front; it sits in `escrow`.
