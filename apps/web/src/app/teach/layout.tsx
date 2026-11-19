@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inStoreApp } from "@/lib/store-server";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth/session";
 import { toolsCopy } from "@/lib/copy-tools";
@@ -15,6 +16,7 @@ export default async function TeachLayout({ children }: { children: React.ReactN
   const user = await getUser();
   if (!user) redirect("/login?next=/teach");
   const lang = await getLang();
+  const store = await inStoreApp();
   const t = toolsCopy(lang).teach;
   const g = growthCopy(lang).nav;
   const mk = marketCopy(lang).nav;
@@ -36,7 +38,7 @@ export default async function TeachLayout({ children }: { children: React.ReactN
     <div className="mx-auto max-w-6xl px-4 py-8">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-3">
         <span className="eyebrow">{t.panel}</span>
-        {nav.map(([href, label]) => (
+        {nav.filter(([href]) => !(store && href === "/teach/pro")).map(([href, label]) => (
           <Link key={href} href={href} className="text-sm font-semibold text-ink-2 hover:text-ink">{label}</Link>
         ))}
       </div>

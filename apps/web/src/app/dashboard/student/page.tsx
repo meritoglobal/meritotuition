@@ -1,4 +1,5 @@
 import { DeviceRecordings } from "@/components/class/DeviceRecording";
+import { inStoreApp } from "@/lib/store-server";
 import { copy } from "@/lib/copy";
 import { L } from "@/lib/l10n";
 import { getLang } from "@/lib/lang";
@@ -32,6 +33,7 @@ const TONE: Record<string, string> = {
 
 export default async function StudentDashboard() {
   const lang = await getLang();
+  const store = await inStoreApp();
   const c = copy(lang).student;
   const plan = demoStudentPlan();
   const fmt = (d: Date) => L.dateTime(d, lang);
@@ -57,7 +59,7 @@ export default async function StudentDashboard() {
       )}
       <Link href="/learn" className="mt-6 flex flex-wrap items-center gap-3 rounded-xl bg-board p-4 text-white">
         <span className="text-2xl" aria-hidden>📘</span>
-        <span><b className="text-gold">{bz.learn.freeH}</b><span className="block text-sm text-white/80">{bz.learn.subH(CONTENT_PRICE)}</span></span>
+        <span><b className="text-gold">{bz.learn.freeH}</b>{!store && <span className="block text-sm text-white/80">{bz.learn.subH(CONTENT_PRICE)}</span>}</span>
         <span className="ml-auto text-sm font-semibold underline">{bz.nav.learn} →</span>
       </Link>
       <MoreTiles lang={lang} unread={unread} routine={routine} />
@@ -123,6 +125,7 @@ export default async function StudentDashboard() {
         <button className="btn-ghost">{c.renew}</button>
         <button className="btn-ghost text-redpen!">{c.stop}</button>
       </div>
+      <p className="mt-10 text-sm"><Link href="/account/delete" className="text-ink-3 underline">{lang === "en" ? "Delete my account" : "অ্যাকাউন্ট মুছে ফেলি"}</Link></p>
     </div>
   );
 }

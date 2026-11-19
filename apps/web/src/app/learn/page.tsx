@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inStoreApp } from "@/lib/store-server";
 import { CLASS_SEGMENTS, CLASS_SEGMENT_LABEL, GROUP_LABEL, SEGMENT_LABEL, isSegment, packClass, packGroup, packsOfClass, segmentsOfLevel, type ClassLevel, type ContentSegment } from "@mastermoshai/core";
 import { Flash } from "@/components/growth/Off";
 import { accessContext, catalog } from "@/lib/biz/access";
@@ -16,6 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function Learn({ searchParams }: { searchParams: Promise<{ pack?: string; paid?: string; why?: string; renew?: string }> }) {
   const m = await mustMe("/learn");
   const lang = await getLang();
+  const store = await inStoreApp();
   const c = bizCopy(lang).learn;
   const kinds = toolsCopy(lang).teach.content.kinds;
   const sp = await searchParams;
@@ -48,13 +50,13 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
             ? <p className="mt-3 text-sm">{c.via.teacher(null)}: <b>{L.subjects(freeSubjects, lang)}</b></p>
             : <Link href="/teachers" className="btn-gold mt-4 inline-flex px-4! py-2!">{c.freeHow}</Link>}
         </section>
-        <section className="card p-5">
+        {!store && <section className="card p-5">
           <p className="font-semibold">{c.subH(CONTENT_PRICE)}</p>
           <p className="mt-2 text-sm text-ink-2">{c.subBody}</p>
           {segOpen ? <p className="mt-3 text-sm font-semibold text-leaf">{ctx.staff ? c.via.staff : c.already}</p>
             : otherLocked ? <p className="mt-3 rounded-lg bg-mist p-3 text-sm">{c.lockedTo(SEGMENT_LABEL[locked!][lang])} <Link href={`/learn?pack=${locked}`} className="font-semibold underline">{SEGMENT_LABEL[locked!][lang]}</Link></p>
             : <Link href={`/learn/buy/${pack}`} className="btn mt-4 inline-flex border-[#e2136e] bg-[#e2136e] px-4! py-2! text-white">{c.buy(CONTENT_PRICE)} · {SEGMENT_LABEL[pack][lang]}</Link>}
-        </section>
+        </section>}
       </div>
 
       {mine.length > 0 && (
@@ -66,10 +68,10 @@ export default async function Learn({ searchParams }: { searchParams: Promise<{ 
                 <div className="flex flex-wrap items-center gap-2">
                   <b>{SEGMENT_LABEL[s.segment][lang]}</b>
                   <span className={`tag ${s.status === "ACTIVE" ? "bg-home text-home-ink" : s.status === "PAST_DUE" ? "bg-redpen-tint text-redpen" : "bg-mist"}`}>{c.status[s.status]}</span>
-                  <span className="text-sm text-ink-2">{L.taka(s.price, lang)}{lang === "bn" ? "/মাস" : "/month"}{s.student_email !== m.email ? ` · ${s.student_email}` : ""}</span>
+                  <span className="text-sm text-ink-2">{store ? "" : `${L.taka(s.price, lang)}${lang === "bn" ? "/মাস" : "/month"}`}{s.student_email !== m.email ? ` · ${s.student_email}` : ""}</span>
                 </div>
                 {s.current_period_end && s.status !== "CANCELLED" && <div className="text-sm text-ink-3">{c.until(L.date(new Date(s.current_period_end), lang))}</div>}
-                {s.status !== "CANCELLED" && s.payer_email === m.email && (
+                {!store && s.status !== "CANCELLED" && s.payer_email === m.email && (
                   <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
                     <form action={renewSegment.bind(null, s.id)}><button className={s.status === "PAST_DUE" || sp.renew === s.id ? "btn-gold px-3! py-1.5!" : "btn-ghost px-3! py-1.5!"}>{c.renew}</button></form>
                     <form action={autoSegment.bind(null, s.id, !s.auto_renew)}>

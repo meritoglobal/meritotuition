@@ -1,3 +1,4 @@
+import { getLang } from "@/lib/lang";
 import { DATA_LIVE } from "@/lib/data";
 import { getUser } from "@/lib/auth/session";
 import { getProfile } from "@/lib/batches";
@@ -14,6 +15,7 @@ export default async function ProfilePage() {
       <ProfileForm initial={profile} />
       {/* The video needs a saved profile row first. */}
       {profile && <IntroVideoForm userId={u.id} initial={await myVideo(u.id)} uploads={UPLOADS_ON} maxMb={MAX_VIDEO_MB} />}
+      <p className="mt-10 text-sm"><a href="/account/delete" className="text-redpen underline">{(await getLang()) === "en" ? "Delete my account" : "অ্যাকাউন্ট মুছে ফেলি"}</a></p>
     </>
   );
 }

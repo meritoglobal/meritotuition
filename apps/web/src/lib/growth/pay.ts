@@ -1,4 +1,6 @@
 import "server-only";
+import { DIGITAL_PURPOSES } from "@/lib/store";
+import { inStoreApp } from "@/lib/store-server";
 import { extendPro } from "./pro";
 import { DATA_LIVE, db } from "@/lib/data";
 import { BKASH_LIVE, createPayment, execute, type BkashMode } from "./bkash";
@@ -34,6 +36,7 @@ export async function startPayment(o: {
   saveWallet?: boolean; agreementId?: string | null;
 }): Promise<{ url: string; paymentId: string }> {
   if (!DATA_LIVE) throw new Error("data-off");
+  if ((DIGITAL_PURPOSES as readonly string[]).includes(o.purpose) && (await inStoreApp())) throw new Error("store-app");
   const q = await quote(o.payer, o.listPrice, o.coupon, o.useCredit ?? true);
   const mode: BkashMode = o.agreementId ? "0001" : o.saveWallet ? "0000" : "0011";
   const { data: row, error } = await db().from("payments").insert({

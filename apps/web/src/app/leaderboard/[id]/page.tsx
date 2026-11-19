@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inStoreApp } from "@/lib/store-server";
 import { notFound } from "next/navigation";
 import { Flash } from "@/components/growth/Off";
 import { growthCopy } from "@/lib/copy-growth";
@@ -20,6 +21,7 @@ export default async function TestPage({ params, searchParams }: { params: Promi
   const t = await getTest(id);
   if (!t || !t.published) notFound();
   const lang = await getLang();
+  const store = await inStoreApp();
   const g = growthCopy(lang);
   const c = g.test;
   const m = await me();
@@ -63,7 +65,7 @@ export default async function TestPage({ params, searchParams }: { params: Promi
   } else if (!m) {
     body = <Link href={`/login?next=/leaderboard/${t.id}`} className="btn-gold">{c.login}</Link>;
   } else if (!allowed) {
-    body = PAY_ON ? <form action={buyTest.bind(null, t.id)}><button className="btn-gold">{c.buy(t.price)}</button></form> : <p className="text-sm text-redpen">{g.pkg.payOff}</p>;
+    body = store ? <p className="rounded-lg bg-mist p-4 text-sm">{lang === "bn" ? "এই টেস্টটা অ্যাপে দেওয়া যাচ্ছে না। ফ্রি টেস্টগুলো দিতে পারো।" : "This test isn't available in the app. The free tests are open to you."}</p> : PAY_ON ? <form action={buyTest.bind(null, t.id)}><button className="btn-gold">{c.buy(t.price)}</button></form> : <p className="text-sm text-redpen">{g.pkg.payOff}</p>;
   } else {
     body = <StartForm action={startTest.bind(null, t.id)} name={m.name} />;
   }
