@@ -1,0 +1,37 @@
+import Constants from "expo-constants";
+import { router } from "expo-router";
+
+export const SITE = ((Constants.expoConfig?.extra as { siteUrl?: string } | undefined)?.siteUrl ?? "https://mastermoshai.netlify.app").replace(/\/$/, "");
+
+/**
+ * Open a page of the website inside the app, under a native header.
+ * Used for the parts that live on the server (login, booking, live class, sheets),
+ * so the app and the site never drift apart.
+ */
+export function openPage(path: string, title: string) {
+  router.push({ pathname: "/web", params: { path, title } });
+}
+
+/**
+ * Some features (tuition requests, wallet, content subscriptions, routine approvals) live on the server
+ * once it ships them. Until each feature's API answers on the site, the app keeps its own demo screens.
+ */
+type Feature = "requests" | "wallet" | "pro" | "verify";
+const PROBES: Record<Feature, string> = { requests: "/api/requests/prefs", wallet: "/api/wallet", pro: "/api/pro", verify: "/api/tutor/verify" };
+const live: Record<Feature, boolean> = { requests: false, wallet: false, pro: false, verify: false };
+for (const f of Object.keys(PROBES) as Feature[]) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 6000);
+  fetch(`${SITE}${PROBES[f]}`, { signal: ctl.signal })
+    .then((r) => {
+      live[f] = r.status !== 404 && !(r.headers.get("content-type") ?? "").includes("text/html");
+    })
+    .catch(() => {})
+    .finally(() => clearTimeout(timer));
+}
+
+/** Open the server page when the feature is live there, otherwise the in-app demo screen. */
+export function openLive(path: string, title: string, demo: string, feature: Feature = "requests") {
+  if (live[feature]) openPage(path, title);
+  else router.push(demo as never);
+}
