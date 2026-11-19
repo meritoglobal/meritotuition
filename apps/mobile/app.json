@@ -25,32 +25,35 @@
         "CAMERA",
         "RECORD_AUDIO",
         "MODIFY_AUDIO_SETTINGS",
-        "ACCESS_FINE_LOCATION",
         "POST_NOTIFICATIONS"
       ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/splash-mark.png",
-        "backgroundColor": "#ff6b4a"
+        "backgroundColor": "#ffd84d"
       },
       "versionCode": 1,
       "blockedPermissions": [
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.SYSTEM_ALERT_WINDOW"
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
       ]
     },
     "ios": {
       "bundleIdentifier": "com.mastermoshai.app",
       "buildNumber": "1",
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
         "NSCameraUsageDescription": "লাইভ ক্লাসে টিচার আর সহপাঠীরা যেন তোমাকে দেখতে পায়, তাই ক্যামেরা লাগবে।",
         "NSMicrophoneUsageDescription": "লাইভ ক্লাসে প্রশ্ন করতে আর উত্তর দিতে মাইক লাগবে।",
-        "NSLocationWhenInUseUsageDescription": "তোমার কাছের বাসার টিউটর খুঁজে দিতে লোকেশন লাগবে।",
-        "ITSAppUsesNonExemptEncryption": false,
         "UIBackgroundModes": [
           "audio"
-        ]
+        ],
+        "CFBundleAllowMixedLocalizations": true
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "experiments": {
