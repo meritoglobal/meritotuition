@@ -2,7 +2,7 @@ import { CLASS_SEGMENTS, CLASS_SEGMENT_LABEL, CONTENT_SEGMENTS, GROUPS, GROUP_LA
 import { fail, json } from "@/lib/api";
 import { DATA_LIVE } from "@/lib/data";
 import { accessContext, catalog } from "@/lib/biz/access";
-import { CONTENT_PRICE, lockedSegment, myContentSubs } from "@/lib/biz/content-subs";
+import { contentPrice, lockedSegment, myContentSubs } from "@/lib/biz/content-subs";
 import { me } from "@/lib/growth/people";
 import { PAY_DEMO, PAY_ON } from "@/lib/growth/pay";
 
@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   const q = new URL(req.url).searchParams;
   const ctx = await accessContext(m);
   return json({
-    price: CONTENT_PRICE,
+    price: (await contentPrice()),
     classes: CLASS_SEGMENTS.map((code) => ({ code, label: CLASS_SEGMENT_LABEL[code] })),
     groups: GROUPS.map((code) => ({ code, label: GROUP_LABEL[code] })),
     packs: CONTENT_SEGMENTS.map((code) => ({ code, class: packClass(code), group: packGroup(code), label: SEGMENT_LABEL[code] })),

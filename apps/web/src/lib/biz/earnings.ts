@@ -1,4 +1,5 @@
 import "server-only";
+import { getSettings } from "@/lib/admin/settings";
 import { lateMinutes, nextRelease, nextTier, tierFor, unreleased, validSchedule, type Tier } from "@mastermoshai/core";
 import { DATA_LIVE, db } from "@/lib/data";
 import { notify } from "@/lib/growth/notify";
@@ -53,7 +54,8 @@ export async function tierOf(teacherId: string): Promise<TierInfo> {
   ]);
   const students = new Set((lots ?? []).map((l) => l.student_email)).size;
   const expert = Boolean(prof?.expert);
-  return { tier: tierFor(students, expert), students, expert, next: nextTier(students, expert) };
+  const { tiers } = await getSettings();
+  return { tier: tierFor(students, expert, tiers), students, expert, next: nextTier(students, expert, tiers) };
 }
 
 interface LotRow { id: string; subscription_id: string; teacher_id: string; gross: number; classes: number; released: number; starts_at: string; ends_at: string; created_at: string }

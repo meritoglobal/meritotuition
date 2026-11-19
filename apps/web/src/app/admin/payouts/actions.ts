@@ -1,34 +1,38 @@
 "use server";
 import { revalidatePath } from "next/cache";
-import { DATA_LIVE, db } from "@/lib/data";
+import { db } from "@/lib/data";
 import { releaseSession } from "@/lib/biz/earnings";
 import { adminSettle } from "@/lib/biz/payout";
 import { refundHalf, rejectComplaint } from "@/lib/biz/complaints";
-import { me } from "@/lib/growth/people";
+import { adminOrNull, audit } from "@/lib/admin/core";
 
-async function admin() {
-  const m = await me();
-  return m?.admin && DATA_LIVE ? m : null;
-}
+const admin = adminOrNull;
 
 export async function settle(id: string, ok: boolean, f: FormData) {
-  if (!(await admin())) return;
-  await adminSettle(id, ok, String(f.get("trx") ?? "").trim().slice(0, 40));
-  revalidatePath("/admin/payouts");
+  const m = await admin();
+  if (!m) return;
+  const trx = String(f.get("trx") ?? "").trim().slice(0, 40);
+  await adminSettle(id, ok, trx);
+  await audit(m.email, ok ? "WITHDRAWAL_PAID" : "WITHDRAWAL_FAILED", id, { trx });
+  revalidatePath("/admin", "layout");
 }
 
 export async function forceRelease(sessionId: string) {
-  if (!(await admin())) return;
+  const m = await admin();
+  if (!m) return;
+  await audit(m.email, "SESSION_FORCE_RELEASE", sessionId);
   await db().from("class_sessions").update({ status: "OPEN" }).eq("id", sessionId).eq("status", "EMPTY");
   await releaseSession(sessionId, true);
-  revalidatePath("/admin/payouts");
+  revalidatePath("/admin", "layout");
 }
 
 export async function setExpert(f: FormData) {
-  if (!(await admin())) return;
+  const m = await admin();
+  if (!m) return;
   const email = String(f.get("email") ?? "").trim().toLowerCase();
+  await audit(m.email, f.get("on") === "1" ? "TUTOR_EXPERT_ON" : "TUTOR_EXPERT_OFF", email);
   await db().from("teacher_profiles").update({ expert: f.get("on") === "1" }).eq("email", email);
-  revalidatePath("/admin/payouts");
+  revalidatePath("/admin", "layout");
 }
 
 export async function decideComplaint(id: string, half: boolean, f: FormData) {
@@ -37,5 +41,6 @@ export async function decideComplaint(id: string, half: boolean, f: FormData) {
   const note = String(f.get("note") ?? "").trim().slice(0, 300);
   if (half) await refundHalf(id, note || `admin ${m.email}`);
   else await rejectComplaint(id, note);
-  revalidatePath("/admin/payouts");
+  await audit(m.email, half ? "COMPLAINT_REFUND_HALF" : "COMPLAINT_REJECT", id, { note });
+  revalidatePath("/admin", "layout");
 }

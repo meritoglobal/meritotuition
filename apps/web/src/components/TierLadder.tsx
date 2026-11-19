@@ -3,11 +3,11 @@ import { bizCopy } from "@/lib/copy-biz";
 import { L } from "@/lib/l10n";
 
 /** The commission ladder: 20% for new tutors down to 5% for experts. */
-export function TierLadder({ lang, current, dark = false }: { lang: Lang; current?: Tier["code"]; dark?: boolean }) {
+export function TierLadder({ lang, current, dark = false, tiers = COMMISSION_TIERS }: { lang: Lang; current?: Tier["code"]; dark?: boolean; tiers?: Tier[] }) {
   const c = bizCopy(lang).tiers;
   return (
     <ol className="grid gap-2 sm:grid-cols-5">
-      {COMMISSION_TIERS.map((t) => {
+      {tiers.map((t) => {
         const me = t.code === current;
         return (
           <li key={t.code} className={`rounded-xl border p-3 ${me ? "border-gold bg-gold/15" : dark ? "border-white/20" : "border-line bg-paper"}`}>

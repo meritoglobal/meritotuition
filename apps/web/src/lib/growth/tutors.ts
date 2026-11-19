@@ -16,7 +16,7 @@ export interface PublicTutor {
 export async function publicTutor(id: string): Promise<PublicTutor | null> {
   if (!/^[\w:-]{1,80}$/.test(id)) return null;
   const { data } = await db().from("teacher_profiles").select("*").eq("user_id", id).maybeSingle();
-  if (!data) return null;
+  if (!data || (data as { hidden?: boolean }).hidden) return null; // hidden from the admin panel
   const t = data as TeacherProfile & { intro_video_kind: "YOUTUBE" | "FILE" | null; intro_video_ref: string | null; intro_video_vertical: boolean | null };
   return {
     id: t.user_id, name: t.name, headline: t.headline, bio: t.bio, university: t.university, department: t.department,

@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isSegment } from "@mastermoshai/core";
 import { DATA_LIVE } from "@/lib/data";
-import { cancelContent, CONTENT_PRICE, getContentSub, renewContent, setContentAutoRenew, subscribeSegment } from "@/lib/biz/content-subs";
+import { cancelContent, contentPrice, getContentSub, renewContent, setContentAutoRenew, subscribeSegment } from "@/lib/biz/content-subs";
 import { isEmail, me } from "@/lib/growth/people";
 import { quote } from "@/lib/growth/pay";
 import type { BuyState } from "@/app/packages/actions";
@@ -17,7 +17,7 @@ export async function buySegment(segment: string, _: BuyState, f: FormData): Pro
   const student = forChild ? String(f.get("child") ?? "").trim().toLowerCase() : m.email;
   if (forChild && (!isEmail(student) || student === m.email)) return { error: "badEmail" };
   const coupon = String(f.get("coupon") ?? "").trim();
-  if (coupon && !(await quote(m.email, CONTENT_PRICE, coupon)).couponOk) return { error: "badCoupon" };
+  if (coupon && !(await quote(m.email, await contentPrice(), coupon)).couponOk) return { error: "badCoupon" };
   let url: string;
   try {
     url = (await subscribeSegment({ segment, payer: m.email, student, autoRenew: f.get("auto") === "on", coupon })).url;
