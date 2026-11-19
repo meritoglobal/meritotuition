@@ -95,6 +95,11 @@ export async function handleCallback(pid: string, paymentID: string, status: str
     await s.from("payments").update({ bkash_payment_id: next.paymentID, mode: "0001" }).eq("id", pid);
     return next.url;
   }
+  // bKash must report exactly the amount we asked for; anything else is not delivered.
+  if (ex.amount !== undefined && Math.abs(ex.amount - Number(p.amount)) > 0.009) {
+    await s.from("payments").update({ status: "FAILED" }).eq("id", pid);
+    return resultPath(p.purpose, p.ref_id, "failure");
+  }
   await markPaid(pid, { trx: ex.trxID });
   return resultPath(p.purpose, p.ref_id, "success");
 }
