@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inStoreApp } from "@/lib/store-server";
 import { notFound } from "next/navigation";
 import { contentAccess, segmentOfContent } from "@mastermoshai/core";
 import { accessContext } from "@/lib/biz/access";
@@ -17,6 +18,7 @@ export default async function Sheet({ params, searchParams }: { params: Promise<
   const s = CONTENT.find((x) => x.id === id);
   if (!s) notFound();
   const lang = await getLang();
+  const store = await inStoreApp();
   const c = bizCopy(lang).learn;
   const p = marketCopy(lang).prep;
   const a = contentAccess(s, await accessContext(m));
@@ -34,10 +36,10 @@ export default async function Sheet({ params, searchParams }: { params: Promise<
       ) : (
         <div className="card mt-6 max-w-xl p-6">
           <p className="font-semibold">🔒 {c.locked}</p>
-          <p className="mt-2 text-sm text-ink-2">{c.lockedWhy}</p>
+          <p className="mt-2 text-sm text-ink-2">{store ? c.lockedWhyStore : c.lockedWhy}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link href="/teachers" className="btn-board px-4! py-2!">{c.freeHow}</Link>
-            {seg && <Link href={`/learn/buy/${seg}`} className="btn-ghost px-4! py-2!">{c.unlock}</Link>}
+            {seg && !store && <Link href={`/learn/buy/${seg}`} className="btn-ghost px-4! py-2!">{c.unlock}</Link>}
           </div>
         </div>
       )}

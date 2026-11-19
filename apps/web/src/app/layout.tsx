@@ -96,6 +96,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <p className="mt-3 text-lg font-semibold text-gold">{c.footer.tagline}</p>
               <p className="mt-2 text-sm text-white/60">{c.footer.line}</p>
               <Link href="/privacy" className="mt-2 inline-block text-sm text-white/60 underline underline-offset-4">{lang === "en" ? "Privacy policy" : "গোপনীয়তা নীতি"}</Link>
+              <Link href="/account/delete" className="mt-2 ml-4 inline-block text-sm text-white/60 underline underline-offset-4">{lang === "en" ? "Delete account" : "অ্যাকাউন্ট মুছুন"}</Link>
             </div>
             {c.footer.cols.map(([h, items]) => (
               <div key={h}>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { inStoreApp } from "@/lib/store-server";
 import { Off } from "@/components/growth/Off";
 import { growthCopy } from "@/lib/copy-growth";
 import { DATA_LIVE } from "@/lib/data";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Leaderboard() {
   const lang = await getLang();
+  const store = await inStoreApp();
   const g = growthCopy(lang);
   const c = g.test;
   if (!DATA_LIVE) return <div className="mx-auto max-w-5xl px-5 py-10"><h1 className="font-display text-4xl">{c.h1}</h1><Off text={g.off} /></div>;
@@ -35,7 +37,7 @@ export default async function Leaderboard() {
                       <span className="block font-semibold">{t.title}</span>
                       <span className="block text-xs text-ink-3">{L.subject(t.subject, lang)} · {c.qs(t.questions.length)} · {c.minutes(t.duration_min)} · {c.takers(t.takers)}</span>
                     </span>
-                    <span className={`tag ${t.price > 0 ? "bg-gold-tint" : "bg-home text-home-ink"}`}>{t.price > 0 ? L.taka(t.price, lang) : c.free}</span>
+                    {!(store && t.price > 0) && <span className={`tag ${t.price > 0 ? "bg-gold-tint" : "bg-home text-home-ink"}`}>{t.price > 0 ? L.taka(t.price, lang) : c.free}</span>}
                   </Link>
                 </li>
               ))}

@@ -30,3 +30,8 @@
 Sheets are served only through `/api/content/{id}` to people allowed to see them, never as public files. Opening the URL directly in a tab redirects to the viewer (the app passes `?embed=app`). The served page blocks selection, copy, right-click, save/print keys and printing (prints blank), and carries a faint watermark with the viewer's email and time so a leaked photo can be traced. No download or print buttons anywhere. Screenshots are allowed in the app (owner decision); the watermark makes any shared image traceable.
 
 Tutor ID check uses `ANTHROPIC_API_KEY` (already set for photo questions); `VERIFY_MODEL` overrides the model. ID photos are in the private `class-files` bucket under `tutor-ids/`.
+
+## App Store / Play Store
+- **No digital sales in store builds.** Store builds send a user agent with `MastermoshaiApp/1.0 (ios; store)` or `(android; store)` (`isStoreUA` in `lib/store.ts`). Then `/learn/buy/*` and `/teach/pro` redirect away; the ৳999 pack card, pack prices and renew buttons, the locked-sheet "buy" link, the Tutor Pro nav item and paid model-test prices/buttons are hidden; and `startPayment` refuses `CONTENT`, `PRO` and `TEST`. Tutoring packages (a real tutor teaching) and paid tutor answers stay, as person-to-person services.
+- **Account deletion:** `/account/delete` (linked from the footer, student dashboard and tutor profile). Removes the login and personal data; money records are kept. Tutors must withdraw their wallet first. Run the updated `supabase/business.sql` (adds `account_deletions`).
+- **Reviewer login:** set `REVIEW_LOGIN=on` (and optionally `REVIEW_EMAIL`, default `review@mastermoshai.net`). That email then signs in with code `123456`, with no email sent. Remove the flag after review.

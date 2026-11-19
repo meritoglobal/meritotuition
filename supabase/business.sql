@@ -264,3 +264,14 @@ create table if not exists class_complaints (
 create index if not exists class_complaints_status on class_complaints (status, created_at);
 create index if not exists class_complaints_student on class_complaints (student_email, created_at desc);
 alter table class_complaints enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- Account deletion log (store requirement): who asked, when. The login itself is removed.
+-- ---------------------------------------------------------------------------
+create table if not exists account_deletions (
+  id         bigint generated always as identity primary key,
+  user_id    text not null,
+  email      text,
+  deleted_at timestamptz not null default now()
+);
+alter table account_deletions enable row level security;

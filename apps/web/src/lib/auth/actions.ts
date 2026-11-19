@@ -2,7 +2,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cleanOtp, normalizeBdPhone, normalizeEmail } from "@mastermoshai/core";
-import { AUTH_LIVE, DEMO_CODE, DEMO_COOKIE, OTP_CHANNEL, safeNext } from "./config";
+import { DATA_LIVE, db } from "@/lib/data";
+import { AUTH_LIVE, DEMO_CODE, DEMO_COOKIE, isReviewLogin, OTP_CHANNEL, safeNext } from "./config";
 import { supabaseServer } from "./supabase";
 
 export type LoginError = "badId" | "badCode" | "wrongCode" | "rateLimit" | "off" | "unknown";
@@ -28,7 +29,7 @@ export async function sendCode(_: LoginState, form: FormData): Promise<LoginStat
   const raw = String(form.get("id") ?? "");
   const id = OTP_CHANNEL === "phone" ? normalizeBdPhone(raw) : normalizeEmail(raw);
   if (!id) return { step: "id", next, error: "badId" };
-  if (!AUTH_LIVE) return { step: "code", id, next };
+  if (!AUTH_LIVE || isReviewLogin(id)) return { step: "code", id, next };
 
   const sb = await supabaseServer();
   const { error } = await sb.auth.signInWithOtp(OTP_CHANNEL === "phone" ? { phone: id } : { email: id, options: { shouldCreateUser: true } });
@@ -48,6 +49,14 @@ export async function verifyCode(_: LoginState, form: FormData): Promise<LoginSt
   if (!AUTH_LIVE) {
     if (token !== DEMO_CODE) return { step: "code", id, next, error: "wrongCode" };
     (await cookies()).set(DEMO_COOKIE, id, { path: "/", httpOnly: true, sameSite: "lax", maxAge: 60 * 60 * 24 * 30 });
+  } else if (isReviewLogin(id) && DATA_LIVE) {
+    // Store reviewer: fixed code, session minted with the admin key (no email sent).
+    if (token !== DEMO_CODE) return { step: "code", id, next, error: "wrongCode" };
+    await db().auth.admin.createUser({ email: id, email_confirm: true }).catch(() => null); // first time only; "already exists" is fine
+    const { data, error: linkErr } = await db().auth.admin.generateLink({ type: "magiclink", email: id });
+    if (linkErr || !data.properties?.hashed_token) return { step: "code", id, next, error: "unknown" };
+    const { error } = await (await supabaseServer()).auth.verifyOtp({ token_hash: data.properties.hashed_token, type: "magiclink" });
+    if (error) return { step: "code", id, next, error: errorOf(error.code) };
   } else {
     const sb = await supabaseServer();
     const { error } = await sb.auth.verifyOtp(OTP_CHANNEL === "phone" ? { phone: id, token, type: "sms" } : { email: id, token, type: "email" });

@@ -18,6 +18,14 @@ export const OTP_CHANNEL: OtpChannel = process.env.NEXT_PUBLIC_OTP_CHANNEL === "
 export const DEMO_COOKIE = "mm_demo_user";
 export const DEMO_CODE = "123456";
 
+/**
+ * App Store / Play Store reviewer login. With REVIEW_LOGIN=on, this one email signs in with
+ * code 123456 (no email is sent). Turn it off after review.
+ */
+export const REVIEW_LOGIN = process.env.REVIEW_LOGIN === "on";
+export const REVIEW_EMAIL = (process.env.REVIEW_EMAIL ?? "review@mastermoshai.net").trim().toLowerCase();
+export const isReviewLogin = (id: string) => REVIEW_LOGIN && id.toLowerCase() === REVIEW_EMAIL;
+
 /** Pages that need a signed-in user. */
 export const PROTECTED_PREFIXES = ["/dashboard", "/book", "/class", "/exams", "/teach", "/parent", "/chat", "/packages", "/refer", "/ask", "/pay", "/requests", "/learn", "/routine", "/admin"];
 /** "/teach" guards /teach and /teach/..., but not public pages like /teachers. */

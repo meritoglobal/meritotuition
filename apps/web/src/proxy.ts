@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isStoreUA, STORE_BLOCKED } from "@/lib/store";
 import { AFTER_LOGIN, AUTH_LIVE, DEMO_COOKIE, isProtected, SUPABASE_KEY, SUPABASE_URL } from "@/lib/auth/config";
 
 /** Keeps the Supabase session fresh and sends signed-out visitors to /login. */
@@ -33,6 +34,14 @@ export async function proxy(req: NextRequest) {
     return r;
   };
   keepRef(res);
+  // Store builds of the app: no pages that sell digital goods.
+  const blocked = isStoreUA(req.headers.get("user-agent")) ? STORE_BLOCKED.find(([p]) => pathname === p || pathname.startsWith(`${p}/`)) : undefined;
+  if (blocked) {
+    const url = req.nextUrl.clone();
+    url.pathname = blocked[1];
+    url.search = "";
+    return keepRef(NextResponse.redirect(url));
+  }
   if (!signedIn && isProtected(pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
