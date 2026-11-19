@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { WebView, type WebViewMessageEvent, type WebViewNavigation } from "react-native-webview";
 import { DOWNLOAD_BRIDGE, createDownloads } from "../src/downloads";
 import { SITE } from "../src/site";
-import { APP_AGENT, DIGITAL_SALE, STORE } from "../src/store";
+import { APP_AGENT, DIGITAL_SALE, HIDE_DIGITAL_SALES, STORE } from "../src/store";
 import { SITE_HOSTS, colors } from "../src/theme";
 import { Button, Ionicons } from "../src/ui";
 
@@ -94,7 +94,7 @@ export default function WebPage() {
     const { url } = req;
     if (url.startsWith("about:")) return true;
     // Store builds never open a page that sells digital goods (store billing rules).
-    if (STORE && isOurs(url) && DIGITAL_SALE.test(url)) return false;
+    if (STORE && HIDE_DIGITAL_SALES && isOurs(url) && DIGITAL_SALE.test(url)) return false;
     // Nothing leaves a content page as a file.
     if (isContent(url) && FILE_RE.test(url)) return false;
     if (url.startsWith("blob:") || url.startsWith("data:")) return true;

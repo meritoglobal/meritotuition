@@ -2,15 +2,16 @@ import { Platform } from "react-native";
 
 /**
  * True in builds made for the Play Store / App Store (eas.json "production" sets
- * EXPO_PUBLIC_STORE=1). Store rules: digital goods (lecture sheet packs, Tutor Pro)
- * may only be sold through Apple/Google billing, so store builds do not sell them;
- * people buy those on the website and the app simply shows what they own.
- * Tutor fees (live 1-to-1 classes with a real person) are a service and stay on bKash.
+ * EXPO_PUBLIC_STORE=1). Owner's decision (Nov 19): everything, including lecture
+ * sheet packs and Tutor Pro, is sold through bKash in every build. Store billing
+ * is not used. If a store review rejects that, set HIDE_DIGITAL_SALES to true for
+ * that platform: store builds then hide those buys and the website does the same.
  */
 export const STORE = process.env.EXPO_PUBLIC_STORE === "1";
+export const HIDE_DIGITAL_SALES = false;
 
-/** Pages that sell digital goods; never opened inside a store build. */
+/** Pages that sell digital goods; blocked only when HIDE_DIGITAL_SALES is on. */
 export const DIGITAL_SALE = /\/(learn\/buy|teach\/pro|api\/content\/subscribe|api\/pro)(\/|\?|#|$)/;
 
-/** Sent to the website so it can hide "buy" buttons in store builds. */
-export const APP_AGENT = `MastermoshaiApp/1.0 (${Platform.OS}${STORE ? "; store" : ""})`;
+/** The website hides digital "buy" buttons when this contains "; store". */
+export const APP_AGENT = `MastermoshaiApp/1.0 (${Platform.OS}${STORE && HIDE_DIGITAL_SALES ? "; store" : ""})`;

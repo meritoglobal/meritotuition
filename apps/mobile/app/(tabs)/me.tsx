@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router } from "expo-router";
 import { setRole, useRole } from "../../src/prefs";
 import { SITE, openLive, openPage } from "../../src/site";
-import { STORE } from "../../src/store";
+import { HIDE_DIGITAL_SALES as STORE } from "../../src/store";
 import { colors } from "../../src/theme";
 import { Button, Ionicons, Mark, Screen, TabHeader, type IconName } from "../../src/ui";
 
