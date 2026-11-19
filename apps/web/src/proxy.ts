@@ -26,17 +26,24 @@ export async function proxy(req: NextRequest) {
   }
 
   const { pathname, search } = req.nextUrl;
+  // Referral links (?ref=CODE): remember the code for 30 days; it is attached after login.
+  const ref = req.nextUrl.searchParams.get("ref");
+  const keepRef = (r: NextResponse) => {
+    if (ref && /^[A-Za-z0-9]{4,12}$/.test(ref)) r.cookies.set("mm_ref", ref.toUpperCase(), { path: "/", maxAge: 30 * 86_400, sameSite: "lax", httpOnly: true });
+    return r;
+  };
+  keepRef(res);
   if (!signedIn && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname + search)}`;
-    return NextResponse.redirect(url);
+    return keepRef(NextResponse.redirect(url));
   }
   if (signedIn && pathname === "/login") {
     const url = req.nextUrl.clone();
     url.pathname = AFTER_LOGIN;
     url.search = "";
-    return NextResponse.redirect(url);
+    return keepRef(NextResponse.redirect(url));
   }
   return res;
 }

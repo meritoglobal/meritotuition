@@ -75,3 +75,19 @@ export async function listRecordings(classId: string): Promise<R2Rec[]> {
     };
   }));
 }
+
+/** Tutor intro videos live under intro/ (outside the rec/ lifecycle rule, so they are kept). */
+export const introKey = (userId: string, ext: string) => `intro/${userId.replace(/[^\w-]/g, "_")}/${Date.now()}.${ext}`;
+
+/** One-shot presigned PUT for a small file (up to a few hundred MB). */
+export const putUrl = (key: string, expires = 3600) => presign(`${base()}/${keyPath(key)}`, "PUT", expires);
+export const getUrl = (key: string, expires = 3600) => presign(`${base()}/${keyPath(key)}`, "GET", expires);
+
+export async function headSize(key: string): Promise<number | null> {
+  const r = await aws().fetch(`${base()}/${keyPath(key)}`, { method: "HEAD" });
+  return r.ok ? Number(r.headers.get("content-length")) || 0 : null;
+}
+
+export async function removeObject(key: string) {
+  await aws().fetch(`${base()}/${keyPath(key)}`, { method: "DELETE" }).catch(() => null);
+}

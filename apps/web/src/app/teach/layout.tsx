@@ -4,15 +4,25 @@ import { getUser } from "@/lib/auth/session";
 import { toolsCopy } from "@/lib/copy-tools";
 import { DATA_LIVE } from "@/lib/data";
 import { getLang } from "@/lib/lang";
+import { growthCopy } from "@/lib/copy-growth";
+import { marketCopy } from "@/lib/copy-market";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeachLayout({ children }: { children: React.ReactNode }) {
   if (!(await getUser())) redirect("/login?next=/teach");
-  const t = toolsCopy(await getLang()).teach;
+  const lang = await getLang();
+  const t = toolsCopy(lang).teach;
+  const g = growthCopy(lang).nav;
+  const mk = marketCopy(lang).nav;
   const nav = [
     ["/teach", t.nav.home],
+    ["/teach/requests", mk.requests],
+    ["/teach/prep", mk.prep],
     ["/teach/content", t.nav.content],
+    ["/teach/packages", g.packages],
+    ["/teach/questions", g.questions],
+    ["/teach/pro", mk.pro],
     ["/teach/profile", t.nav.profile],
     ["/dashboard/teacher", t.nav.earnings],
   ] as const;
@@ -24,7 +34,9 @@ export default async function TeachLayout({ children }: { children: React.ReactN
           <Link key={href} href={href} className="text-sm font-semibold text-ink-2 hover:text-ink">{label}</Link>
         ))}
       </div>
-      {DATA_LIVE ? <div className="pt-6">{children}</div> : <p className="mt-6 rounded-lg bg-mist p-6 text-center text-sm text-ink-2">{t.off}</p>}
+      {/* Pages that need the database render nothing while it is off; class prep works without it. */}
+      {!DATA_LIVE && <p className="mt-6 rounded-lg bg-mist p-6 text-center text-sm text-ink-2">{t.off}</p>}
+      <div className="pt-6">{children}</div>
     </div>
   );
 }
