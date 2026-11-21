@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Once a day (Netlify scheduled function, 8 AM Dhaka). Per-class pay and payouts run hourly (/api/cron/hourly). Needs CRON_SECRET as
+ * Once a day (Cloudflare cron in apps/web/worker.ts, 8 AM Dhaka). Per-class pay and payouts run hourly (/api/cron/hourly). Needs CRON_SECRET as
  * `authorization: Bearer …`. Every day: renewal reminders, lapsed months, Pro reminders, Pro money-back.
  * Saturdays (or ?weekly=1): last week's report to every linked parent.
  */

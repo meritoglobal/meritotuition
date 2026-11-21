@@ -31,7 +31,7 @@ The API currently uses an in-memory store with the same methods the Prisma repos
 
 ## Live classes (LiveKit)
 
-Set these in Netlify (Site configuration, Environment variables), then redeploy:
+Set these in Cloudflare (Workers & Pages → mastermoshai → Settings → Variables and Secrets), then redeploy:
 
 - `LIVEKIT_URL`: the project's `wss://...livekit.cloud` address
 - `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET`: from LiveKit Cloud, Settings, API Keys
