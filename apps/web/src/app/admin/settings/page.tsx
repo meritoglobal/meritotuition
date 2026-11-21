@@ -82,7 +82,7 @@ async function Admins({ lang }: { lang: Lang }) {
   const { data, error } = await db().from("admin_users").select("*").order("created_at");
   return (
     <>
-      <Section title={t("মালিক (Netlify-র ADMIN_EMAILS)", "Owners (ADMIN_EMAILS in Netlify)")}>
+      <Section title={t("মালিক (Cloudflare-এর ADMIN_EMAILS)", "Owners (ADMIN_EMAILS in Cloudflare)")}>
         <p className="text-sm">{OWNER_EMAILS.join(", ") || "—"}</p>
         <p className="mt-1 text-xs text-ink-3">{t("এঁদের এখান থেকে সরানো বা সাসপেন্ড করা যায় না।", "These cannot be removed or suspended from here.")}</p>
       </Section>

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Every hour (Netlify scheduled function). Needs CRON_SECRET as `authorization: Bearer …`.
+ * Every hour (Cloudflare cron in apps/web/worker.ts). Needs CRON_SECRET as `authorization: Bearer …`.
  * Pays tutors for classes held (commission kept), sends queued/auto bKash payouts,
  * and closes routine-change proposals that ran out of time.
  */

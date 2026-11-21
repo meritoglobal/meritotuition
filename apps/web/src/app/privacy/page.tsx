@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getLang } from "@/lib/lang";
 
-/** Contact for privacy requests. Set NEXT_PUBLIC_SUPPORT_EMAIL in Netlify. */
+/** Contact for privacy requests. Set NEXT_PUBLIC_SUPPORT_EMAIL in Cloudflare. */
 const EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "hello@mastermoshai.net";
 const UPDATED = { bn: "১২ নভেম্বর ২০২৬", en: "12 November 2026" };
 
@@ -19,7 +19,7 @@ const BN: [string, string[]][] = [
     "টাকা: বিকাশ, নগদ বা কার্ডের তথ্য আমরা দেখি না, রাখিও না। পেমেন্ট সরাসরি তাদের পাতায় হয়।",
   ]],
   ["তথ্য কেন লাগে", ["ক্লাস চালাতে, হাজিরা আর টাকা ফেরতের হিসাব রাখতে, পরীক্ষার নম্বর দেখাতে, ক্লাসের খবর পাঠাতে, আর প্রতারণা ঠেকাতে। বিজ্ঞাপনের জন্য তোমার তথ্য বিক্রি করি না, কারো সাথে ভাগও করি না।"]],
-  ["কারা তথ্য রাখে", ["আমাদের হয়ে কয়েকটি সেবা তথ্য রাখে: Supabase (ডেটাবেস আর ফাইল), LiveKit (লাইভ ভিডিও আর রেকর্ডিং), Netlify (ওয়েবসাইট)। তারা শুধু আমাদের কাজের জন্য তথ্য ব্যবহার করতে পারে।"]],
+  ["কারা তথ্য রাখে", ["আমাদের হয়ে কয়েকটি সেবা তথ্য রাখে: Supabase (ডেটাবেস আর ফাইল), LiveKit (লাইভ ভিডিও আর রেকর্ডিং), Cloudflare (ওয়েবসাইট)। তারা শুধু আমাদের কাজের জন্য তথ্য ব্যবহার করতে পারে।"]],
   ["কতদিন রাখি", ["অ্যাকাউন্ট চালু থাকা পর্যন্ত। ক্লাস রেকর্ডিং সর্বোচ্চ ১২ মাস। হিসাবের রেকর্ড আইন অনুযায়ী যতদিন রাখা দরকার।"]],
   ["তোমার অধিকার", [`নিজের তথ্য দেখতে, ঠিক করতে বা অ্যাকাউন্ট আর সব তথ্য মুছে ফেলতে চাইলে ${EMAIL}-এ ইমেইল করো। ৩০ দিনের মধ্যে করে দেব।`]],
   ["ছোটদের তথ্য", ["১৩ বছরের কম বয়সীদের অ্যাকাউন্ট অভিভাবকের অনুমতি নিয়ে খোলা উচিত। অভিভাবক চাইলে যেকোনো সময় সন্তানের তথ্য মুছে দিতে বলতে পারেন।"]],
@@ -38,7 +38,7 @@ const EN: [string, string[]][] = [
     "Payments: we never see or store bKash, Nagad or card details. Payment happens on their own pages.",
   ]],
   ["Why we need it", ["To run classes, keep attendance and refunds fair, show exam results, send class reminders, and prevent fraud. We do not sell your data or share it for advertising."]],
-  ["Who stores it", ["A few services store data on our behalf: Supabase (database and files), LiveKit (live video and recordings) and Netlify (website). They may use it only to provide their service to us."]],
+  ["Who stores it", ["A few services store data on our behalf: Supabase (database and files), LiveKit (live video and recordings) and Cloudflare (website). They may use it only to provide their service to us."]],
   ["How long we keep it", ["While your account is open. Class recordings for up to 12 months. Payment records for as long as the law requires."]],
   ["Your rights", [`To see, correct or delete your data or your whole account, email ${EMAIL}. We will do it within 30 days.`]],
   ["Children", ["Accounts for children under 13 should be opened with a parent's permission. A parent can ask us to delete their child's data at any time."]],

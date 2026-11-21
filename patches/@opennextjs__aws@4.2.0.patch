@@ -1,0 +1,23 @@
+diff --git a/dist/overrides/converters/edge.js b/dist/overrides/converters/edge.js
+index a5a9641d1651b45d4c73004dc57b72882d3c14c8..0e53b3546318f877fcc8513f3c6492e7d995a68b 100644
+--- a/dist/overrides/converters/edge.js
++++ b/dist/overrides/converters/edge.js
+@@ -1,5 +1,6 @@
+ import { Buffer } from "node:buffer";
+-import cookieParser from "cookie";
++// Patched: namespace import works whether the bundler gives cookie@1 a default export or not.
++import * as cookieParser from "cookie";
+ import { parseSetCookieHeader } from "../../http/util.js";
+ import { getQueryFromSearchParams } from "./utils.js";
+ // https://fetch.spec.whatwg.org/#statuses
+diff --git a/dist/overrides/converters/node.js b/dist/overrides/converters/node.js
+index e4b40b735fd8a26f372ad9076d3e2b8f35c61127..06c079be6b4ca0bb78333949f5c5198e6c8c31d4 100644
+--- a/dist/overrides/converters/node.js
++++ b/dist/overrides/converters/node.js
+@@ -1,4 +1,5 @@
+-import cookieParser from "cookie";
++// Patched: namespace import works whether the bundler gives cookie@1 a default export or not.
++import * as cookieParser from "cookie";
+ import { extractHostFromHeaders, getQueryFromSearchParams } from "./utils.js";
+ const converter = {
+     convertFrom: async (req) => {

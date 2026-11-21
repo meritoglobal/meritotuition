@@ -1,0 +1,26 @@
+// Cloudflare Workers settings for the website (apps/web).
+// Build:  pnpm build:cf      Deploy: pnpm deploy:cf
+// Secrets and variables are set in the Cloudflare dashboard (Worker → Settings → Variables and Secrets).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mastermoshai",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    // Lecture sheets are copied to /_sheets but must never be served directly:
+    // the worker answers this path (404) and only /api/content/[id] reads them, after checking access.
+    "run_worker_first": ["/_sheets/*"]
+  },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "mastermoshai" }],
+  // Hourly: pay tutors per class, bKash payouts, expire routine changes.
+  // Daily 02:00 UTC (08:00 Dhaka): renewal reminders, Saturday parent reports.
+  "triggers": { "crons": ["7 * * * *", "0 2 * * *"] },
+  "observability": { "enabled": true },
+  // Keep variables set in the dashboard when deploying from the repo.
+  "keep_vars": true
+}

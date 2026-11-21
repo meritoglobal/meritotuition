@@ -14,6 +14,15 @@ const page = (status: number, title: string, body: string, link: string, linkTex
   { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 
 async function load(file: string): Promise<string | null> {
+  // Cloudflare: sheets live in the worker's private static files (/_sheets, see wrangler.jsonc).
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const assets = (getCloudflareContext().env as { ASSETS?: { fetch: (u: string) => Promise<Response> } }).ASSETS;
+    if (assets) {
+      const r = await assets.fetch(`https://assets.local/_sheets/${encodeURIComponent(path.basename(file))}`);
+      if (r.ok) return await r.text();
+    }
+  } catch { /* not on Cloudflare: read from disk below */ }
   for (const base of [path.join(process.cwd(), "content/sheets"), path.join(process.cwd(), "apps/web/content/sheets")]) {
     const html = await readFile(path.join(base, path.basename(file)), "utf8").catch(() => null);
     if (html) return html;
